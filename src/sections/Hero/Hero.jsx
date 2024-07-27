@@ -68,9 +68,12 @@ function Hero() {
           <br />
           Singh
         </h1>
+        <div className={styles.movingtext}>
         <h2 className="type-wrapper">
-          <span className="role" ref={typedElement}></span>
-        </h2>
+            <span className="role" ref={typedElement}></span>
+          </h2>
+        </div>
+        
         <span>
           
           <a href="https://github.com/pr7bh" target="_blank">
@@ -84,7 +87,7 @@ function Hero() {
         A distinguished and certified MERN stack developer with a profound expertise in Data Structures and Algorithms (DSA) using Java.
         </p>
         <a href={CV} download>
-          <button className="hover">Resume</button>
+          <button className="hover">🡇 RESUME</button>
         </a>
       </div>
     </section>
