@@ -29,7 +29,7 @@ function Projects() {
         />
         <ProjectCard
           src={cryptocurrency}
-          link="https://github.com/pr7bh/Cryptocurrency_App"
+          link="https://cryptoverse7.vercel.app/"
           h3="Cryptoverse"
           p="Cryptocurrency App"
         />
