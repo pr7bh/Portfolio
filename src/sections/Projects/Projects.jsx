@@ -1,6 +1,6 @@
 import styles from './ProjectsStyles.module.css';
 import studyNotion from '../../assets/studyNotion.png';
-import genAI from '../../assets/genAI.png';
+import netflix from '../../assets/netflix.png';
 import cryptocurrency from '../../assets/cryptocurrency.png';
 import shoppingcart from '../../assets/shoppingcart.png';
 import snakegame from '../../assets/snakeGame.png';
@@ -22,10 +22,10 @@ function Projects() {
         
 
         <ProjectCard
-          src={genAI}
-          link="https://github.com/pr7bh/GENAI_IMAGE_GENERATOR"
-          h3="Gen AI"
-          p="Image Generation App"
+          src={netflix}
+          link="https://netflix-clone-yc80.onrender.com/"
+          h3="Netflix Clone"
+          p="Streaming Platform"
         />
         <ProjectCard
           src={cryptocurrency}
