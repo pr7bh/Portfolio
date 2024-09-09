@@ -1,5 +1,5 @@
 import styles from './ProjectsStyles.module.css';
-import studyNotion from '../../assets/studyNotion.png';
+import realEstate from '../../assets/realEstate.png';
 import netflix from '../../assets/netflix.png';
 import cryptocurrency from '../../assets/cryptocurrency.png';
 import shoppingcart from '../../assets/shoppingcart.png';
@@ -14,10 +14,10 @@ function Projects() {
       <div className={styles.projectsContainer}>
       
         <ProjectCard
-          src={studyNotion}
-          link="https://github.com/pr7bh/Edtech_Project_StudyNotion"
-          h3="StudyNotion"
-          p="Edtech Platform" 
+          src={realEstate}
+          link="https://real-estate-a73r.onrender.com/"
+          h3="Real Estate"
+          p="Real Estate Finder App" 
         />
         
 
