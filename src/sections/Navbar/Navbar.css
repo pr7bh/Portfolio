@@ -1,0 +1,116 @@
+/* src/components/Navbar/Navbar.css */
+.navbar {
+    position: fixed;
+    width: 100%;
+    background-color: var(--background-color);
+    font-family: 'Rubik', sans-serif;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional for a subtle shadow */
+  }
+  
+  .navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    padding: 10px 20px;
+  }
+  
+  .logo {
+    color: var(--text-color);
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .navbar-links {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar-links li {
+    margin: 0 20px;
+    cursor: pointer;
+    color: var(--text-color);
+    font-size: 18px;
+  }
+  
+  .navbar-links li:hover {
+    color: #0987f2;
+  }
+  
+  /* Hamburger menu */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+  }
+  
+  .hamburger .bar {
+    width: 25px;
+    height: 3px;
+    background-color: var(--text-color);
+    margin: 4px 0;
+    transition: 0.3s;
+  }
+  
+  .hamburger.open .bar:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+  }
+  
+  .hamburger.open .bar:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .hamburger.open .bar:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -6px);
+  }
+  
+  /* Hide the navbar links on smaller screens */
+  .navbar-links {
+    display: flex;
+  }
+  
+  .navbar-links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    width: 200px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  }
+  
+  .navbar-links.open li {
+    margin: 10px 0;
+    text-align: center;
+  }
+  
+  .navbar-links.open li:hover {
+    color: #0987f2;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .navbar-links {
+      display: none;
+    }
+  
+    .hamburger {
+      display: flex;
+    }
+  }
+  
+  /* Adding space at the top of the page so content doesn't get hidden under the navbar */
+  .section {
+    padding-top: 60px; /* Adjust this based on your navbar height */
+  }
+  
