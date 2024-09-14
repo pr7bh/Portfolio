@@ -25,6 +25,10 @@
     color: var(--text-color);
     font-size: 24px;
     font-weight: bold;
+    cursor: pointer;
+    &:hover{
+      color: #0987f2;
+    }
   }
   
   .navbar-links {

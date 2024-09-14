@@ -20,14 +20,13 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <div className="logo">Prabhjot Singh</div>
+        <div className="logo" onClick={() => scrollToSection('hero')}>Prabhjot Singh</div>
         <div className={`hamburger ${isOpen ? 'open' : ''}`} onClick={toggleMenu}>
           <span className="bar"></span>
           <span className="bar"></span>
           <span className="bar"></span>
         </div>
         <ul className={`navbar-links ${isOpen ? 'open' : ''}`}>
-          <li onClick={() => scrollToSection('hero')}>Home</li>
           <li onClick={() => scrollToSection('projects')}>Projects</li>
           <li onClick={() => scrollToSection('skills')}>Skills</li>
           <li onClick={() => scrollToSection('contact')}>Contact</li>
