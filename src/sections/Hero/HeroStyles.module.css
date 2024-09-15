@@ -6,7 +6,7 @@
   text-align: center;
   height: 100dvh;
   min-height: 500px;
-  margin-top: 0px;
+  margin-top: 40px;
 
   .hero {
     max-width: 200px;
@@ -94,13 +94,14 @@
     align-items: center;
     justify-content: space-evenly;
 
+
     .hero {
       max-width: 350px;
       width: 350px;
     }
 
     .container{
-      margin-top: 30px;
+      margin-top: 0px;
     }
   }
 }
