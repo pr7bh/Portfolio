@@ -56,6 +56,7 @@
 
   button:hover {
     transform: scale(1.05);
+    background-color: red;
   }
 
   button:active {
@@ -79,7 +80,7 @@
 }
 
 .description {
-  max-width: 24ch;
+  max-width: 30ch;
 }
 
 .info {
@@ -118,6 +119,7 @@
 }
 
 .movingtext{
+  display: inline-block;
   min-height: 80px;
   margin-bottom: 0px;
 }

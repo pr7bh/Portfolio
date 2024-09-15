@@ -1,19 +1,12 @@
+/* Main Container Styles */
 .container {
   display: flex;
   flex-direction: column;
   text-align: center;
-
-  span {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  img {
-    width: 20px;
-  }
+  animation: fadeIn 1s ease-in-out;
 }
 
+/* Skill List Styling */
 .skillList {
   display: flex;
   justify-content: space-evenly;
@@ -21,24 +14,76 @@
   flex-wrap: wrap;
   row-gap: 40px;
   max-width: 26ch;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.8s ease-in-out forwards;
+  animation-delay: 0.2s;
 }
 
+/* Staggered Animation */
+.skillList:nth-child(1) {
+  animation-delay: 0.2s;
+}
+.skillList:nth-child(2) {
+  animation-delay: 0.4s;
+}
+.skillList:nth-child(3) {
+  animation-delay: 0.6s;
+}
+.skillList:nth-child(4) {
+  animation-delay: 0.8s;
+}
+
+/* Skill Icons and Hover Effects */
+.skillList span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  perspective: 1000px;
+  transition: transform 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.skillList img {
+  width: 30px;
+  padding: 10px;
+  transition: transform 0.5s ease, box-shadow 0.4s ease;
+  border-radius: 15px;
+}
+
+/* 3D Hover Effect */
+.skillList span:hover {
+  transform: rotateY(15deg);
+  color: var(--hover-color);
+}
+
+.skillList span:hover img {
+  transform: scale(1.3);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 6px rgba(0, 0, 0, 0.1);
+  filter: drop-shadow(0 4px 10px var(--hover-color));
+}
+
+/* Icon Glow Effect */
+.skillList span:hover img {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+/* Divider Animation (HR) */
 hr {
   width: 100px;
-  height: 1px;
+  height: 2px;
   border: none;
   background-color: var(--text-color);
   margin: 30px auto;
+  opacity: 0;
+  transform: scaleX(0);
+  animation: expandGlow 1.2s ease-in-out forwards;
 }
 
-@media (width >= 800px) {
+/* Responsive Design for Larger Screens */
+@media (min-width: 800px) {
   .skillList {
     max-width: fit-content;
-    gap: 30px;
-
-    p {
-      font-size: 20px;
-    }
+    gap: 40px;
   }
 
   hr {
@@ -46,3 +91,46 @@ hr {
   }
 }
 
+/* Entrance Animation for Skill Section */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Staggered Fade In and Slide Up Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Expand and Glow Animation for the Divider (HR) */
+@keyframes expandGlow {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+/* Smooth Scroll for Section Navigation */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Dark/Light Mode Transition */
+body {
+  transition: background-color 0.5s ease, color 0.5s ease;
+}

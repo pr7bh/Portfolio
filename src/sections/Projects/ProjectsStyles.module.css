@@ -1,46 +1,89 @@
+/* Main Container Styles */
 .container {
   display: flex;
   flex-direction: column;
   text-align: center;
-
-  img {
-    max-width: 250px;
-    height: 250px;
-    align-self: center;
-    background-color: var(--project-card-bg);
-    border-radius: 20px;
-  }
-
-
-
-  a {
-    width: fit-content;
-    text-decoration: none;
-    color: #222;
-    transition: transform 200ms ease-in-out;
-  }
-
-  a:hover {
-    transform: scale(1.2);
-    
-  }
 }
 
+/* Project Image Styling */
+.container img {
+  max-width: 250px;
+  height: 250px;
+  align-self: center;
+  background-color: var(--project-card-bg);
+  border-radius: 20px;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* Image Hover Effect */
+.container img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Project Links */
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+a:hover {
+  transform: translateY(-5px);
+  color: var(--hover-color); /* Use a variable or define a hover color */
+}
+
+/* Projects Container Layout */
 .projectsContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
   gap: 30px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 0.6s ease-in-out forwards;
+  padding: 0 15px;
 }
 
-@media (width >= 800px) {
+/* Fade-In Animation for Project Cards */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Section Title with Slight Hover Effect */
+.sectionTitle {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.sectionTitle:hover {
+  transform: scale(1.05);
+}
+
+/* Responsive Design for Larger Screens */
+@media (min-width: 800px) {
   .projectsContainer {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-evenly;
-    padding: 0 30px;
   }
 }
 
+/* Smooth Scroll for Section Navigation */
+html {
+  scroll-behavior: smooth;
+}
 
+/* Dark/Light Mode Transition */
+body {
+  transition: background-color 0.5s ease, color 0.5s ease;
+}

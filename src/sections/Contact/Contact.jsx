@@ -66,7 +66,7 @@ function Contact() {
             placeholder="Message"
             required></textarea>
         </div>
-        <input className="hover btn" type="submit" value="Submit" />
+        <input className="hover btn" type="submit" value="SUBMIT" />
       </form>
     </section>
   );
