@@ -93,6 +93,7 @@
     flex-direction: row-reverse;
     align-items: center;
     justify-content: space-evenly;
+    margin-top: 0px;
 
 
     .hero {
@@ -108,6 +109,7 @@
 
 @media (width >= 1400px) {
   .container {
+    margin-top: 0px;
     .hero {
       max-width: 400px;
       width: 400px;
