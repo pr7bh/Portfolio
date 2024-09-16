@@ -8,6 +8,8 @@
 form {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 30px;
   max-width: 800px; /* Set a maximum width for better responsiveness */
   margin: 0 auto; /* Center the form horizontally */
