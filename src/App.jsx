@@ -5,6 +5,8 @@ import Footer from './sections/Footer/Footer';
 import Hero from './sections/Hero/Hero';
 import Projects from './sections/Projects/Projects';
 import Skills from './sections/Skills/Skills';
+import About from './sections/About/About';
+import Education from './sections/Education/Education';
 
 function App() {
   return (
@@ -18,6 +20,12 @@ function App() {
       </div>
       <div id="skills" className="section">
         <Skills />
+      </div>
+      <div id='about' className='about'>
+        <About/>
+      </div>
+      <div id='education' className='education'>
+        <Education/>
       </div>
       <div id="contact" className="section">
         <Contact />

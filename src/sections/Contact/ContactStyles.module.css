@@ -47,6 +47,7 @@ textarea:focus {
 ::placeholder {
   color: var(--form-text-color);
   opacity: 0.7; /* Make placeholder text slightly faded */
+  font-family: 'Roboto Mono', monospace;
 }
 
 input[type='submit'] {

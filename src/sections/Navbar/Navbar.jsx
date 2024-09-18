@@ -29,6 +29,8 @@ const Navbar = () => {
         <ul className={`navbar-links ${isOpen ? 'open' : ''}`}>
           <li onClick={() => scrollToSection('projects')}>Projects</li>
           <li onClick={() => scrollToSection('skills')}>Skills</li>
+          <li onClick={() => scrollToSection('about')}>About</li>
+          <li onClick={() => scrollToSection('education')}>Education</li>
           <li onClick={() => scrollToSection('contact')}>Contact</li>
         </ul>
       </div>
