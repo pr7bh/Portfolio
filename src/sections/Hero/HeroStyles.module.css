@@ -105,6 +105,9 @@ button:active {
   }
 
   button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100px;
     font-size: 18px;
   }
@@ -119,6 +122,12 @@ button:active {
 
   .hero {
     width: 180px;
+  }
+
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 
@@ -135,6 +144,11 @@ button:active {
     max-width: 350px;
     width: 350px;
   }
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 @media (min-width: 1400px) {
@@ -145,6 +159,11 @@ button:active {
   .hero {
     max-width: 400px;
     width: 400px;
+  }
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 
