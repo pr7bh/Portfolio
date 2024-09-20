@@ -70,7 +70,7 @@ function Hero() {
         </h1>
         <div className={styles.movingtext}>
           <h2 className="type-wrapper">
-            <span className="role" ref={typedElement}></span>
+            <span className="role" id='role' ref={typedElement}></span>
           </h2>
         </div>
         

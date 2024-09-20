@@ -25,11 +25,17 @@
   transform: scale(1.1);
 }
 
+.movingtext span{
+  display: inline;
+}
+
 span {
   display: flex;
   gap: 25px;
   justify-content: center;
 }
+
+
 
 span a img {
   width: 30px;
