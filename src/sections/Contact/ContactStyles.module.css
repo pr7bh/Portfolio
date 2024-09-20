@@ -1,8 +1,11 @@
 .container {
   display: flex;
   flex-direction: column;
-  text-align: center;
-  
+  justify-content: center;
+  align-items: center;
+  padding: 20px; /* Padding for better alignment */
+  width: 100%;
+  box-sizing: border-box; /* Ensures padding and borders are included in width */
 }
 
 form {
@@ -10,43 +13,45 @@ form {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
   gap: 30px;
-  max-width: 800px; /* Set a maximum width for better responsiveness */
-  margin: 0 auto; /* Center the form horizontally */
+  max-width: 100%; /* Ensure the form scales on smaller screens */
+  padding: 20px;
+  padding-left: 0;
+  border-radius: 10px; /* Smooth rounded corners */
+  background-color: var(--form-bg-color); /* Customizable form background */
 }
 
 textarea,
 input:not([type='submit']) {
   height: 50px;
-  padding-left: 16px;
-  width: 100%; /* Make input fields fill their parent container */
-  border-radius: 10px; /* Slightly rounded corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  transition: box-shadow 0.2s ease-in-out; /* Smooth transition for focus */
+  padding: 16px;
+  width: 100%; /* Ensure full width on mobile */
+  max-width: 100%; /* Prevent overflow */
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background-color: var(--background-color);
+  color: var(--form-text-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease-in-out;
+  font-size: 16px;
 }
 
 textarea {
   padding-top: 16px;
   resize: none;
-  height: 250px;
-}
-
-input,
-textarea {
-  border: 1px solid #ccc; /* Lighter border color */
-  background-color: var(--background-color);
-  color: var(--form-text-color);
+  height: 200px;
 }
 
 input:focus,
 textarea:focus {
-  outline: none; /* Remove default browser focus outline */
-  box-shadow: 0 0 5px 2px rgba(0, 120, 255, 0.5); /* Custom focus effect */
+  outline: none;
+  box-shadow: 0 0 5px 2px rgba(0, 120, 255, 0.5);
 }
 
 ::placeholder {
   color: var(--form-text-color);
-  opacity: 0.7; /* Make placeholder text slightly faded */
+  opacity: 0.7;
   font-family: 'Roboto Mono', monospace;
 }
 
@@ -54,18 +59,18 @@ input[type='submit'] {
   background-color: var(--btn-color);
   color: var(--btn-text-color);
   border: none;
-  border-radius: 20px;
-  padding: 15px 30px; /* Add more padding for better readability */
-  font-size: 18px; /* Slightly smaller font size */
+  border-radius: 30px; /* More rounded corners for a modern feel */
+  padding: 15px 30px;
+  font-size: 18px;
   font-weight: bold;
-  cursor: pointer; /* Add cursor styling for clarity */
+  cursor: pointer;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   transition: box-shadow 200ms ease-in-out, transform 200ms ease-in-out;
 }
 
 input[type='submit']:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25); /* Enhance shadow on hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
   background-color: red;
 }
 
@@ -74,20 +79,49 @@ input[type='submit']:active {
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
 }
 
-@media (width >= 800px) {
+/* Responsive Design */
+@media (max-width: 599px) {
+  textarea,
+  input:not([type='submit']) {
+    width: 100%; /* Full width on small screens */
+    font-size: 14px;
+  }
+  
+  input[type='submit'] {
+    padding: 12px 20px;
+    font-size: 16px;
+    margin-left: 30px;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 799px) {
+  textarea,
+  input:not([type='submit']) {
+    width: 90%; /* More width for medium screens */
+    font-size: 18px;
+  }
+  
+  form {
+    gap: 30px;
+  }
+}
+
+@media (min-width: 800px) {
   textarea,
   input:not([type='submit']) {
     width: 600px;
-    font-size: 20px;
+    font-size: 18px;
   }
+  
   form {
     gap: 40px;
   }
 }
 
-@media (width >= 1400px) {
+@media (min-width: 1400px) {
   textarea,
   input:not([type='submit']) {
     width: 800px;
+    font-size: 20px;
   }
 }
