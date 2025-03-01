@@ -86,7 +86,7 @@ function Hero() {
         <p className={styles.description}>
         A distinguished and certified MERN stack developer with a profound expertise in Data Structures and Algorithms (DSA) using Java.
         </p>
-        <a href={CV} download>
+        <a href={CV} target="_blank" rel="noopener noreferrer">
           <button className="hover">RESUME</button>
         </a>
       </div>

@@ -10,7 +10,7 @@ const Education = () => {
           <tr>
             <th>Degree</th>
             <th>Institution</th>
-            <th>Year</th>
+            <th style={{paddingRight:'4rem'}}>Year</th>
             <th>Grade</th>
           </tr>
         </thead>
@@ -19,7 +19,7 @@ const Education = () => {
             <td>Bachelor of Technology in Computer Science</td>
             <td>Chandigarh Group of Colleges, Landran, Mohali, Punjab</td>
             <td>2020-2024</td>
-            <td>8.63/10 CGPA</td>
+            <td>86.3%</td>
           </tr>
           <tr>
             <td>Senior Secondary Education (Class 12)</td>

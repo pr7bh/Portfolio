@@ -95,6 +95,7 @@ button:active {
 }
 
 .description {
+  text-align: justify;
   max-width: 30ch;
 }
 

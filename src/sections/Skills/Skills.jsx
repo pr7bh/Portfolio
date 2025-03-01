@@ -33,7 +33,6 @@ function Skills() {
         <SkillList src={mongodbIcon} skill="MongoDB" />
         <SkillList src={nodejsIcon} skill="Node" />
       </div>
-      <hr />
       <div className={styles.skillList}>
         <SkillList src={htmlIcon} skill="HTML" />
         <SkillList src={cssIcon} skill="CSS" />
@@ -42,7 +41,6 @@ function Skills() {
         <SkillList src={cppIcon} skill="C/C++" />
         <SkillList src={pythonIcon} skill="Python" />
       </div>
-      <hr />
       <div className={styles.skillList}>
         <SkillList src={reduxIcon} skill="Redux" />
         <SkillList src={gitIcon} skill="Git" />
