@@ -7,11 +7,13 @@ import Projects from './sections/Projects/Projects';
 import Skills from './sections/Skills/Skills';
 import About from './sections/About/About';
 import Education from './sections/Education/Education';
+import CustomCursor from './common/CustomCursor';
 
 function App() {
   return (
     <>
       <Navbar />
+      <CustomCursor />
       <div id="hero" className="section">
         <Hero />
       </div>

@@ -64,9 +64,7 @@ function Hero() {
       </div>
       <div className={styles.info}>
         <h1>
-          Prabhjot
-          <br />
-          Singh
+          Prabhjot Singh
         </h1>
         <div className={styles.movingtext}>
           <h2 className="type-wrapper">
