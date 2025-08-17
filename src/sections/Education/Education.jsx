@@ -11,7 +11,7 @@ const Education = () => {
             <th>Degree</th>
             <th>Institution</th>
             <th style={{paddingRight:'4rem'}}>Year</th>
-            <th>Grade</th>
+            <th>Percentage</th>
           </tr>
         </thead>
         <tbody>

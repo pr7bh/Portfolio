@@ -1,11 +1,13 @@
 import styles from './FooterStyles.module.css';
 
 function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <section id="footer" className={styles.container}>
       <p>
-        &copy; 2025 Prabhjot Singh.
-          <br />
+        &copy; {currentYear} Prabhjot Singh.
+        <br />
         All rights reserved.
       </p>
     </section>
@@ -13,3 +15,4 @@ function Footer() {
 }
 
 export default Footer;
+
