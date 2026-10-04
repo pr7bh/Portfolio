@@ -8,7 +8,7 @@ import linkedinLight from '../../assets/linkedin-light.svg';
 import linkedinDark from '../../assets/linkedin-dark.svg';
 import CV from '../../assets/PRABHJOT_SINGH_RESUME.pdf';
 import { useTheme } from '../../common/ThemeContext';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import Typed from 'typed.js';
 
 
