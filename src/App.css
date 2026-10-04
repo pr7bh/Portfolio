@@ -3,13 +3,13 @@
   --btn-color: #0987f2;
   --btn-text-color: #fff;
   --project-card-bg: #ffffff00;
-  --text-color: #222;
+  --text-color: #000;
   --form-text-color: #555;
   --footer-text-color: #888;
 }
 
 [data-theme='dark'] {
-  --background-color: #222;
+  --background-color: #000;
   --btn-color: #fff;
   --btn-text-color: #222;
   --project-card-bg: #fff;
@@ -24,6 +24,8 @@ body {
   justify-content: center;
   margin: 0 auto 60px;
   cursor: none;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 #root {

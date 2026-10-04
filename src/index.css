@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@media (min-width: 768px) {
+  html,
+  body,
+  *,
+  *:hover {
+    cursor: none !important;
+  }
+}
+
+/* Main page scrollbar */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+html::-webkit-scrollbar {
+  width: 4px;
+}
+
+html::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+html::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  border: none;
+}
+
+html::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+html::-webkit-scrollbar-corner {
+  background: transparent !important;
+}

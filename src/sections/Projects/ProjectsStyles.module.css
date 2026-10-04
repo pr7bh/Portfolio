@@ -1,89 +1,28 @@
-/* Main Container Styles */
 .container {
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-}
-
-/* Project Image Styling */
-.container img {
-  max-width: 250px;
-  height: 250px;
-  align-self: center;
-  background-color: var(--project-card-bg);
-  border-radius: 20px;
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-/* Image Hover Effect */
-.container img:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Project Links */
-a {
-  text-decoration: none;
-  color: inherit;
-  transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
-}
-
-a:hover {
-  transform: translateY(-5px);
-  color: var(--hover-color); /* Use a variable or define a hover color */
-}
-
-/* Projects Container Layout */
-.projectsContainer {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
-  gap: 30px;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeIn 0.6s ease-in-out forwards;
-  padding: 0 15px;
+  gap: 2rem;
 }
 
-/* Fade-In Animation for Project Cards */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+.carouselContainer {
+  width: 100%;
+  height: 560px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+  .carouselContainer {
+    height: 500px;
   }
 }
 
-/* Section Title with Slight Hover Effect */
-.sectionTitle {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  transition: transform 0.3s ease-in-out;
-}
-
-.sectionTitle:hover {
-  transform: scale(1.05);
-}
-
-/* Responsive Design for Larger Screens */
-@media (min-width: 800px) {
-  .projectsContainer {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
+@media (max-width: 500px) {
+  .carouselContainer {
+    height: 420px;
   }
-}
-
-/* Smooth Scroll for Section Navigation */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Dark/Light Mode Transition */
-body {
-  transition: background-color 0.5s ease, color 0.5s ease;
 }
