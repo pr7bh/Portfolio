@@ -1,3 +1,5 @@
+import os
+
 from google import genai
 
 from app.config import GEMINI_API_KEY
@@ -7,6 +9,20 @@ from app.services.rag import vector_store
 client = genai.Client(
     api_key=GEMINI_API_KEY
 )
+
+
+# Primary model
+PRIMARY_MODEL = os.getenv(
+    "GEMINI_MODEL",
+    "gemini-3.8-flash",
+)
+
+# Fallback models
+FALLBACK_MODELS = [
+    "gemini-3.7-flash",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash",
+]
 
 
 SYSTEM_PROMPT = """
@@ -37,7 +53,7 @@ def generate_response(question: str) -> str:
         top_k=5,
     )
 
-    # Build structured CV context
+    # Build CV context
     context_parts = []
 
     for chunk in relevant_chunks:
@@ -54,7 +70,7 @@ Similarity: {chunk["similarity"]:.3f}
 
     context = "\n".join(context_parts)
 
-    # Build the final prompt
+    # Build final prompt
     prompt = f"""
 {SYSTEM_PROMPT}
 
@@ -70,10 +86,34 @@ USER QUESTION:
 Answer the user's question using ONLY the CV CONTEXT.
 """
 
-    # Generate answer using Gemini
-    response = client.models.generate_content(
-        model="gemini-3.6-flash",
-        contents=prompt,
-    )
+    # Try primary model first
+    models_to_try = [
+        PRIMARY_MODEL,
+        *[
+            model
+            for model in FALLBACK_MODELS
+            if model != PRIMARY_MODEL
+        ],
+    ]
 
-    return response.text
+    last_error = None
+
+    for model in models_to_try:
+
+        try:
+
+            response = client.models.generate_content(
+                model=model,
+                contents=prompt,
+            )
+
+            return response.text
+
+        except Exception as error:
+
+            last_error = error
+
+            continue
+
+    # All models failed
+    raise last_error
