@@ -1,8 +1,71 @@
 import { useState } from "react";
 import AILogo from "../assets/AILogo.gif";
+import ReactMarkdown from "react-markdown";
 function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
+
+  const [question, setQuestion] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const askQuestion = async (userQuestion) => {
+    const trimmedQuestion = userQuestion.trim();
+
+    if (!trimmedQuestion || isLoading) {
+      return;
+    }
+
+    setQuestion("");
+    setIsLoading(true);
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "user",
+        content: trimmedQuestion,
+      },
+    ]);
+
+    try {
+      const response = await fetch(
+        "https://portfolio-h5kk.onrender.com/api/chat",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            question: trimmedQuestion,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: data.answer,
+        },
+      ]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "Sorry, I couldn't process your question right now.",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <>
       {/* =========================================================
@@ -116,7 +179,11 @@ function AIChatbot() {
                   rounded-xl
                 "
               >
-                <img src={AILogo} alt="AI" className="h-15 w-15 object-contain" />
+                <img
+                  src={AILogo}
+                  alt="AI"
+                  className="h-15 w-15 object-contain"
+                />
 
                 {/* Online indicator */}
                 <span
@@ -323,7 +390,129 @@ function AIChatbot() {
                 </p>
               </div>
             </div>
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`mt-4 flex items-start gap-2.5 ${
+                  message.role === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
+                {message.role === "assistant" && (
+                  <div
+                    className="
+          mt-1
+          flex
+          h-7
+          w-7
+          shrink-0
+          items-center
+          justify-center
+          rounded-lg
+          border
+          border-white/10
+          bg-white/[0.06]
+        "
+                  >
+                    <img
+                      src={AILogo}
+                      alt="AI"
+                      className="h-6 w-6 object-contain"
+                    />
+                  </div>
+                )}
 
+                <div
+                  className={`
+        max-w-[85%]
+        rounded-2xl
+        px-4
+        py-3
+        ${
+          message.role === "user"
+            ? "rounded-tr-md bg-white/10"
+            : "rounded-tl-md border border-white/10 bg-white/[0.06]"
+        }
+      `}
+                >
+                  <div className="text-sm leading-relaxed text-white/85">
+                    <ReactMarkdown
+                      components={{
+                        p: ({ children }) => (
+                          <p className="mb-2 last:mb-0">{children}</p>
+                        ),
+
+                        ul: ({ children }) => (
+                          <ul className="my-2 list-disc space-y-1 pl-5">
+                            {children}
+                          </ul>
+                        ),
+
+                        ol: ({ children }) => (
+                          <ol className="my-2 list-decimal space-y-1 pl-5">
+                            {children}
+                          </ol>
+                        ),
+
+                        li: ({ children }) => (
+                          <li className="pl-1">{children}</li>
+                        ),
+
+                        strong: ({ children }) => (
+                          <strong className="font-semibold text-white">
+                            {children}
+                          </strong>
+                        ),
+                      }}
+                    >
+                      {message.content}
+                    </ReactMarkdown>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {isLoading && (
+              <div className="mt-4 flex items-start gap-2.5">
+                <div
+                  className="
+        mt-1
+        flex
+        h-7
+        w-7
+        shrink-0
+        items-center
+        justify-center
+        rounded-lg
+        border
+        border-white/10
+        bg-white/[0.06]
+      "
+                >
+                  <img
+                    src={AILogo}
+                    alt="AI"
+                    className="h-6 w-6 object-contain"
+                  />
+                </div>
+
+                <div
+                  className="
+        rounded-2xl
+        rounded-tl-md
+        border
+        border-white/10
+        bg-white/[0.06]
+        px-4
+        py-3
+      "
+                >
+                  <div className="flex items-center gap-1">
+  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.3s]" />
+  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.15s]" />
+  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50" />
+</div>
+                </div>
+              </div>
+            )}
             {/* Suggested questions */}
             <div className="mt-5">
               <p className="mb-2 px-1 text-[10px] uppercase tracking-[0.15em] text-white/30">
@@ -339,6 +528,7 @@ function AIChatbot() {
                   <button
                     key={question}
                     type="button"
+                    onClick={() => askQuestion(question)}
                     className="
                       rounded-full
 
@@ -410,28 +600,34 @@ function AIChatbot() {
             >
               <input
                 type="text"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    askQuestion(question);
+                  }
+                }}
                 placeholder="Ask something..."
+                disabled={isLoading}
                 className="
-                  min-w-0
-                  flex-1
-
-                  bg-transparent
-
-                  px-3
-                  py-2
-
-                  text-sm
-                  text-white
-
-                  outline-none
-
-                  placeholder:text-white/25
-                "
+    min-w-0
+    flex-1
+    bg-transparent
+    px-3
+    py-2
+    text-sm
+    text-white
+    outline-none
+    placeholder:text-white/25
+    disabled:opacity-50
+  "
               />
 
               {/* Send button */}
               <button
                 type="button"
+                onClick={() => askQuestion(question)}
+                disabled={isLoading || !question.trim()}
                 aria-label="Send message"
                 className="
                   flex
@@ -500,8 +696,6 @@ function AIChatbot() {
           active:scale-95
         "
       >
-        
-
         {/* AI text */}
         <img src={AILogo} alt="AI" className="h-20 w-20 object-contain" />
       </button>

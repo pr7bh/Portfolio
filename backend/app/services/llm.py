@@ -1,4 +1,5 @@
 import os
+import time
 
 from google import genai
 
@@ -16,6 +17,7 @@ PRIMARY_MODEL = os.getenv(
     "GEMINI_MODEL",
     "gemini-3.8-flash",
 )
+
 
 # Fallback models
 FALLBACK_MODELS = [
@@ -41,7 +43,13 @@ IMPORTANT RULES:
 
 "I don't have that information in Prabhjot's CV."
 
-Answer directly and concisely.
+Answer naturally and concisely.
+
+Use Markdown when it improves readability:
+- Use bullet points for lists.
+- Use bold for important categories or technologies.
+- Use short paragraphs.
+- Do not repeat "Based on Prabhjot's CV" unless necessary.
 """
 
 
@@ -86,7 +94,7 @@ USER QUESTION:
 Answer the user's question using ONLY the CV CONTEXT.
 """
 
-    # Try primary model first
+    # Primary model + fallback models
     models_to_try = [
         PRIMARY_MODEL,
         *[
@@ -98,22 +106,35 @@ Answer the user's question using ONLY the CV CONTEXT.
 
     last_error = None
 
+    # Try each model
     for model in models_to_try:
 
-        try:
+        # Retry the same model up to 3 times
+        for attempt in range(3):
 
-            response = client.models.generate_content(
-                model=model,
-                contents=prompt,
-            )
+            try:
 
-            return response.text
+                response = client.models.generate_content(
+                    model=model,
+                    contents=prompt,
+                )
 
-        except Exception as error:
+                return response.text
 
-            last_error = error
+            except Exception as error:
 
-            continue
+                last_error = error
 
-    # All models failed
+                # Retry only for temporary 503 errors
+                if "503" not in str(error):
+                    break
+
+                # Exponential backoff:
+                # attempt 0 -> 1 second
+                # attempt 1 -> 2 seconds
+                # attempt 2 -> no more retry
+                if attempt < 2:
+                    time.sleep(2 ** attempt)
+
+    # All models and retries failed
     raise last_error
