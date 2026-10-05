@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import {useEffect, useRef } from "react";
 
 const experienceData = [
   {
@@ -40,24 +40,6 @@ const experienceData = [
 function Experience() {
   const sectionRef = useRef(null);
   const cometRef = useRef(null);
-
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 768px)");
-
-    const handleMediaChange = (event) => {
-      setIsDesktop(event.matches);
-    };
-
-    setIsDesktop(mediaQuery.matches);
-
-    mediaQuery.addEventListener("change", handleMediaChange);
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleMediaChange);
-    };
-  }, []);
 
   useEffect(() => {
   let ticking = false;
@@ -166,9 +148,9 @@ function Experience() {
             left-1/2
             top-0
             hidden
-            w-[3px]
+            w-0.75
             -translate-x-1/2
-            bg-gradient-to-b
+            bg-linear-to-b
             from-transparent
             via-white/10
             to-transparent
@@ -186,7 +168,7 @@ function Experience() {
                 fixed
                 left-[calc(50%-5px)]
                 top-1/2
-                z-[999]
+                z-999
                 hidden
                 h-1
                 w-1
@@ -202,9 +184,9 @@ function Experience() {
               bottom-0
               left-1/2
               h-32
-              w-[2px]
+              w-0.5
               -translate-x-1/2
-              bg-gradient-to-t
+              bg-linear-to-t
               from-transparent
               via-white/20
               to-white
@@ -363,7 +345,7 @@ function Experience() {
                           <span
                             className={`
                               absolute
-                              top-[10px]
+                              top-2.5
                               hidden
                               h-1.5
                               w-1.5

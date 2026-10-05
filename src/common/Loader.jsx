@@ -1,4 +1,3 @@
-import React from "react";
 
 function Loader() {
   return (
@@ -6,7 +5,7 @@ function Loader() {
       className="
         fixed
         inset-0
-        z-[99999]
+        z-99999
         flex
         items-center
         justify-center
@@ -42,7 +41,7 @@ function Loader() {
               absolute
               inset-2
               rounded-full
-              border-[2px]
+              border-2
               border-white/10
             "
           />
@@ -54,10 +53,10 @@ function Loader() {
               left-1/2
               top-0
               h-1/2
-              w-[3px]
+              w-0.75
               -translate-x-1/2
               rounded-full
-              bg-gradient-to-b
+              bg-linear-to-b
               from-white
               via-white/40
               to-transparent
@@ -70,7 +69,7 @@ function Loader() {
             className="
               absolute
               left-1/2
-              top-[-2px]
+              -top-0.5
               h-3
               w-3
               -translate-x-1/2
@@ -85,7 +84,7 @@ function Loader() {
             className="
               absolute
               left-1/2
-              top-[-1px]
+              -top-px
               h-1
               w-1
               -translate-x-1/2

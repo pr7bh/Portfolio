@@ -1262,7 +1262,7 @@ const FlexCarousel = ({
           absolute
           bottom-8
           left-1/2
-          z-[100]
+          z-100
           flex
           w-[90%]
           -translate-x-1/2
@@ -1292,8 +1292,7 @@ const FlexCarousel = ({
           <p
             className="
               mt-2
-              max-w-[700px]
-              
+              max-w-175
               text-sm
               font-medium
               leading-relaxed
