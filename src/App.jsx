@@ -11,6 +11,8 @@ import CustomCursor from './common/CustomCursor';
 import Particles from './common/Particles';
 
 import { useTheme } from './common/ThemeContext';
+import MoveToTop from './common/MoveToTop';
+import Experience from './sections/Experience/Experience';
 
 function App() {
   const { theme } = useTheme();
@@ -39,13 +41,16 @@ function App() {
       {/* Portfolio */}
       <div className="relative z-10">
         <Navbar />
-
+        <MoveToTop />
         <CustomCursor />
 
         <div id="hero" className="section">
           <Hero />
         </div>
 
+        <div id="experience" className="section">
+          <Experience />
+        </div>
         <div id="projects" className="section">
           <Projects />
         </div>

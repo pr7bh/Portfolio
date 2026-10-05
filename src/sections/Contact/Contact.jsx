@@ -87,7 +87,7 @@ function Contact() {
 
       <form
         onSubmit={onSubmit}
-        className="flex w-full max-w-2xl flex-col gap-7"
+        className="flex w-full max-w-6xl flex-col gap-7"
       >
         <div>
           <label

@@ -46,14 +46,14 @@ function Education() {
               <div
                 className="
                   absolute
-                  left-[50px]
-                  top-[110px]
-                  h-[100px]
-                  w-[2px]
-                  bg-gradient-to-b
-                  from-[#5227FF]
+                  left-12.5
+                  top-27.5
+                  h-25
+                  w-0.5
+                  bg-linear-to-b
+                  from-[#64748B]
                   to-transparent
-                  md:left-[60px]
+                  md:left-15
                 "
               />
             )}
@@ -62,7 +62,7 @@ function Education() {
             <div className="relative z-10 shrink-0">
               <Folder
                 size={1.25}
-                color="#5227FF"
+                color="#64748B"
                 className="custom-folder"
                 items={[
                   <div className="flex h-full w-full items-center justify-center p-2 text-center">
@@ -88,7 +88,7 @@ function Education() {
 
             {/* Education content */}
             <div className="flex-1 text-right">
-              <p className="mb-2 text-sm font-bold tracking-wider text-[#5227FF]">
+              <p className="mb-2 text-sm font-bold tracking-wider text-[#64748B]">
                 {item.year}
               </p>
 
@@ -104,7 +104,7 @@ function Education() {
                 {item.institute}
               </p>
 
-              <span className="mt-3 inline-flex rounded-full border border-[#5227FF]/30 bg-[#5227FF]/10 px-3 py-1 text-sm font-bold text-[#5227FF]">
+              <span className="mt-3 inline-flex rounded-full border border-[#64748B]/30 bg-[#64748B]/10 px-3 py-1 text-sm font-bold text-[#64748B]">
                 {item.score}
               </span>
             </div>

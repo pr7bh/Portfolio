@@ -1,6 +1,6 @@
 import reactIcon from '../../assets/react.svg';
 import tailwindIcon from '../../assets/tailwind.svg';
-import expressIcon from '../../assets/express.svg';
+import expressIcon from '../../assets/FastAPI.svg';
 import mongodbIcon from '../../assets/mongodb.svg';
 import nodejsIcon from '../../assets/node-js.svg';
 import htmlIcon from '../../assets/html.svg';
@@ -36,7 +36,7 @@ function Skills() {
   return (
     <section
       id="skills"
-      className="flex w-full flex-col items-center gap-8 p-0 m-0 mt-30"
+      className="flex w-full flex-col items-center gap-8 p-0 m-0 pt-30"
     >
       <h1 className="sectionTitle">Skills</h1>
 

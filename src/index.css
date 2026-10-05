@@ -1,5 +1,50 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Nippo";
+  src: url("./assets/fonts/Nippo-Extralight.woff2") format("woff2");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nippo";
+  src: url("./assets/fonts/Nippo-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nippo";
+  src: url("./assets/fonts/Nippo-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nippo";
+  src: url("./assets/fonts/Nippo-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nippo";
+  src: url("./assets/fonts/Nippo-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+html,
+body {
+  font-family: "Nippo", sans-serif;
+}
+
 @media (min-width: 768px) {
   html,
   body,
@@ -9,24 +54,34 @@
   }
 }
 
-/* Main page scrollbar */
+/* Floating scrollbar */
 html {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.45) transparent;
 }
 
 html::-webkit-scrollbar {
-  width: 4px;
+  width: 5px;
+  background: transparent;
 }
 
 html::-webkit-scrollbar-track {
   background: transparent !important;
+  box-shadow: none !important;
+}
+
+html::-webkit-scrollbar-track-piece {
+  background: transparent !important;
 }
 
 html::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 999px;
-  border: none;
+  background: rgba(255, 255, 255, 0.45) !important;
+  border: none !important;
+  border-radius: 9999px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.65) !important;
 }
 
 html::-webkit-scrollbar-button {

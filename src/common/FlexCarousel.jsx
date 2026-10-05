@@ -1274,7 +1274,7 @@ const FlexCarousel = ({
       >
         <h2
           className="
-            font-['Rubik']
+            
             text-2xl
             font-extrabold
             leading-tight
@@ -1293,7 +1293,7 @@ const FlexCarousel = ({
             className="
               mt-2
               max-w-[700px]
-              font-['Rubik']
+              
               text-sm
               font-medium
               leading-relaxed

@@ -70,7 +70,7 @@ function Projects() {
       alt: "Syncora GenAI application",
       title: "Syncora",
       subtitle: "GenAI meeting assistant • RAG • Gemini",
-      link: "#",
+      link: "https://syncora-by-prabh.vercel.app/",
     },
     {
       src: webgeo,
@@ -135,7 +135,6 @@ function Projects() {
       id="projects"
       className="
         m-0
-        mt-25
         flex
         w-screen
         max-w-none
@@ -143,6 +142,7 @@ function Projects() {
         items-center
         gap-6
         p-0
+        pt-25
       "
     >
       <h1 className="sectionTitle">

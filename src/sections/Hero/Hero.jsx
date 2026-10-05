@@ -10,6 +10,7 @@ import { useTheme } from "../../common/ThemeContext";
 import { useEffect, useRef } from "react";
 import Typed from "typed.js";
 import ScrollExpand from "../../common/ScrollExpand";
+import { IconPhone } from "@tabler/icons-react";
 
 function Hero() {
   const typedElement = useRef(null);
@@ -94,6 +95,7 @@ function Hero() {
               sm:text-6xl
               md:text-7xl
               lg:text-8xl
+              pb-4
             "
           >
             Prabhjot Singh
@@ -102,7 +104,7 @@ function Hero() {
           {/* Main Role */}
           <p
             className="
-              mt-4
+              mt-7
               text-xl
               font-semibold
               tracking-wide
@@ -132,45 +134,56 @@ function Hero() {
           </div>
 
           {/* Social Links */}
-          <div className="mt-7 flex items-center gap-5">
+          <div className="mt-1 flex items-center gap-5">
+  {/* GitHub */}
             <a
               href="https://github.com/pr7bh"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="GitHub"
               className="
-                flex
-                h-11
-                w-11
-                items-center
-                justify-center
+                flex h-11 w-11 items-center justify-center
                 rounded-full
-                transition-all
-                duration-300
-                hover:-translate-y-1
-                hover:scale-110
+                transition-all duration-300
+                hover:-translate-y-1 hover:scale-110
               "
             >
               <img src={githubIcon} alt="GitHub" className="w-6" />
             </a>
 
+            {/* LinkedIn */}
             <a
               href="https://www.linkedin.com/in/prabhjot-singh-40301b243/"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="LinkedIn"
               className="
-                flex
-                h-11
-                w-11
-                items-center
-                justify-center
-                
-                transition-all
-                duration-300
-                hover:-translate-y-1
-                hover:scale-110
+                flex h-11 w-11 items-center justify-center
+                rounded-full
+                transition-all duration-300
+                hover:-translate-y-1 hover:scale-110
               "
             >
               <img src={linkedinIcon} alt="LinkedIn" className="w-6" />
+            </a>
+
+            {/* Call */}
+            <a
+              href="tel:+917056952556"
+              aria-label="Call"
+              className="
+                flex h-11 w-11 items-center justify-center
+                rounded-full
+                transition-all duration-300
+                hover:-translate-y-1 hover:scale-110
+              "
+            >
+              <IconPhone
+                size={23}
+                strokeWidth={1}
+                className="text-white"
+                fill="currentColor"
+              />
             </a>
           </div>
 
@@ -199,12 +212,12 @@ function Hero() {
             <SpecularButton
               size="lg"
               radius={18}
-              tint="#ffffff"
+              tint="rgb(255, 255, 255)"
               tintOpacity={0}
               blur={0}
-              textColor="#f5f5f5"
-              lineColor="#ffffff"
-              baseColor="#525252"
+              textColor="rgb(245, 245, 245)"
+              lineColor="rgb(255, 255, 255)"
+              baseColor="rgb(82, 82, 82)"
               intensity={1}
               shineSize={10}
               shineFade={40}
@@ -218,7 +231,6 @@ function Hero() {
               View CV
             </SpecularButton>
           </div>
-
           {/* Scroll hint */}
           <div
             className="

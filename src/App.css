@@ -42,11 +42,6 @@ p {
   padding: 0;
 }
 
-h2,
-h3,
-p {
-  font-family: 'Roboto Mono', monospace;
-}
 
 h1,
 h2 {
@@ -59,7 +54,6 @@ h3 {
 }
 
 h1 {
-  font-family: 'Rubik', sans-serif;
   font-size: 32px;
 }
 

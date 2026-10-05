@@ -72,7 +72,25 @@ void main() {
   fragColor = vec4(col, a);
 }
 `;
+const hexToRgb = hex => {
+  const value = hex.replace('#', '');
 
+  const normalized =
+    value.length === 3
+      ? value
+          .split('')
+          .map(char => char + char)
+          .join('')
+      : value;
+
+  const num = parseInt(normalized, 16);
+
+  return {
+    r: ((num >> 16) & 255) / 255,
+    g: ((num >> 8) & 255) / 255,
+    b: (num & 255) / 255
+  };
+};
 const SpecularButton = ({
   children = 'Get Started',
   size = 'lg',
@@ -188,8 +206,8 @@ const SpecularButton = ({
     let last = performance.now();
     let raf = 0;
 
-    const lineC = new Color();
-    const baseC = new Color();
+    const lineC = { r: 1, g: 1, b: 1 };
+    const baseC = { r: 0.32, g: 0.32, b: 0.32 };
 
     const update = now => {
       raf = requestAnimationFrame(update);
@@ -207,8 +225,25 @@ const SpecularButton = ({
       const brightTarget = p.autoAnimate ? 1 : proximityT;
       bright += (brightTarget - bright) * (1 - Math.exp(-dt * 8));
 
-      lineC.set(p.lineColor);
-      baseC.set(p.baseColor);
+      const lineColor = hexToRgb(p.lineColor);
+      const baseColor = hexToRgb(p.baseColor);
+
+      program.uniforms.uAngle.value = angle;
+
+      program.uniforms.uRadius.value =
+        Math.min(p.radius, Math.min(sizeRef.w, sizeRef.h) / 2) * dpr;
+
+      program.uniforms.uLineColor.value = [
+        lineColor.r,
+        lineColor.g,
+        lineColor.b
+      ];
+
+      program.uniforms.uBaseColor.value = [
+        baseColor.r,
+        baseColor.g,
+        baseColor.b
+      ];
       program.uniforms.uAngle.value = angle;
       program.uniforms.uRadius.value = Math.min(p.radius, Math.min(sizeRef.w, sizeRef.h) / 2) * dpr;
       program.uniforms.uLineColor.value = [lineC.r, lineC.g, lineC.b];
