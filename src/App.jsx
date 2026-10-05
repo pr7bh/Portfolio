@@ -1,5 +1,7 @@
 import './App.css';
 
+import { useEffect, useState } from 'react';
+
 import Navbar from './sections/Navbar/Navbar';
 import Contact from './sections/Contact/Contact';
 import Footer from './sections/Footer/Footer';
@@ -17,26 +19,47 @@ import Experience from './sections/Experience/Experience';
 function App() {
   const { theme } = useTheme();
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+
+    const handleChange = (event) => {
+      setIsMobile(event.matches);
+    };
+
+    setIsMobile(mediaQuery.matches);
+
+    mediaQuery.addEventListener('change', handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, []);
+
   return (
-    <div className="relative min-h-screen">
-      {/* Background particles */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <Particles
-          particleColors={
-            theme === 'dark'
-              ? ['#ffffff']
-              : ['#000000']
-          }
-          particleCount={100}
-          particleSpread={10}
-          speed={0.05}
-          particleBaseSize={50}
-          moveParticlesOnHover
-          alphaParticles
-          disableRotation={false}
-          pixelRatio={1}
-        />
-      </div>
+    <div className="relative min-h-screen bg-black">
+      
+      {/* Background particles - desktop only */}
+      {!isMobile && (
+        <div className="pointer-events-none fixed inset-0 -z-10">
+          <Particles
+            particleColors={
+              theme === 'dark'
+                ? ['#ffffff']
+                : ['#000000']
+            }
+            particleCount={100}
+            particleSpread={10}
+            speed={0.05}
+            particleBaseSize={50}
+            moveParticlesOnHover
+            alphaParticles
+            disableRotation={false}
+            pixelRatio={1}
+          />
+        </div>
+      )}
 
       {/* Portfolio */}
       <div className="relative z-10">
@@ -51,6 +74,7 @@ function App() {
         <div id="experience" className="section">
           <Experience />
         </div>
+
         <div id="projects" className="section">
           <Projects />
         </div>
