@@ -1,0 +1,103 @@
+PRABHJOT SINGH
+
++91-7056952556 | prabhjotsinghrainu@gmail.com | LinkedIn | GitHub | Portfolio
+
+
+Summary
+
+Software developer with 2+ years of experience building performant, data-heavy web apps for energy and geospatial platforms. Also build GenAI apps with LLMs, RAG, and FastAPI.
+
+
+Technical Skills
+
+Languages:
+JavaScript, Python
+
+Frontend:
+React.js, Redux Toolkit, Tailwind CSS, HTML5, CSS3, Chart.js
+
+Backend & APIs:
+FastAPI, REST APIs
+
+Generative AI:
+LLMs, RAG, Prompt Engineering, Gemini API, Whisper, Vector Search
+
+Databases:
+MongoDB, PostgreSQL, MySQL, SQL Server
+
+Maps & Tools:
+HERE Maps, OpenStreetMap, Git, GitHub, Postman, TFS, Vercel, Netlify, Render
+
+
+Experience
+
+Software Developer
+April 2025 – September 2026
+
+Open Access Technology International Pvt. Ltd., Mohali, Punjab
+
+• Built interactive geospatial features in WebGeo using React.js and JavaScript, improving map interaction speed by 25%.
+
+• Optimized Predicted BA Capacity Margin Map rendering with viewport-based data loading and marker handling, supporting N+ markers with 33% faster load time.
+
+• Developed reusable UI components and Chart.js data visualizations for WebGIQ, an energy market analytics platform used by users/teams.
+
+• Integrated frontend with REST APIs and shipped production features in collaboration with product and backend teams.
+
+• Rated E1 – Exceeds Requirements for performance and contribution.
+
+
+Software Engineer
+December 2024 – April 2025
+
+Carvia Technologies, Mohali, Punjab
+
+• TrackIt: Built a Jira-like project and issue tracking app in React.js with boards, ticket workflows, assignments.
+
+• Watchdog: Built a service monitoring dashboard showing real-time up/down status of services, with alerts, uptime history.
+
+• Built reusable components and improved performance by 15% with cross-functional teams.
+
+
+Freelance Full Stack Developer
+September 2024 – November 2024
+
+Self-employed (Remote)
+
+• Safetied – Form Builder Module: Built a drag-and-drop form builder that lets users create custom forms by adding, arranging, and configuring form elements, using React.js, library e.g. dnd-kit / react-beautiful-dnd.
+
+• Green Roots (Canadian landscaping company): Developed a full-stack web application where customers book slots for landscaping services, including booking flow, calendar/slot availability, admin dashboard, using tech stack.
+
+
+Projects
+
+Syncora | Python, FastAPI, React.js, Gemini, Whisper, RAG Demo
+
+• Built a GenAI app that transcribes audio/video and YouTube content, generates summaries, and answers contextual questions.
+
+• Developed FastAPI services for transcription, summarization, and conversational Q&A using Whisper and Google Gemini.
+
+• Implemented RAG with vector search over transcripts to support follow-up questions and chat history.
+
+
+WebGeo – Geospatial Mapping Platform | React.js, JavaScript, HERE Maps, REST APIs
+
+• Developed interactive energy infrastructure visualizations and optimized map rendering for large datasets.
+
+
+Predicted BA Capacity Margin Map – Energy Infrastructure Mapping Tool | React.js, JavaScript, Chart.js, HERE Maps
+
+• Implemented map-based visualizations and optimized marker interactions for large geospatial datasets.
+
+
+Education
+
+B.Tech, Computer Science and Engineering
+2020 – 2024
+
+Chandigarh Group of Colleges, Landran
+Percentage: 86.3%
+
+Senior Secondary (CBSE), 2020: 92.6%
+
+Secondary (CBSE), 2018: 91.4%
