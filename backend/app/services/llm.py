@@ -241,11 +241,11 @@ def generate_response(question: str) -> str:
 
         context_parts.append(
             f"""
-Section: {chunk["section"]}
-Title: {chunk["title"]}
+            Section: {chunk["section"]}
+            Title: {chunk["title"]}
 
-{chunk["text"]}
-"""
+            {chunk["text"]}
+            """
         )
 
 
@@ -257,29 +257,29 @@ Title: {chunk["title"]}
     # ========================================================
 
     prompt = f"""
-{SYSTEM_PROMPT}
+        {SYSTEM_PROMPT}
 
-================ CV CONTEXT ================
+        ================ CV CONTEXT ================
 
-{context}
+        {context}
 
-============== END CV CONTEXT ==============
+        ============== END CV CONTEXT ==============
 
-USER QUESTION:
-{question}
+        USER QUESTION:
+        {question}
 
-Determine what type of question this is and answer according
-to the rules above.
+        Determine what type of question this is and answer according
+        to the rules above.
 
-Remember:
+        Remember:
 
-- Casual conversation → respond naturally.
-- Questions about Prabhjot → use ONLY the CV CONTEXT.
-- General technical questions → general knowledge is allowed.
-- Mixed questions → separate general explanation from
-  information about Prabhjot.
-- Never invent information about Prabhjot.
-"""
+        - Casual conversation → respond naturally.
+        - Questions about Prabhjot → use ONLY the CV CONTEXT.
+        - General technical questions → general knowledge is allowed.
+        - Mixed questions → separate general explanation from
+        information about Prabhjot.
+        - Never invent information about Prabhjot.
+        """
 
 
     # ========================================================
