@@ -12,14 +12,16 @@ client = genai.Client(
 )
 
 
-# Primary model
+# ============================================================
+# MODELS
+# ============================================================
+
 PRIMARY_MODEL = os.getenv(
     "GEMINI_MODEL",
     "gemini-3.8-flash",
 )
 
 
-# Fallback models
 FALLBACK_MODELS = [
     "gemini-3.7-flash",
     "gemini-3.6-flash",
@@ -27,41 +29,212 @@ FALLBACK_MODELS = [
 ]
 
 
+# ============================================================
+# SYSTEM PROMPT
+# ============================================================
+
 SYSTEM_PROMPT = """
-You are the portfolio assistant for Prabhjot Singh.
+You are the AI assistant for Prabhjot Singh's portfolio website.
 
-IMPORTANT RULES:
+Your job is to help visitors learn about Prabhjot and also answer
+general questions when appropriate.
 
-1. Answer ONLY using the CV CONTEXT provided below.
-2. The CV CONTEXT is the only source of truth.
-3. Do not use your general knowledge.
-4. Do not invent any experience, skills, technologies, companies,
-   projects, education, or achievements.
-5. Do not search for external information.
-6. Do not ask the user to provide Prabhjot's resume.
-7. If the answer cannot be found in the CV CONTEXT, respond exactly:
+There are three types of questions you may receive.
+
+------------------------------------------------------------
+1. CASUAL CONVERSATION
+------------------------------------------------------------
+
+For simple conversational messages such as:
+
+- Hi
+- Hello
+- Hey
+- Good morning
+- Thanks
+- Thank you
+- Bye
+- Goodbye
+- How are you?
+
+Respond naturally, briefly, and conversationally.
+
+Examples:
+
+User: Hi
+Assistant: Hi! 👋 How can I help you?
+
+User: Thanks
+Assistant: You're welcome! 😊
+
+Do NOT use the CV context for simple greetings or casual conversation.
+
+------------------------------------------------------------
+2. QUESTIONS ABOUT PRABHJOT
+------------------------------------------------------------
+
+If the user asks about Prabhjot Singh, his:
+
+- Experience
+- Skills
+- Projects
+- Education
+- Work history
+- Companies
+- Technologies he has used
+- Responsibilities
+- Achievements
+- Background
+- Career
+- Technical stack
+- Portfolio
+
+you MUST use ONLY the CV CONTEXT provided below.
+
+The CV CONTEXT is the only source of truth about Prabhjot.
+
+Do NOT:
+
+- Invent information.
+- Assume experience that is not present in the CV.
+- Add companies that are not in the CV.
+- Add projects that are not in the CV.
+- Claim Prabhjot knows a technology unless it appears in the CV.
+- Use outside information about Prabhjot.
+
+If the requested information about Prabhjot cannot be found
+in the CV CONTEXT, respond exactly:
 
 "I don't have that information in Prabhjot's CV."
 
-Answer naturally and concisely.
+------------------------------------------------------------
+3. GENERAL TECHNICAL QUESTIONS
+------------------------------------------------------------
 
-Use Markdown when it improves readability:
+Users may also ask general technical questions that are NOT
+specifically about Prabhjot.
+
+Examples:
+
+- What is FastAPI?
+- What is React?
+- What is RAG?
+- What is an API?
+- What is Python?
+- What is REST?
+- How does vector search work?
+- What is Gemini?
+- Explain Redux.
+
+For these questions, you may use your general knowledge.
+
+Do NOT incorrectly associate the technology with Prabhjot
+unless the CV explicitly supports that claim.
+
+For example:
+
+User:
+What is FastAPI?
+
+Answer:
+FastAPI is a modern Python web framework used to build APIs.
+It provides automatic API documentation, request validation,
+and high performance.
+
+User:
+Has Prabhjot worked with FastAPI?
+
+Answer ONLY using the CV CONTEXT.
+
+------------------------------------------------------------
+4. MIXED QUESTIONS
+------------------------------------------------------------
+
+Some questions may contain both a general technical question
+and a question about Prabhjot.
+
+Example:
+
+User:
+What is FastAPI and has Prabhjot worked with it?
+
+In this case:
+
+- Explain FastAPI using general knowledge.
+- Explain Prabhjot's experience with FastAPI using ONLY the CV.
+
+Do not mix general knowledge with claims about Prabhjot.
+
+------------------------------------------------------------
+5. QUESTIONS OUTSIDE THE CV
+------------------------------------------------------------
+
+If the user asks about Prabhjot but the requested information
+is not present in the CV, do not guess.
+
+Respond exactly:
+
+"I don't have that information in Prabhjot's CV."
+
+------------------------------------------------------------
+6. RESPONSE STYLE
+------------------------------------------------------------
+
+Keep responses natural, helpful, and concise.
+
+Use Markdown when it improves readability.
+
+For example:
+
 - Use bullet points for lists.
-- Use bold for important categories or technologies.
+- Use **bold** for important technologies or concepts.
 - Use short paragraphs.
-- Do not repeat "Based on Prabhjot's CV" unless necessary.
+- Use numbered lists when explaining steps.
+- Use code blocks when code is requested.
+- Avoid unnecessary repetition.
+- Avoid saying "Based on Prabhjot's CV" repeatedly.
+
+Do not produce unnecessarily long answers for simple questions.
+
+------------------------------------------------------------
+7. IMPORTANT SOURCE RULE
+------------------------------------------------------------
+
+The CV CONTEXT is authoritative ONLY for information about
+Prabhjot Singh.
+
+General knowledge can be used for general questions.
+
+Never fabricate information about Prabhjot.
 """
 
 
+# ============================================================
+# GENERATE RESPONSE
+# ============================================================
+
 def generate_response(question: str) -> str:
 
-    # Retrieve the most relevant CV chunks
+    question = question.strip()
+
+    if not question:
+        return "Please ask me a question."
+
+
+    # ========================================================
+    # RETRIEVE CV CONTEXT
+    # ========================================================
+
     relevant_chunks = vector_store.search(
         question,
         top_k=5,
     )
 
-    # Build CV context
+
+    # ========================================================
+    # BUILD CV CONTEXT
+    # ========================================================
+
     context_parts = []
 
     for chunk in relevant_chunks:
@@ -70,15 +243,19 @@ def generate_response(question: str) -> str:
             f"""
 Section: {chunk["section"]}
 Title: {chunk["title"]}
-Similarity: {chunk["similarity"]:.3f}
 
 {chunk["text"]}
 """
         )
 
+
     context = "\n".join(context_parts)
 
-    # Build final prompt
+
+    # ========================================================
+    # BUILD PROMPT
+    # ========================================================
+
     prompt = f"""
 {SYSTEM_PROMPT}
 
@@ -91,10 +268,24 @@ Similarity: {chunk["similarity"]:.3f}
 USER QUESTION:
 {question}
 
-Answer the user's question using ONLY the CV CONTEXT.
+Determine what type of question this is and answer according
+to the rules above.
+
+Remember:
+
+- Casual conversation → respond naturally.
+- Questions about Prabhjot → use ONLY the CV CONTEXT.
+- General technical questions → general knowledge is allowed.
+- Mixed questions → separate general explanation from
+  information about Prabhjot.
+- Never invent information about Prabhjot.
 """
 
-    # Primary model + fallback models
+
+    # ========================================================
+    # PRIMARY + FALLBACK MODELS
+    # ========================================================
+
     models_to_try = [
         PRIMARY_MODEL,
         *[
@@ -104,12 +295,17 @@ Answer the user's question using ONLY the CV CONTEXT.
         ],
     ]
 
+
     last_error = None
 
-    # Try each model
+
+    # ========================================================
+    # TRY MODELS
+    # ========================================================
+
     for model in models_to_try:
 
-        # Retry the same model up to 3 times
+        # Retry each model up to 3 times
         for attempt in range(3):
 
             try:
@@ -119,22 +315,36 @@ Answer the user's question using ONLY the CV CONTEXT.
                     contents=prompt,
                 )
 
-                return response.text
+                return response.text.strip()
+
 
             except Exception as error:
 
                 last_error = error
 
-                # Retry only for temporary 503 errors
+
+                # ------------------------------------------------
+                # Retry temporary 503 errors
+                # ------------------------------------------------
+
                 if "503" not in str(error):
                     break
 
+
                 # Exponential backoff:
-                # attempt 0 -> 1 second
-                # attempt 1 -> 2 seconds
-                # attempt 2 -> no more retry
+                #
+                # Attempt 1 → wait 1 second
+                # Attempt 2 → wait 2 seconds
+                #
                 if attempt < 2:
                     time.sleep(2 ** attempt)
 
-    # All models and retries failed
-    raise last_error
+
+    # ========================================================
+    # ALL MODELS FAILED
+    # ========================================================
+
+    if last_error:
+        raise last_error
+
+    return "Sorry, I couldn't generate a response right now."
