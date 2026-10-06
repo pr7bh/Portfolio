@@ -166,7 +166,7 @@ function Experience() {
             className="
                 pointer-events-none
                 fixed
-                left-[calc(50%-2px)]
+                left-1/2
                 top-1/2
                 z-999
                 hidden
