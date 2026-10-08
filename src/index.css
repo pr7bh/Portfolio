@@ -93,3 +93,32 @@ html::-webkit-scrollbar-button {
 html::-webkit-scrollbar-corner {
   background: transparent !important;
 }
+
+.glass-swal-popup {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 20px !important;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.glass-swal-title {
+  color: #fff !important;
+}
+
+.glass-swal-text {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.glass-swal-button {
+  border-radius: 12px !important;
+  font-weight: 500 !important;
+  padding: 10px 22px !important;
+
+  box-shadow: 0 8px 25px rgba(82, 39, 255, 0.3);
+}

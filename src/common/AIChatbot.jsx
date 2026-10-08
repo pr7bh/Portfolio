@@ -224,7 +224,7 @@ function AIChatbot() {
             </div>
 
             <div className="flex items-center gap-1">
-              {/* MAXIMIZE / RESTORE */}
+              {/* MAXIMIZE / RESTORE - Desktop only */}
               <button
                 type="button"
                 onClick={() => setIsMaximized((prev) => !prev)}
@@ -232,7 +232,8 @@ function AIChatbot() {
                   isMaximized ? "Restore AI assistant" : "Maximize AI assistant"
                 }
                 className="
-      flex
+      hidden
+      md:flex
       h-8
       w-8
       items-center
@@ -249,7 +250,6 @@ function AIChatbot() {
     "
               >
                 {isMaximized ? (
-                  /* Restore icon */
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -258,10 +258,9 @@ function AIChatbot() {
                     className="h-4 w-4"
                   >
                     <rect x="5" y="9" width="10" height="10" rx="1" />
-                    <path d="M9 9V6a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-3" />
+                    <path d="M9 9V6a1 1 0 0 1 1-1h8a2 2 0 0 1 2 2v8a1 1 0 0 1-1 1h-3" />
                   </svg>
                 ) : (
-                  /* Maximize icon */
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -506,10 +505,10 @@ function AIChatbot() {
       "
                 >
                   <div className="flex items-center gap-1">
-  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.3s]" />
-  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.15s]" />
-  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50" />
-</div>
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.3s]" />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.15s]" />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50" />
+                  </div>
                 </div>
               </div>
             )}
@@ -677,8 +676,8 @@ function AIChatbot() {
           group
 
           fixed
-          bottom-8
-          right-4
+          bottom-2
+          right-0
           z-10001
 
           flex

@@ -1,28 +1,109 @@
 import Swal from "sweetalert2";
 import SpecularButton from "../../common/SpecularButton";
+const glassAlert = {
+  background: "rgba(20, 20, 20, 0.55)",
+  color: "#fff",
+  confirmButtonColor: "#5227FF",
+  backdrop: "rgba(0, 0, 0, 0.45)",
+  customClass: {
+    popup: "glass-swal-popup",
+    title: "glass-swal-title",
+    htmlContainer: "glass-swal-text",
+    confirmButton: "glass-swal-button",
+  },
+};
 
 function Contact() {
   const onSubmit = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData(event.target);
+    const form = event.target;
+    const formData = new FormData(form);
 
-    const email = formData.get("email");
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const name = formData.get("name")?.trim();
+    const email = formData.get("email")?.trim();
+    const phone = formData.get("phone")?.trim();
+    const message = formData.get("message")?.trim();
 
-    if (!emailRegex.test(email)) {
+    // ==========================================
+    // EMAIL VALIDATION
+    // ==========================================
+
+    const emailRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/;
+
+    if (!email || !emailRegex.test(email)) {
       Swal.fire({
+        ...glassAlert,
         title: "Invalid Email",
         text: "Please enter a valid email address.",
         icon: "error",
         confirmButtonText: "OK",
-        background: "rgba(20, 20, 20, 0.9)",
-        color: "#fff",
-        confirmButtonColor: "#5227FF",
       });
 
       return;
     }
+
+    // ==========================================
+    // PHONE VALIDATION
+    // ==========================================
+
+    const cleanPhone = phone?.replace(/[\s()-]/g, "");
+
+    const phoneRegex = /^\+?[1-9]\d{7,14}$/;
+
+    if (!phone || !phoneRegex.test(cleanPhone)) {
+      Swal.fire({
+        ...glassAlert,
+        title: "Invalid Contact Number",
+        text: "Please enter a valid contact number with country code.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+
+      return;
+    }
+
+    // ==========================================
+    // NAME VALIDATION
+    // ==========================================
+
+    if (!name || name.length < 2) {
+      Swal.fire({
+        ...glassAlert,
+        title: "Invalid Name",
+        text: "Please enter your name.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+
+      return;
+    }
+
+    // ==========================================
+    // MESSAGE VALIDATION
+    // ==========================================
+
+    if (!message || message.length < 10) {
+      Swal.fire({
+        ...glassAlert,
+        title: "Message Too Short",
+        text: "Please enter at least 10 characters in your message.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+
+      return;
+    }
+
+    // ==========================================
+    // WEB3FORMS
+    // ==========================================
+
+    formData.set("name", name);
+    formData.set("email", email);
+    formData.set("phone", cleanPhone);
+    formData.set("message", message);
 
     formData.append(
       "access_key",
@@ -33,47 +114,46 @@ function Contact() {
     const json = JSON.stringify(object);
 
     try {
-      const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: json,
-      }).then((res) => res.json());
+      const response = await fetch(
+        "https://api.web3forms.com/submit",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: json,
+        }
+      );
+
+      const res = await response.json();
 
       if (res.success) {
         Swal.fire({
+          ...glassAlert,
           title: "Message Sent!",
           text: "Thanks for reaching out. I'll get back to you soon.",
           icon: "success",
           confirmButtonText: "Awesome",
-          background: "rgba(20, 20, 20, 0.9)",
-          color: "#fff",
-          confirmButtonColor: "#5227FF",
         });
 
-        event.target.reset();
+        form.reset();
       } else {
         Swal.fire({
+          ...glassAlert,
           title: "Something went wrong",
           text: "Unable to send your message. Please try again.",
           icon: "error",
           confirmButtonText: "OK",
-          background: "rgba(20, 20, 20, 0.9)",
-          color: "#fff",
-          confirmButtonColor: "#5227FF",
         });
       }
-    } catch {
+    } catch (error) {
       Swal.fire({
+        ...glassAlert,
         title: "Error",
         text: "Unable to send your message right now.",
         icon: "error",
         confirmButtonText: "OK",
-        background: "rgba(20, 20, 20, 0.9)",
-        color: "#fff",
-        confirmButtonColor: "#5227FF",
       });
     }
   };
@@ -83,12 +163,15 @@ function Contact() {
       id="contact"
       className="flex w-full flex-col items-center px-5 py-24 md:px-10"
     >
-      <h1 className="sectionTitle mb-12 text-center">Contact</h1>
+      <h1 className="sectionTitle mb-12 text-center">
+        Contact
+      </h1>
 
       <form
         onSubmit={onSubmit}
         className="flex w-full max-w-6xl flex-col gap-7"
       >
+        {/* NAME */}
         <div>
           <label
             htmlFor="name"
@@ -103,6 +186,7 @@ function Contact() {
             id="name"
             placeholder="Your name"
             required
+            minLength={2}
             className="
               w-full
               rounded-xl
@@ -124,6 +208,7 @@ function Contact() {
           />
         </div>
 
+        {/* EMAIL */}
         <div>
           <label
             htmlFor="email"
@@ -159,6 +244,45 @@ function Contact() {
           />
         </div>
 
+        {/* PHONE */}
+        <div>
+          <label
+            htmlFor="phone"
+            className="mb-2 block text-sm font-medium text-white/60"
+          >
+            Contact Number
+          </label>
+
+          <input
+            type="tel"
+            name="phone"
+            id="phone"
+            placeholder="+91 9876543210"
+            required
+            inputMode="tel"
+            autoComplete="tel"
+            className="
+              w-full
+              rounded-xl
+              border
+              border-white/20
+              bg-transparent
+              px-4
+              py-3.5
+              text-white
+              outline-none
+              placeholder:text-white/30
+              backdrop-blur-sm
+              transition-all
+              duration-300
+              focus:border-white/50
+              focus:ring-1
+              focus:ring-white/20
+            "
+          />
+        </div>
+
+        {/* MESSAGE */}
         <div>
           <label
             htmlFor="message"
@@ -172,6 +296,7 @@ function Contact() {
             id="message"
             placeholder="Tell me about your project..."
             required
+            minLength={10}
             rows={6}
             className="
               w-full
@@ -195,6 +320,7 @@ function Contact() {
           />
         </div>
 
+        {/* BUTTON */}
         <div className="flex justify-center pt-2">
           <div className="custom-cursor--action">
             <SpecularButton
