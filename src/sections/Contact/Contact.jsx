@@ -198,7 +198,6 @@ function Contact() {
               text-white
               outline-none
               placeholder:text-white/30
-              backdrop-blur-sm
               transition-all
               duration-300
               focus:border-white/50
@@ -234,7 +233,6 @@ function Contact() {
               text-white
               outline-none
               placeholder:text-white/30
-              backdrop-blur-sm
               transition-all
               duration-300
               focus:border-white/50
@@ -272,7 +270,6 @@ function Contact() {
               text-white
               outline-none
               placeholder:text-white/30
-              backdrop-blur-sm
               transition-all
               duration-300
               focus:border-white/50
@@ -310,7 +307,6 @@ function Contact() {
               text-white
               outline-none
               placeholder:text-white/30
-              backdrop-blur-sm
               transition-all
               duration-300
               focus:border-white/50

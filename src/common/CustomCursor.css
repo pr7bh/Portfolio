@@ -51,12 +51,25 @@
 }
 
 /* Action cursor */
+/* Action cursor */
 .svg-cursor--action {
   animation: mutantCursorBounce 1s linear infinite;
 }
 
 .svg-cursor--action .svg-cursor__lines {
   transform: scale(1) rotate(0deg);
+}
+
+.svg-cursor--action .svg-cursor__lines line:nth-child(1) {
+  transform: rotate(0deg);
+}
+
+.svg-cursor--action .svg-cursor__lines line:nth-child(2) {
+  transform: rotate(60deg);
+}
+
+.svg-cursor--action .svg-cursor__lines line:nth-child(3) {
+  transform: rotate(120deg);
 }
 
 /* Close cursor */
@@ -78,23 +91,4 @@
 
 .svg-cursor--close .svg-cursor__lines line:nth-child(3) {
   transform: scaleY(1) rotate(-45deg);
-}
-
-@keyframes mutantCursorBounce {
-  30% {
-    transform: translate(8px, 8px);
-  }
-
-  40% {
-    transform: translate(0, 0);
-  }
-
-  50% {
-    transform: translate(4px, 4px);
-  }
-
-  60%,
-  100% {
-    transform: translate(0, 0);
-  }
 }

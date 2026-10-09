@@ -54,44 +54,33 @@ body {
   }
 }
 
-/* Floating scrollbar */
-html {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.45) transparent;
-}
-
+/* Chrome, Edge, Safari */
 html::-webkit-scrollbar {
-  width: 5px;
+  width: 2px;
   background: transparent;
 }
-
-html::-webkit-scrollbar-track {
-  background: transparent !important;
-  box-shadow: none !important;
+html::-webkit-scrollbar-track,
+html::-webkit-scrollbar-track-piece,
+html::-webkit-scrollbar-corner {
+  background: transparent;
 }
-
-html::-webkit-scrollbar-track-piece {
-  background: transparent !important;
-}
-
 html::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.45) !important;
-  border: none !important;
+  background: rgba(255, 255, 255, 0.45);
   border-radius: 9999px;
 }
-
 html::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.65) !important;
+  background: rgba(255, 255, 255, 0.65);
 }
-
 html::-webkit-scrollbar-button {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
+  display: none;
 }
 
-html::-webkit-scrollbar-corner {
-  background: transparent !important;
+/* Firefox only (must not apply in Chrome) */
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.45) transparent;
+  }
 }
 
 .glass-swal-popup {
