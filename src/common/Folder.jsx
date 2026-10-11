@@ -75,9 +75,9 @@ const Folder = ({ color = '#5227FF', size = 1, items = [], className = '' }) => 
   const scaleStyle = { transform: `scale(${size})` };
 
   const getOpenTransform = index => {
-    if (index === 0) return 'translate(-120%, -70%) rotate(-15deg)';
-    if (index === 1) return 'translate(10%, -70%) rotate(15deg)';
-    if (index === 2) return 'translate(-50%, -100%) rotate(5deg)';
+    if (index === 0) return 'translate(-155%, -85%) rotate(-25deg)';
+    if (index === 1) return 'translate(55%, -85%) rotate(25deg)';
+    if (index === 2) return 'translate(-50%, -135%) rotate(0deg)';
     return '';
   };
 

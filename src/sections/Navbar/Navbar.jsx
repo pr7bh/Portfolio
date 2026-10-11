@@ -271,7 +271,7 @@ const Navbar = () => {
             absolute
             inset-3
             overflow-hidden
-            rounded-[30px]
+            rounded-[20px]
             border
             border-white/20
             bg-black/40

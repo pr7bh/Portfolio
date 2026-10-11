@@ -36,16 +36,16 @@ function Skills() {
   return (
     <section
       id="skills"
-      className="flex w-full flex-col items-center gap-8 p-0 m-0 pt-30"
+      className="flex w-full flex-col items-center p-0 m-0 pt-30"
     >
       <h1 className="sectionTitle">Skills</h1>
 
-      <div className="relative flex h-140 w-full items-center justify-center overflow-hidden">
+      <div className="relative flex w-full md:h-200 items-center justify-center overflow-hidden">
         <OrbitImages
           images={images}
           shape="infinity"
           radiusX={480}
-          radiusY={200}
+          radiusY={300}
           rotation={1}
           duration={30}
           itemSize={80}
