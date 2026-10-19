@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import GlassSurface from "../../common/GlassSurface";
 
 const Navbar = () => {
@@ -68,7 +68,7 @@ const Navbar = () => {
   return (
     <>
       {/* ================= DESKTOP NAVBAR ================= */}
-      <nav className="fixed left-1/2 top-3 z-[1000] hidden -translate-x-1/2 px-3 md:block">
+      <nav className="fixed left-1/2 top-3 z-1000 hidden -translate-x-1/2 px-3 md:block">
         <GlassSurface
           width={650}
           height={70}
@@ -82,7 +82,7 @@ const Navbar = () => {
           opacity={0.85}
           mixBlendMode="normal"
         >
-          <div className="relative flex h-[70px] items-center justify-center px-7 ">
+          <div className="relative flex h-17.5 items-center justify-center px-7 ">
             <ul className="flex items-center gap-10">
               {navItems.map((item) => (
                 <li key={item.id}>
@@ -109,7 +109,7 @@ const Navbar = () => {
             absolute
             bottom-0
             left-0
-            h-[2px]
+            h-0.5
             w-full
             origin-center
             scale-x-0
@@ -131,7 +131,7 @@ const Navbar = () => {
       </nav>
 
       {/* ================= MOBILE NAVBAR ================= */}
-      <nav className="fixed left-4 top-4 z-[1100] md:hidden">
+      <nav className="fixed left-4 top-4 z-1100 md:hidden">
         <GlassSurface
           width={56}
           height={56}
@@ -152,8 +152,8 @@ const Navbar = () => {
             aria-expanded={isOpen}
             className="
               flex
-              h-[56px]
-              w-[56px]
+              h-14
+              w-14
               items-center
               justify-center
             "
@@ -162,7 +162,7 @@ const Navbar = () => {
               <span
                 className={`
                   block
-                  h-[2px]
+                  h-0.5
                   w-6
                   rounded-full
                   bg-white
@@ -175,7 +175,7 @@ const Navbar = () => {
               <span
                 className={`
                   block
-                  h-[2px]
+                  h-0.5
                   w-6
                   rounded-full
                   bg-white
@@ -188,7 +188,7 @@ const Navbar = () => {
               <span
                 className={`
                   block
-                  h-[2px]
+                  h-0.5
                   w-6
                   rounded-full
                   bg-white
@@ -202,7 +202,7 @@ const Navbar = () => {
         </GlassSurface>
       </nav>
       {/* ================= MOBILE CALL BUTTON ================= */}
-      <nav className="fixed right-4 top-4 z-[1100] md:hidden">
+      <nav className="fixed right-4 top-4 z-1100 md:hidden">
         <GlassSurface
           width={56}
           height={56}
@@ -221,8 +221,8 @@ const Navbar = () => {
             aria-label="Call Prabhjot Singh"
             className="
         flex
-        h-[56px]
-        w-[56px]
+        h-14
+        w-14
         items-center
         justify-center
         text-white
@@ -254,7 +254,7 @@ const Navbar = () => {
         className={`
           fixed
           inset-0
-          z-[1050]
+          z-1050
           md:hidden
           transition-all
           duration-500
@@ -282,9 +282,9 @@ const Navbar = () => {
           `}
         >
           {/* Subtle glass highlights */}
-          <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-white/[0.06] blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-white/6 blur-3xl" />
 
-          <div className="pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-white/[0.05] blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
 
           {/* Navigation */}
           <div className="relative flex h-full flex-col items-center justify-center px-8 ">
@@ -332,7 +332,7 @@ const Navbar = () => {
                         absolute
                         bottom-0
                         left-1/2
-                        h-[2px]
+                        h-0.5
                         -translate-x-1/2
                         rounded-full
                         bg-white

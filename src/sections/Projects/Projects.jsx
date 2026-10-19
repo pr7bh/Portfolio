@@ -153,8 +153,8 @@ function Projects() {
         className="
           relative
           m-0
-          h-[700px]
-          min-h-[400px]
+          h-175
+          min-h-100
           w-screen
           max-w-none
           overflow-hidden
