@@ -5,19 +5,19 @@ function AppLoader({ children }) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const handleLoad = () => {
-      setLoaded(true);
+    // Don't block on window.load — it waits for all images (11MB+) which
+    // causes 10-30s blank screen on mobile. Show content after DOM is ready.
+    if (document.readyState !== "loading") {
+      const id = setTimeout(() => setLoaded(true), 400);
+      return () => clearTimeout(id);
+    }
+
+    const handleReady = () => {
+      setTimeout(() => setLoaded(true), 400);
     };
 
-    if (document.readyState === "complete") {
-      handleLoad();
-    } else {
-      window.addEventListener("load", handleLoad);
-
-      return () => {
-        window.removeEventListener("load", handleLoad);
-      };
-    }
+    document.addEventListener("DOMContentLoaded", handleReady);
+    return () => document.removeEventListener("DOMContentLoaded", handleReady);
   }, []);
 
   return (

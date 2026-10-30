@@ -14,13 +14,20 @@ import { useTheme } from './common/ThemeContext';
 import MoveToTop from './common/MoveToTop';
 import Experience from './sections/Experience/Experience';
 import AIChatbot from './common/AIChatbot';
+import { useState } from 'react';
 
 function App() {
   const { theme } = useTheme();
+  // Disable WebGL particles on mobile — avoids competing with FlexCarousel's
+  // WebGL context, which can crash or freeze the GPU on low-end phones.
+  const [isMobile] = useState(
+    () => window.matchMedia('(max-width: 767px)').matches
+  );
 
   return (
     <div className="relative min-h-screen">
-      {/* Background particles */}
+      {/* Background particles — desktop only */}
+      {!isMobile && (
       <div className="pointer-events-none fixed inset-0 -z-10">
         <Particles
           particleColors={
@@ -38,6 +45,7 @@ function App() {
           pixelRatio={1}
         />
       </div>
+      )}
 
       {/* Portfolio */}
       <div className="relative z-10">
