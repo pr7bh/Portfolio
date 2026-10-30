@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import AILogo from "../assets/AILogo.gif";
 import ReactMarkdown from "react-markdown";
 function AIChatbot() {
@@ -8,6 +8,8 @@ function AIChatbot() {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [slowBackend, setSlowBackend] = useState(false);
+  const retryQuestionRef = useRef("");
 
   const askQuestion = async (userQuestion) => {
     const trimmedQuestion = userQuestion.trim();
@@ -16,53 +18,65 @@ function AIChatbot() {
       return;
     }
 
+    retryQuestionRef.current = trimmedQuestion;
     setQuestion("");
     setIsLoading(true);
+    setSlowBackend(false);
 
     setMessages((prev) => [
       ...prev,
-      {
-        role: "user",
-        content: trimmedQuestion,
-      },
+      { role: "user", content: trimmedQuestion },
     ]);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 35000);
+    const slowTimerId = setTimeout(() => setSlowBackend(true), 8000);
 
     try {
       const response = await fetch(
         "https://portfolio-h5kk.onrender.com/api/chat",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            question: trimmedQuestion,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: trimmedQuestion }),
+          signal: controller.signal,
         },
       );
 
-      if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}`);
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: data.answer },
+        ]);
+      } else {
+        const errorMessages = {
+          429: "You're sending messages too quickly. Please wait a moment and try again.",
+          422: "Your message couldn't be processed. Please try a shorter question.",
+        };
+        const content =
+          errorMessages[response.status] ??
+          "The AI assistant encountered an error. Please try again.";
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content, isError: true },
+        ]);
       }
-
-      const data = await response.json();
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: data.answer,
-        },
-      ]);
     } catch (error) {
+      clearTimeout(timeoutId);
+      const content =
+        error.name === "AbortError"
+          ? "The request timed out. The AI assistant may be waking up — please try again in a moment."
+          : "Unable to connect. Please check your connection and try again.";
       setMessages((prev) => [
         ...prev,
-        {
-          role: "assistant",
-          content: "Sorry, I couldn't process your question right now.",
-        },
+        { role: "assistant", content, isError: true },
       ]);
     } finally {
+      clearTimeout(slowTimerId);
+      setSlowBackend(false);
       setIsLoading(false);
     }
   };
@@ -466,6 +480,15 @@ function AIChatbot() {
                       {message.content}
                     </ReactMarkdown>
                   </div>
+                  {message.isError && (
+                    <button
+                      type="button"
+                      onClick={() => askQuestion(retryQuestionRef.current)}
+                      className="mt-2 text-[11px] text-white/40 underline transition-colors duration-150 hover:text-white/70"
+                    >
+                      Try again
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -504,11 +527,17 @@ function AIChatbot() {
         py-3
       "
                 >
-                  <div className="flex items-center gap-1">
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.3s]" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.15s]" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50" />
-                  </div>
+                  {slowBackend ? (
+                    <p className="text-xs leading-relaxed text-white/50">
+                      Waking up the AI assistant...
+                    </p>
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.3s]" />
+                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.15s]" />
+                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50" />
+                    </div>
+                  )}
                 </div>
               </div>
             )}

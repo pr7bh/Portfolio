@@ -1,9 +1,12 @@
 from pathlib import Path
+import hashlib
+import json
 import re
 
 from app.services.embeddings import (
     create_embedding,
     cosine_similarity,
+    EMBEDDING_MODEL,
 )
 
 
@@ -12,6 +15,14 @@ RESUME_PATH = (
     / "data"
     / "resume.txt"
 )
+
+CACHE_PATH = (
+    Path(__file__).resolve().parent.parent
+    / "data"
+    / "embeddings_cache.json"
+)
+
+_EMBEDDING_DIMS = 768
 
 
 class ResumeVectorStore:
@@ -26,9 +37,12 @@ class ResumeVectorStore:
         if self.is_built:
             return
 
-        resume = RESUME_PATH.read_text(
-            encoding="utf-8"
-        )
+        resume = RESUME_PATH.read_text(encoding="utf-8")
+        resume_hash = hashlib.md5(resume.encode("utf-8")).hexdigest()
+
+        if self._load_cache(resume_hash):
+            self.is_built = True
+            return
 
         self.chunks = self._chunk_resume(resume)
 
@@ -38,6 +52,60 @@ class ResumeVectorStore:
         ]
 
         self.is_built = True
+        self._save_cache(resume_hash)
+
+    def _load_cache(self, resume_hash: str) -> bool:
+        if not CACHE_PATH.exists():
+            return False
+
+        try:
+            data = json.loads(CACHE_PATH.read_text(encoding="utf-8"))
+
+            if (
+                data.get("resume_hash") != resume_hash
+                or data.get("embedding_model") != EMBEDDING_MODEL
+                or data.get("embedding_dims") != _EMBEDDING_DIMS
+            ):
+                return False
+
+            cached = data.get("chunks", [])
+
+            if not cached:
+                return False
+
+            for entry in cached:
+                if len(entry.get("embedding", [])) != _EMBEDDING_DIMS:
+                    return False
+
+            self.chunks = [
+                {"section": e["section"], "title": e["title"], "text": e["text"]}
+                for e in cached
+            ]
+            self.embeddings = [e["embedding"] for e in cached]
+            return True
+
+        except Exception:
+            return False
+
+    def _save_cache(self, resume_hash: str) -> None:
+        try:
+            data = {
+                "resume_hash": resume_hash,
+                "embedding_model": EMBEDDING_MODEL,
+                "embedding_dims": _EMBEDDING_DIMS,
+                "chunks": [
+                    {
+                        "section": chunk["section"],
+                        "title": chunk["title"],
+                        "text": chunk["text"],
+                        "embedding": embedding,
+                    }
+                    for chunk, embedding in zip(self.chunks, self.embeddings)
+                ],
+            }
+            CACHE_PATH.write_text(json.dumps(data), encoding="utf-8")
+        except Exception:
+            pass
 
     def _chunk_resume(self, text: str):
 

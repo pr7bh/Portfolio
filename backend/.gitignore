@@ -19,3 +19,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Generated embedding cache
+app/data/embeddings_cache.json
