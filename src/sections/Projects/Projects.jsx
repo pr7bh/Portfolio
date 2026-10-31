@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import FlexCarousel from "../../common/FlexCarousel";
 
+import geomind from "../../assets/geomind.png";
 import syncora from "../../assets/syncora.png";
 import webgeo from "../../assets/webgeo.jpg";
 import capacityMargin from "../../assets/capacity-margin.jpg";
@@ -65,6 +66,13 @@ function Projects() {
   }, [isInView, captureWheel]);
 
   const items = [
+    {
+      src: geomind,
+      alt: "GeoMind AI geospatial intelligence platform",
+      title: "GeoMind AI",
+      subtitle: "Geospatial AI platform • LLM • Maps",
+      link: "https://geo-mind-by-prabh.vercel.app/",
+    },
     {
       src: syncora,
       alt: "Syncora GenAI application",
