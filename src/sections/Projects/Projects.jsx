@@ -17,8 +17,26 @@ function Projects() {
 
   const [isInView, setIsInView] = useState(false);
   const [captureWheel, setCaptureWheel] = useState(false);
+  // Defer mounting WebGL carousel until section is near viewport.
+  // Prevents loading 9 images as GPU textures on initial page load,
+  // which was crashing Safari on iPhone due to memory pressure.
+  const [carouselReady, setCarouselReady] = useState(false);
 
   const MAX_WHEEL_SCROLLS = 25;
+
+  useEffect(() => {
+    const mountObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setCarouselReady(true);
+          mountObserver.disconnect();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    if (projectsRef.current) mountObserver.observe(projectsRef.current);
+    return () => mountObserver.disconnect();
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -169,7 +187,7 @@ function Projects() {
           p-0
         "
       >
-        <FlexCarousel
+        {carouselReady && <FlexCarousel
           items={items}
           preset="liquid"
           intro="rise"
@@ -212,7 +230,7 @@ function Projects() {
             w-full
             p-0
           "
-        />
+        />}
       </div>
     </section>
   );

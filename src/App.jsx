@@ -1,20 +1,22 @@
 import './App.css';
 
 import Navbar from './sections/Navbar/Navbar';
-import Contact from './sections/Contact/Contact';
-import Footer from './sections/Footer/Footer';
 import Hero from './sections/Hero/Hero';
-import Projects from './sections/Projects/Projects';
-import Skills from './sections/Skills/Skills';
-import Education from './sections/Education/Education';
 import CustomCursor from './common/CustomCursor';
 import Particles from './common/Particles';
 
 import { useTheme } from './common/ThemeContext';
 import MoveToTop from './common/MoveToTop';
-import Experience from './sections/Experience/Experience';
 import AIChatbot from './common/AIChatbot';
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
+
+// Lazy-load everything below the fold — deferred until needed
+const Experience = lazy(() => import('./sections/Experience/Experience'));
+const Projects   = lazy(() => import('./sections/Projects/Projects'));
+const Skills     = lazy(() => import('./sections/Skills/Skills'));
+const Education  = lazy(() => import('./sections/Education/Education'));
+const Contact    = lazy(() => import('./sections/Contact/Contact'));
+const Footer     = lazy(() => import('./sections/Footer/Footer'));
 
 function App() {
   const { theme } = useTheme();
@@ -58,26 +60,28 @@ function App() {
           <Hero />
         </div>
 
-        <div id="experience" className="section">
-          <Experience />
-        </div>
-        <div id="projects" className="section">
-          <Projects />
-        </div>
+        <Suspense fallback={<div className="min-h-screen" />}>
+          <div id="experience" className="section">
+            <Experience />
+          </div>
+          <div id="projects" className="section">
+            <Projects />
+          </div>
 
-        <div id="skills" className="section">
-          <Skills />
-        </div>
+          <div id="skills" className="section">
+            <Skills />
+          </div>
 
-        <div id="education" className="education">
-          <Education />
-        </div>
+          <div id="education" className="education">
+            <Education />
+          </div>
 
-        <div id="contact" className="section">
-          <Contact />
-        </div>
+          <div id="contact" className="section">
+            <Contact />
+          </div>
 
-        <Footer />
+          <Footer />
+        </Suspense>
       </div>
     </div>
   );
