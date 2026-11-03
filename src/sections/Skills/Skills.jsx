@@ -38,7 +38,7 @@ function Skills() {
       id="skills"
       className="flex w-full flex-col items-center p-0 m-0 pt-30"
     >
-      <h1 className="sectionTitle">Skills</h1>
+      <h2 className="sectionTitle">Skills</h2>
 
       <div className="relative flex w-full md:h-200 items-center justify-center overflow-hidden">
         <OrbitImages

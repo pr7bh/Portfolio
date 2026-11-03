@@ -96,7 +96,7 @@ function Education() {
       "
     >
       {/* Heading */}
-      <h1 className="sectionTitle mb-20 text-center">Education</h1>
+      <h2 className="sectionTitle mb-20 text-center">Education</h2>
 
       {/* Timeline */}
       <div data-education-timeline className="relative w-full max-w-6xl">
@@ -257,7 +257,7 @@ function Education() {
                       {item.year}
                     </p>
 
-                    <h2
+                    <h3
                       className="
                 text-2xl font-bold tracking-tight text-white
                 transition-all duration-300
@@ -266,7 +266,7 @@ function Education() {
               "
                     >
                       {item.degree}
-                    </h2>
+                    </h3>
 
                     <p className="mt-2 text-base font-semibold text-white/80">
                       {item.branch}

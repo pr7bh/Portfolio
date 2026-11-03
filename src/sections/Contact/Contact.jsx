@@ -163,9 +163,9 @@ function Contact() {
       id="contact"
       className="flex w-full flex-col items-center px-5 py-24 md:px-10"
     >
-      <h1 className="sectionTitle mb-12 text-center">
+      <h2 className="sectionTitle mb-12 text-center">
         Contact
-      </h1>
+      </h2>
 
       <form
         onSubmit={onSubmit}

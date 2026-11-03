@@ -109,7 +109,7 @@ function Experience() {
       "
     >
       {/* Heading */}
-      <h1 className="sectionTitle mb-20 text-center">Experience</h1>
+      <h2 className="sectionTitle mb-20 text-center">Experience</h2>
 
       {/* Timeline */}
       <div
@@ -279,9 +279,9 @@ function Experience() {
                       {item.year}
                     </p>
 
-                    <h2 className="text-2xl font-bold tracking-tight text-white transition-all duration-300 hover:[text-shadow:0_0_12px_rgba(255,255,255,0.65)] md:text-3xl">
+                    <h3 className="text-2xl font-bold tracking-tight text-white transition-all duration-300 hover:[text-shadow:0_0_12px_rgba(255,255,255,0.65)] md:text-3xl">
                       {item.role}
-                    </h2>
+                    </h3>
 
                     <p className="mt-2 text-base font-semibold text-white/80">
                       {item.company}

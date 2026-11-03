@@ -171,9 +171,9 @@ function Projects() {
         pt-25
       "
     >
-      <h1 className="sectionTitle">
+      <h2 className="sectionTitle">
         Projects
-      </h1>
+      </h2>
 
       <div
         className="

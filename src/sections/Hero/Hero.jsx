@@ -119,7 +119,7 @@ function Hero() {
 
           {/* Typed Roles */}
           <div className="mt-1 min-h-[45px]">
-            <h2
+            <p
               className="
                 text-lg
                 font-medium
@@ -130,7 +130,7 @@ function Hero() {
               "
             >
               <span ref={typedElement} />
-            </h2>
+            </p>
           </div>
 
           {/* Social Links */}
