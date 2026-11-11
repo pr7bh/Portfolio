@@ -1,28 +1,244 @@
-.container {
+/* ── Mobile / Tablet Scroll-Snap Carousel ──────────────────────────── */
+
+.mobileWrapper {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  padding: 4px 0 28px;
+  gap: 24px;
 }
 
-.carouselContainer {
+.scrollTrack {
   width: 100%;
-  height: 560px;
-  min-height: 400px;
+  display: flex;
+  gap: 20px;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-inline: calc((100% - min(80vw, 390px)) / 2);
+  padding-bottom: 20px;
+  padding-top: 10px;
+}
+
+.scrollTrack::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Card shell ────────────────────────────────────────────────────── */
+
+.card {
   position: relative;
+  flex-shrink: 0;
+  width: min(80vw, 390px);
+  aspect-ratio: 2 / 3;
+  border-radius: 28px;
   overflow: hidden;
+  scroll-snap-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition:
+    transform   0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    opacity     0.45s ease,
+    box-shadow  0.45s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-/* Responsive */
-@media (max-width: 800px) {
-  .carouselContainer {
-    height: 500px;
-  }
+/* Inactive siblings shrink and dim */
+.cardInactive {
+  transform: scale(0.88);
+  opacity: 0.6;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
 }
 
-@media (max-width: 500px) {
-  .carouselContainer {
-    height: 420px;
-  }
+/* Active / centred card */
+.cardActive {
+  transform: scale(1);
+  opacity: 1;
+  box-shadow:
+    0 36px 80px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.13);
+}
+
+.cardClickable {
+  cursor: pointer;
+}
+
+.card:active {
+  transform: scale(0.975) !important;
+}
+
+/* ── Image ─────────────────────────────────────────────────────────── */
+
+.cardImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Subtle vignette at top + fade into panel at bottom */
+.cardGradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.0) 30%,
+    rgba(0, 0, 0, 0.0) 48%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+/* ── Top row — number badge + visit ───────────────────────────────── */
+
+.cardTop {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  right: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+}
+
+.numBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-family: 'Nippo', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.78);
+  letter-spacing: 0.05em;
+}
+
+.visitBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: 'Nippo', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.visitBadge:active {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+/* ── Frosted glass title panel ─────────────────────────────────────── */
+
+.cardPanel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px 22px 26px;
+  background: rgba(8, 8, 8, 0.52);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  z-index: 2;
+}
+
+.cardSubtitle {
+  display: block;
+  font-family: 'Nippo', sans-serif;
+  font-size: 0.56rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.38);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.cardTitle {
+  display: block;
+  font-family: 'Nippo', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+
+.cardRule {
+  margin: 14px 0 10px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  border: none;
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardCount {
+  font-family: 'Nippo', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.28);
+  letter-spacing: 0.1em;
+}
+
+.cardArrow {
+  font-family: 'Nippo', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ── Dot navigation ────────────────────────────────────────────────── */
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.dot {
+  height: 5px;
+  width: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  transition: width 0.3s ease, background 0.3s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.dotActive {
+  height: 5px;
+  width: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  transition: width 0.3s ease, background 0.3s ease;
+  cursor: pointer;
+  flex-shrink: 0;
 }

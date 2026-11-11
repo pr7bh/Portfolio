@@ -7,13 +7,33 @@ import heroImage from "../../assets/hero.png";
 import SpecularButton from "../../common/SpecularButton";
 
 import { useTheme } from "../../common/ThemeContext";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Typed from "typed.js";
 import ScrollExpand from "../../common/ScrollExpand";
 import { IconPhone } from "@tabler/icons-react";
 
+// Calculate startWidth/startHeight/startRadius so the initial
+// clip-path is a perfect circle of diameter = 55vmin.
+const getCircleProps = () => {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const size = Math.min(vw, vh) * 0.55; // 55vmin in px
+  return {
+    startWidth:  (size / vw) * 100,
+    startHeight: (size / vh) * 100,
+    startRadius: size / 2,
+  };
+};
+
 function Hero() {
   const typedElement = useRef(null);
+  const [circleProps, setCircleProps] = useState(getCircleProps);
+
+  useEffect(() => {
+    const onResize = () => setCircleProps(getCircleProps());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useEffect(() => {
     const typed = new Typed(typedElement.current, {
@@ -44,9 +64,9 @@ function Hero() {
         alt="Prabhjot Singh"
         title="PRABHJOT SINGH"
         useWindowScroll
-        startWidth={55}
-        startHeight={55}
-        startRadius={28}
+        startWidth={circleProps.startWidth}
+        startHeight={circleProps.startHeight}
+        startRadius={circleProps.startRadius}
         endRadius={0}
         mediaZoom={1.1}
         scrollDistance={1.2}
@@ -54,6 +74,66 @@ function Hero() {
         smoothing={0.1}
         overlayScrim={0.4}
         enabled
+        scrollHint={
+          <>
+            <style>{`
+              @keyframes heroDot {
+                0%        { transform: translateX(-50%) translateY(0px);  opacity: 1;   }
+                65%       { transform: translateX(-50%) translateY(30px); opacity: 0;   }
+                66%, 100% { transform: translateX(-50%) translateY(0px);  opacity: 0;   }
+              }
+              @keyframes heroPulse {
+                0%, 100% { opacity: 0.45; }
+                50%      { opacity: 1;    }
+              }
+            `}</style>
+            <div
+              style={{
+                display: "inline-flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "10px",
+                animation: "heroPulse 2.4s ease-in-out infinite",
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "'Nippo', sans-serif",
+                  fontSize: "0.56rem",
+                  fontWeight: 400,
+                  letterSpacing: "0.32em",
+                  textTransform: "uppercase",
+                  color: "rgba(255,255,255,0.8)",
+                  textShadow: "0 2px 10px rgba(0,0,0,0.9)",
+                }}
+              >
+                Scroll
+              </span>
+              <div
+                style={{
+                  position: "relative",
+                  width: "1px",
+                  height: "46px",
+                  background: "rgba(255,255,255,0.18)",
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: "50%",
+                    width: "5px",
+                    height: "5px",
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.95)",
+                    boxShadow: "0 0 7px rgba(255,255,255,0.5)",
+                    animation: "heroDot 1.7s ease-in-out infinite",
+                  }}
+                />
+              </div>
+            </div>
+          </>
+        }
       >
         {/* Dark image overlay */}
         <div
@@ -100,22 +180,6 @@ function Hero() {
           >
             Prabhjot Singh
           </h1>
-
-          {/* Main Role */}
-          <p
-            className="
-              mt-7
-              text-xl
-              font-semibold
-              tracking-wide
-              text-white
-              drop-shadow-[0_4px_15px_rgba(0,0,0,0.8)]
-              sm:text-2xl
-              md:text-3xl
-            "
-          >
-            Software Developer
-          </p>
 
           {/* Typed Roles */}
           <div className="mt-1 min-h-[45px]">
@@ -230,28 +294,6 @@ function Hero() {
             >
               View CV
             </SpecularButton>
-          </div>
-          {/* Scroll hint */}
-          <div
-            className="
-              absolute
-              bottom-7
-              left-1/2
-              flex
-              -translate-x-1/2
-              flex-col
-              items-center
-              gap-1
-              text-[10px]
-              uppercase
-              tracking-[0.3em]
-              text-white/80
-              drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]
-            "
-          >
-            <span>Scroll to explore</span>
-
-            <span className="animate-bounce text-xl">↓</span>
           </div>
         </div>
       </ScrollExpand>

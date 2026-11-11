@@ -41,6 +41,7 @@ const experienceData = [
 function Experience() {
   const sectionRef = useRef(null);
   const cometRef = useRef(null);
+  const mobileCometRef = useRef(null);
 
   useEffect(() => {
     let ticking = false;
@@ -48,8 +49,9 @@ function Experience() {
     const updateComet = () => {
       const section = sectionRef.current;
       const comet = cometRef.current;
+      const mobileComet = mobileCometRef.current;
 
-      if (!section || !comet) return;
+      if (!section || (!comet && !mobileComet)) return;
 
       const rect = section.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
@@ -64,7 +66,9 @@ function Experience() {
 
       progress = Math.max(0, Math.min(1, progress));
 
-      comet.style.opacity = progress > 0 && progress < 1 ? "1" : "0";
+      const opacity = progress > 0 && progress < 1 ? "1" : "0";
+      if (comet) comet.style.opacity = opacity;
+      if (mobileComet) mobileComet.style.opacity = opacity;
     };
 
     const handleScroll = () => {
@@ -225,6 +229,86 @@ function Experience() {
           />
 
           {/* Tiny bright core */}
+          <div
+            className="
+              absolute
+              left-1/2
+              top-1/2
+              h-1
+              w-1
+              -translate-x-1/2
+              -translate-y-1/2
+              rounded-full
+              bg-white
+            "
+          />
+        </div>
+
+        {/* Mobile / tablet comet — tracks the left-5 timeline line */}
+        <div
+          ref={mobileCometRef}
+          aria-hidden="true"
+          className="
+            pointer-events-none
+            fixed
+            left-5
+            top-1/2
+            z-999
+            block
+            h-1
+            w-1
+            -translate-x-1/2
+            -translate-y-1/2
+            md:hidden
+          "
+        >
+          {/* Trail */}
+          <div
+            className="
+              absolute
+              bottom-0
+              left-1/2
+              h-32
+              w-0.5
+              -translate-x-1/2
+              bg-linear-to-t
+              from-transparent
+              via-white/20
+              to-white
+              blur-[1px]
+            "
+          />
+          {/* Outer glow */}
+          <div
+            className="
+              absolute
+              left-1/2
+              top-1/2
+              h-10
+              w-10
+              -translate-x-1/2
+              -translate-y-1/2
+              rounded-full
+              bg-white/20
+              blur-xl
+            "
+          />
+          {/* Head */}
+          <div
+            className="
+              absolute
+              left-1/2
+              top-1/2
+              h-3
+              w-3
+              -translate-x-1/2
+              -translate-y-1/2
+              rounded-full
+              bg-white
+              shadow-[0_0_8px_2px_rgba(255,255,255,0.95),0_0_25px_8px_rgba(255,255,255,0.35)]
+            "
+          />
+          {/* Core */}
           <div
             className="
               absolute
