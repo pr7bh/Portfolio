@@ -130,242 +130,110 @@ const Navbar = () => {
         </GlassSurface>
       </nav>
 
-      {/* ================= MOBILE NAVBAR ================= */}
-      <nav className="fixed left-4 top-4 z-1100 md:hidden">
-        <GlassSurface
-          width={56}
-          height={56}
-          borderRadius={18}
-          displace={0.3}
-          distortionScale={-100}
-          redOffset={0}
-          greenOffset={5}
-          blueOffset={10}
-          brightness={50}
-          opacity={0.85}
-          mixBlendMode="normal"
-        >
+      {/* ================= MOBILE PILL NAVBAR ================= */}
+      <nav className="fixed left-1/2 top-3 z-1100 -translate-x-1/2 md:hidden">
+        <div className="flex items-center gap-3 rounded-2xl border border-white/15 bg-black/35 px-4 backdrop-blur-xl shadow-[0_4px_24px_rgba(0,0,0,0.35)]" style={{ height: 52 }}>
+
+          {/* Hamburger */}
           <button
             type="button"
             onClick={toggleMenu}
             aria-label={isOpen ? "Close navigation" : "Open navigation"}
             aria-expanded={isOpen}
-            className="
-              flex
-              h-14
-              w-14
-              items-center
-              justify-center
-            "
+            className="flex h-8 w-8 flex-col items-center justify-center gap-1.5"
           >
-            <span className="relative flex h-5 w-6 flex-col justify-between">
-              <span
-                className={`
-                  block
-                  h-0.5
-                  w-6
-                  rounded-full
-                  bg-white
-                  transition-all
-                  duration-300
-                  ${isOpen ? "absolute top-1/2 rotate-45" : ""}
-                `}
-              />
-
-              <span
-                className={`
-                  block
-                  h-0.5
-                  w-6
-                  rounded-full
-                  bg-white
-                  transition-all
-                  duration-300
-                  ${isOpen ? "opacity-0" : ""}
-                `}
-              />
-
-              <span
-                className={`
-                  block
-                  h-0.5
-                  w-6
-                  rounded-full
-                  bg-white
-                  transition-all
-                  duration-300
-                  ${isOpen ? "absolute top-1/2 -rotate-45" : ""}
-                `}
-              />
-            </span>
+            <span className={`block h-px w-5 rounded-full bg-white transition-all duration-300 ${isOpen ? "translate-y-[7px] rotate-45" : ""}`} />
+            <span className={`block h-px w-5 rounded-full bg-white transition-all duration-300 ${isOpen ? "opacity-0" : ""}`} />
+            <span className={`block h-px w-5 rounded-full bg-white transition-all duration-300 ${isOpen ? "-translate-y-[7px] -rotate-45" : ""}`} />
           </button>
-        </GlassSurface>
-      </nav>
-      {/* ================= MOBILE CALL BUTTON ================= */}
-      <nav className="fixed right-4 top-4 z-1100 md:hidden">
-        <GlassSurface
-          width={56}
-          height={56}
-          borderRadius={18}
-          displace={0.3}
-          distortionScale={-100}
-          redOffset={0}
-          greenOffset={5}
-          blueOffset={10}
-          brightness={50}
-          opacity={0.85}
-          mixBlendMode="normal"
-        >
+
+          {/* Divider */}
+          <div className="h-4 w-px bg-white/20" />
+
+          {/* Name */}
+          <span style={{ fontFamily: "'Nippo', sans-serif", letterSpacing: "0.12em" }} className="text-xs font-medium uppercase text-white/85">
+            Prabhjot Singh
+          </span>
+
+          {/* Divider */}
+          <div className="h-4 w-px bg-white/20" />
+
+          {/* Call */}
           <a
             href="tel:+917056952556"
             aria-label="Call Prabhjot Singh"
-            className="
-        flex
-        h-14
-        w-14
-        items-center
-        justify-center
-        text-white
-        transition-transform
-        duration-300
-        active:scale-90
-      "
+            className="flex h-8 w-8 items-center justify-center text-white/80 transition-opacity active:opacity-60"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              className="h-6 w-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.968-.852-1.09l-4.372-.995a1.125 1.125 0 0 0-1.173.417l-.96 1.172a1.125 1.125 0 0 1-1.218.36 12.035 12.035 0 0 1-7.49-7.49 1.125 1.125 0 0 1 .36-1.218l1.172-.96c.343-.281.498-.734.417-1.173L6.638 2.782A1.125 1.125 0 0 0 5.548 1.93H4.5A2.25 2.25 0 0 0 2.25 4.18v2.57Z"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+              <path fillRule="evenodd" d="M1.5 4.5a3 3 0 0 1 3-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 0 1-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 0 0 6.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 0 1 1.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 0 1-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5Z" clipRule="evenodd" />
             </svg>
           </a>
-        </GlassSurface>
+        </div>
       </nav>
 
       {/* ================= FULL SCREEN MOBILE MENU ================= */}
       <div
-        className={`
-          fixed
-          inset-0
-          z-1050
-          md:hidden
-          transition-all
-          duration-500
-          ${
-            isOpen
-              ? "pointer-events-auto opacity-100"
-              : "pointer-events-none opacity-0"
-          }
-        `}
+        className={`fixed inset-0 z-1050 md:hidden transition-all duration-500 ${
+          isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+        }`}
       >
-        {/* Glass background */}
         <div
-          className={`
-            absolute
-            inset-3
-            overflow-hidden
-            rounded-[20px]
-            border
-            border-white/20
-            bg-black/40
-            backdrop-blur-2xl
-            transition-transform
-            duration-500
-            ${isOpen ? "scale-100" : "scale-95"}
-          `}
+          className={`absolute inset-0 overflow-hidden border-0 bg-black/55 backdrop-blur-2xl transition-all duration-500 ${
+            isOpen ? "scale-100" : "scale-95"
+          }`}
         >
-          {/* Subtle glass highlights */}
-          <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-white/6 blur-3xl" />
+          {/* Ambient glows */}
+          <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-white/4 blur-3xl" />
 
-          <div className="pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
-
-          {/* Navigation */}
-          <div className="relative flex h-full flex-col items-center justify-center px-8 ">
-            <ul className="flex flex-col items-center gap-7">
+          {/* Nav items */}
+          <div className="relative flex h-full flex-col items-start justify-center px-10">
+            <ul className="flex flex-col gap-1 w-full">
               {navItems.map((item, index) => (
                 <li
                   key={item.id}
-                  className={`
-                    transition-all
-                    duration-500
-                    ${
-                      isOpen
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-6 opacity-0"
-                    }
-                  `}
-                  style={{
-                    transitionDelay: isOpen ? `${index * 70}ms` : "0ms",
-                  }}
+                  className={`transition-all duration-500 ${
+                    isOpen ? "translate-x-0 opacity-100" : "-translate-x-6 opacity-0"
+                  }`}
+                  style={{ transitionDelay: isOpen ? `${index * 60}ms` : "0ms" }}
                 >
                   <button
                     type="button"
                     onClick={() => scrollToSection(item.id)}
-                    className="
-                      group
-                      relative
-                      cursor-pointer
-                      bg-transparent
-                      px-4
-                      py-2
-                      text-3xl
-                      font-semibold
-                      tracking-tight
-                      text-white
-                      transition-all
-                      duration-300
-                      hover:scale-105
-                      hover:text-white/70
-                    "
+                    className="group flex w-full items-center gap-5 py-3 text-left"
                   >
-                    {item.label}
-
                     <span
-                      className={`
-                        absolute
-                        bottom-0
-                        left-1/2
-                        h-0.5
-                        -translate-x-1/2
-                        rounded-full
-                        bg-white
-                        transition-all
-                        duration-300
-                        ${activeSection === item.id ? "w-3/4" : "w-0"}
-                        group-hover:w-3/4
-                      `}
-                    />
+                      style={{ fontFamily: "'Nippo', sans-serif", letterSpacing: "0.08em" }}
+                      className="w-7 text-xs text-white/25 transition-colors duration-200 group-hover:text-white/50"
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span
+                      style={{ fontFamily: "'Nippo', sans-serif", letterSpacing: "-0.02em" }}
+                      className={`text-4xl font-bold transition-all duration-200 ${
+                        activeSection === item.id
+                          ? "text-white"
+                          : "text-white/60 group-hover:text-white"
+                      }`}
+                    >
+                      {item.label}
+                    </span>
                   </button>
+                  {index < navItems.length - 1 && (
+                    <div className="ml-12 h-px bg-white/6" />
+                  )}
                 </li>
               ))}
             </ul>
 
-            {/* Bottom text */}
+            {/* Footer */}
             <p
-              className={`
-                absolute
-                bottom-10
-                text-xs
-                tracking-[0.3em]
-                text-white/40
-                uppercase
-                transition-all
-                duration-700
-                ${
-                  isOpen
-                    ? "translate-y-0 opacity-100"
-                    : "translate-y-4 opacity-0"
-                }
-              `}
+              className={`absolute bottom-10 left-10 text-[0.6rem] uppercase tracking-[0.3em] text-white/25 transition-all duration-700 ${
+                isOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+              }`}
+              style={{ transitionDelay: "400ms", fontFamily: "'Nippo', sans-serif" }}
             >
-              Prabhjot Singh
+              Portfolio · 2024
             </p>
           </div>
         </div>
