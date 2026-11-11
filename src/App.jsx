@@ -8,7 +8,7 @@ import Particles from './common/Particles';
 import { useTheme } from './common/ThemeContext';
 import MoveToTop from './common/MoveToTop';
 import AIChatbot from './common/AIChatbot';
-import { useState, lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 
 // Lazy-load everything below the fold — deferred until needed
 const Experience = lazy(() => import('./sections/Experience/Experience'));
@@ -20,16 +20,9 @@ const Footer     = lazy(() => import('./sections/Footer/Footer'));
 
 function App() {
   const { theme } = useTheme();
-  // Disable WebGL particles on mobile — avoids competing with FlexCarousel's
-  // WebGL context, which can crash or freeze the GPU on low-end phones.
-  const [isMobile] = useState(
-    () => window.matchMedia('(max-width: 767px)').matches
-  );
-
   return (
     <div className="relative min-h-screen">
-      {/* Background particles — desktop only */}
-      {!isMobile && (
+      {/* Background particles */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         <Particles
           particleColors={
@@ -47,7 +40,6 @@ function App() {
           pixelRatio={1}
         />
       </div>
-      )}
 
       {/* Portfolio */}
       <div className="relative z-10">
