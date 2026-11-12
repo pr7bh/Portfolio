@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "motion/react";
 
 import reactIcon      from "../../assets/react.svg";
 import tailwindIcon   from "../../assets/tailwind.svg";
@@ -53,7 +54,15 @@ function Skills() {
       id="skills"
       className="flex w-full flex-col items-center p-0 m-0 pt-30"
     >
-      <h2 className="sectionTitle">Skills</h2>
+      <motion.h2
+        initial={{ opacity: 0, y: 32 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="sectionTitle"
+      >
+        Skills
+      </motion.h2>
 
       {isDesktop ? (
         /* Desktop — Framer Motion orbit, never mounted on mobile/tablet */

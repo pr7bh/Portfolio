@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 import SpecularButton from "../../common/SpecularButton";
+import { motion } from "motion/react";
 const glassAlert = {
   background: "rgba(20, 20, 20, 0.55)",
   color: "#fff",
@@ -163,16 +164,27 @@ function Contact() {
       id="contact"
       className="flex w-full flex-col items-center px-5 py-24 md:px-10"
     >
-      <h2 className="sectionTitle mb-12 text-center">
+      <motion.h2
+        initial={{ opacity: 0, y: 32 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="sectionTitle mb-12 text-center"
+      >
         Contact
-      </h2>
+      </motion.h2>
 
       <form
         onSubmit={onSubmit}
         className="flex w-full max-w-6xl flex-col gap-7"
       >
         {/* NAME */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+        >
           <label
             htmlFor="name"
             className="mb-2 block text-sm font-medium text-white/60"
@@ -205,10 +217,15 @@ function Contact() {
               focus:ring-white/20
             "
           />
-        </div>
+        </motion.div>
 
         {/* EMAIL */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
+        >
           <label
             htmlFor="email"
             className="mb-2 block text-sm font-medium text-white/60"
@@ -240,10 +257,15 @@ function Contact() {
               focus:ring-white/20
             "
           />
-        </div>
+        </motion.div>
 
         {/* PHONE */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: 0.3 }}
+        >
           <label
             htmlFor="phone"
             className="mb-2 block text-sm font-medium text-white/60"
@@ -277,10 +299,15 @@ function Contact() {
               focus:ring-white/20
             "
           />
-        </div>
+        </motion.div>
 
         {/* MESSAGE */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: 0.4 }}
+        >
           <label
             htmlFor="message"
             className="mb-2 block text-sm font-medium text-white/60"
@@ -314,10 +341,16 @@ function Contact() {
               focus:ring-white/20
             "
           />
-        </div>
+        </motion.div>
 
         {/* BUTTON */}
-        <div className="flex justify-center pt-2">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: 0.5 }}
+          className="flex justify-center pt-2"
+        >
           <div className="custom-cursor--action">
             <SpecularButton
               type="submit"
@@ -341,7 +374,7 @@ function Contact() {
               Send Message
             </SpecularButton>
           </div>
-        </div>
+        </motion.div>
       </form>
     </section>
   );

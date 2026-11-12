@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import FlexCarousel from "../../common/FlexCarousel";
 import styles from "./ProjectsStyles.module.css";
+import { motion } from "motion/react";
 
 import geomind from "../../assets/geomind.png";
 import syncora from "../../assets/syncora.png";
@@ -218,7 +219,15 @@ function Projects() {
       id="projects"
       className="m-0 flex w-screen max-w-none flex-col items-center gap-6 p-0 pt-25"
     >
-      <h2 className="sectionTitle">Projects</h2>
+      <motion.h2
+        initial={{ opacity: 0, y: 32 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="sectionTitle"
+      >
+        Projects
+      </motion.h2>
 
       {isDesktop ? (
         /* Desktop — WebGL FlexCarousel, never mounted on mobile/tablet */

@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import Typed from "typed.js";
 import ScrollExpand from "../../common/ScrollExpand";
 import { IconPhone } from "@tabler/icons-react";
+import { motion } from "motion/react";
 
 // Calculate startWidth/startHeight/startRadius so the initial
 // clip-path is a perfect circle of diameter = 55vmin.
@@ -166,7 +167,10 @@ function Hero() {
           "
         >
           {/* Name */}
-          <h1
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
             className="
               text-5xl
               font-bold
@@ -179,10 +183,15 @@ function Hero() {
             "
           >
             Prabhjot Singh
-          </h1>
+          </motion.h1>
 
           {/* Typed Roles */}
-          <div className="mt-1 min-h-[45px]">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.5 }}
+            className="mt-1 min-h-[45px]"
+          >
             <p
               className="
                 text-lg
@@ -195,10 +204,15 @@ function Hero() {
             >
               <span ref={typedElement} />
             </p>
-          </div>
+          </motion.div>
 
           {/* Social Links */}
-          <div className="mt-1 flex items-center gap-5">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.7 }}
+            className="mt-1 flex items-center gap-5"
+          >
   {/* GitHub */}
             <a
               href="https://github.com/pr7bh"
@@ -249,10 +263,13 @@ function Hero() {
                 fill="currentColor"
               />
             </a>
-          </div>
+          </motion.div>
 
           {/* Description directly on image */}
-          <p
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.9 }}
             className="
               mt-7
               max-w-[650px]
@@ -268,11 +285,15 @@ function Hero() {
             data-heavy web applications for energy and geospatial platforms. I
             also build GenAI applications using LLMs, RAG, FastAPI, Gemini, and
             modern React.js technologies.
-          </p>
+          </motion.p>
 
           {/* CV */}
-          {/* CV */}
-          <div className="mt-7">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 1.1 }}
+            className="mt-7"
+          >
             <SpecularButton
               size="lg"
               radius={18}
@@ -294,7 +315,7 @@ function Hero() {
             >
               View CV
             </SpecularButton>
-          </div>
+          </motion.div>
         </div>
       </ScrollExpand>
     </section>

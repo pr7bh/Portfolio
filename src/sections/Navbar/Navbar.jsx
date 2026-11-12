@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import GlassSurface from "../../common/GlassSurface";
+import { motion, AnimatePresence } from "motion/react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,7 +69,12 @@ const Navbar = () => {
   return (
     <>
       {/* ================= DESKTOP NAVBAR ================= */}
-      <nav className="fixed left-1/2 top-3 z-1000 hidden -translate-x-1/2 px-3 md:block">
+      <motion.nav
+        initial={{ opacity: 0, y: -24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
+        className="fixed left-1/2 top-3 z-1000 hidden -translate-x-1/2 px-3 md:block"
+      >
         <GlassSurface
           width={650}
           height={70}
@@ -128,7 +134,7 @@ const Navbar = () => {
             </ul>
           </div>
         </GlassSurface>
-      </nav>
+      </motion.nav>
 
       {/* ================= MOBILE PILL NAVBAR ================= */}
       <nav className="fixed left-1/2 top-3 z-1100 -translate-x-1/2 md:hidden">
@@ -172,72 +178,83 @@ const Navbar = () => {
       </nav>
 
       {/* ================= FULL SCREEN MOBILE MENU ================= */}
-      <div
-        className={`fixed inset-0 z-1050 md:hidden transition-all duration-500 ${
-          isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
-        }`}
-      >
-        <div
-          className={`absolute inset-0 overflow-hidden border-0 bg-black/55 backdrop-blur-2xl transition-all duration-500 ${
-            isOpen ? "scale-100" : "scale-95"
-          }`}
-        >
-          {/* Ambient glows */}
-          <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-white/4 blur-3xl" />
-
-          {/* Nav items */}
-          <div className="relative flex h-full flex-col items-start justify-center px-10">
-            <ul className="flex flex-col gap-1 w-full">
-              {navItems.map((item, index) => (
-                <li
-                  key={item.id}
-                  className={`transition-all duration-500 ${
-                    isOpen ? "translate-x-0 opacity-100" : "-translate-x-6 opacity-0"
-                  }`}
-                  style={{ transitionDelay: isOpen ? `${index * 60}ms` : "0ms" }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection(item.id)}
-                    className="group flex w-full items-center gap-5 py-3 text-left"
-                  >
-                    <span
-                      style={{ fontFamily: "'Nippo', sans-serif", letterSpacing: "0.08em" }}
-                      className="w-7 text-xs text-white/25 transition-colors duration-200 group-hover:text-white/50"
-                    >
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span
-                      style={{ fontFamily: "'Nippo', sans-serif", letterSpacing: "-0.02em" }}
-                      className={`text-4xl font-bold transition-all duration-200 ${
-                        activeSection === item.id
-                          ? "text-white"
-                          : "text-white/60 group-hover:text-white"
-                      }`}
-                    >
-                      {item.label}
-                    </span>
-                  </button>
-                  {index < navItems.length - 1 && (
-                    <div className="ml-12 h-px bg-white/6" />
-                  )}
-                </li>
-              ))}
-            </ul>
-
-            {/* Footer */}
-            <p
-              className={`absolute bottom-10 left-10 text-[0.6rem] uppercase tracking-[0.3em] text-white/25 transition-all duration-700 ${
-                isOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-              }`}
-              style={{ transitionDelay: "400ms", fontFamily: "'Nippo', sans-serif" }}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            key="mobile-menu"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-1050 md:hidden pointer-events-auto"
+          >
+            <motion.div
+              initial={{ scale: 0.96 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.96 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0 overflow-hidden border-0 bg-black/55 backdrop-blur-2xl"
             >
-              Portfolio · 2024
-            </p>
-          </div>
-        </div>
-      </div>
+              {/* Ambient glows */}
+              <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-white/4 blur-3xl" />
+
+              {/* Nav items */}
+              <div className="relative flex h-full flex-col items-start justify-center px-10">
+                <ul className="flex flex-col gap-1 w-full">
+                  {navItems.map((item, index) => (
+                    <motion.li
+                      key={item.id}
+                      initial={{ opacity: 0, x: -24 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -24 }}
+                      transition={{ duration: 0.3, delay: index * 0.06 }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => scrollToSection(item.id)}
+                        className="group flex w-full items-center gap-5 py-3 text-left"
+                      >
+                        <span
+                          style={{ fontFamily: "'Nippo', sans-serif", letterSpacing: "0.08em" }}
+                          className="w-7 text-xs text-white/25 transition-colors duration-200 group-hover:text-white/50"
+                        >
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <span
+                          style={{ fontFamily: "'Nippo', sans-serif", letterSpacing: "-0.02em" }}
+                          className={`text-4xl font-bold transition-all duration-200 ${
+                            activeSection === item.id
+                              ? "text-white"
+                              : "text-white/60 group-hover:text-white"
+                          }`}
+                        >
+                          {item.label}
+                        </span>
+                      </button>
+                      {index < navItems.length - 1 && (
+                        <div className="ml-12 h-px bg-white/6" />
+                      )}
+                    </motion.li>
+                  ))}
+                </ul>
+
+                {/* Footer */}
+                <motion.p
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 16 }}
+                  transition={{ duration: 0.4, delay: 0.4 }}
+                  className="absolute bottom-10 left-10 text-[0.6rem] uppercase tracking-[0.3em] text-white/25"
+                  style={{ fontFamily: "'Nippo', sans-serif" }}
+                >
+                  Portfolio · 2024
+                </motion.p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

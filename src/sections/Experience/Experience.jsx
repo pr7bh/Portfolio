@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import Folder from "../../common/Folder";
+import { motion } from "motion/react";
 
 const experienceData = [
   {
@@ -113,7 +114,15 @@ function Experience() {
       "
     >
       {/* Heading */}
-      <h2 className="sectionTitle mb-20 text-center">Experience</h2>
+      <motion.h2
+        initial={{ opacity: 0, y: 32 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="sectionTitle mb-20 text-center"
+      >
+        Experience
+      </motion.h2>
 
       {/* Timeline */}
       <div
@@ -331,8 +340,12 @@ function Experience() {
             const isLeft = index % 2 === 0;
 
             return (
-              <article
+              <motion.article
                 key={`${item.company}-${item.year}`}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
                 className="
           relative
           grid
@@ -464,7 +477,7 @@ function Experience() {
                     ]}
                   />
                 </div>
-              </article>
+              </motion.article>
             );
           })}
         </div>
