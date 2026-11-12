@@ -1,24 +1,16 @@
 import logging
 
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.schema import HumanMessage
+from google import genai
+from google.genai import types as genai_types
 
 from app.config import GEMINI_API_KEY
 from app.services.rag import get_retriever
 
 logger = logging.getLogger(__name__)
 
-# ─── LLM ──────────────────────────────────────────────────────────────────────
-
-_llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash",
-    google_api_key=GEMINI_API_KEY,
-    temperature=0.1,
-    max_output_tokens=1024,
-)
-
-# ─── System Prompt ────────────────────────────────────────────────────────────
+_client = genai.Client(api_key=GEMINI_API_KEY)
+_MODEL = "models/gemini-3.8-flash"
 
 _SYSTEM = """
 You are the AI assistant for Prabhjot Singh's portfolio website.
@@ -49,7 +41,6 @@ RESPONSE STYLE:
 - Never fabricate details about Prabhjot.
 """
 
-# ─── Retry wrapper ────────────────────────────────────────────────────────────
 
 @retry(
     retry=retry_if_exception_type(Exception),
@@ -58,17 +49,22 @@ RESPONSE STYLE:
     reraise=True,
 )
 def _call_llm(prompt: str) -> str:
-    response = _llm.invoke([HumanMessage(content=prompt)])
-    return response.content.strip()
+    response = _client.models.generate_content(
+        model=_MODEL,
+        contents=prompt,
+        config=genai_types.GenerateContentConfig(
+            temperature=0.1,
+            max_output_tokens=1024,
+        ),
+    )
+    return response.text.strip()
 
-# ─── Main function ────────────────────────────────────────────────────────────
 
 def generate_response(question: str) -> str:
     question = question.strip()
     if not question:
         return "Please ask me a question."
 
-    # Retrieve top-k relevant resume chunks
     retriever = get_retriever()
     docs = retriever.invoke(question)
     context = "\n\n".join(doc.page_content for doc in docs)

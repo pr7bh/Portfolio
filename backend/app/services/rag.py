@@ -1,10 +1,12 @@
 import hashlib
 import logging
 from pathlib import Path
+from typing import List
 
+from google import genai
 from pypdf import PdfReader
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import FAISS
+from langchain.schema.embeddings import Embeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from app.config import GEMINI_API_KEY
@@ -16,11 +18,26 @@ CV_PATH   = Path(__file__).resolve().parent.parent.parent.parent / "src" / "asse
 FAISS_DIR = DATA_DIR / "faiss_index"
 HASH_FILE = DATA_DIR / "cv.hash"
 
-_embeddings = GoogleGenerativeAIEmbeddings(
-    model="models/embedding-001",
-    google_api_key=GEMINI_API_KEY,
-)
+_genai_client = genai.Client(api_key=GEMINI_API_KEY)
 
+
+class _GeminiEmbeddings(Embeddings):
+    """LangChain-compatible wrapper around google-genai embed_content (v1 REST)."""
+
+    def __init__(self, client: genai.Client, model: str = "models/gemini-embedding-001"):
+        self._client = client
+        self.model = model
+
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        result = self._client.models.embed_content(model=self.model, contents=texts)
+        return [list(e.values) for e in result.embeddings]
+
+    def embed_query(self, text: str) -> List[float]:
+        result = self._client.models.embed_content(model=self.model, contents=text)
+        return list(result.embeddings[0].values)
+
+
+_embeddings = _GeminiEmbeddings(_genai_client)
 _retriever = None
 
 
