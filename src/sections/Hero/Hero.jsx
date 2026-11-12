@@ -75,6 +75,7 @@ function Hero() {
         smoothing={0.1}
         overlayScrim={0.4}
         enabled
+        glow
         scrollHint={
           <>
             <style>{`

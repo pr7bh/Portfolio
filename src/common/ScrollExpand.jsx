@@ -4,6 +4,31 @@ import { useCallback, useEffect, useRef } from 'react';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 
+const GLOW_STYLES = `
+  @keyframes seGlowPulse {
+    0%,100% {
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.08),
+        0 0 40px 8px rgba(255,255,255,0.07),
+        0 0 90px 24px rgba(255,255,255,0.03);
+    }
+    50% {
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.18),
+        0 0 60px 16px rgba(255,255,255,0.13),
+        0 0 130px 40px rgba(255,255,255,0.06);
+    }
+  }
+  @keyframes seGlowSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes seGlowSpinRev {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(-360deg); }
+  }
+`;
+
 const smoothstep = (edge0, edge1, x) => {
   const t = clamp((x - edge0) / (edge1 - edge0 || 1e-6), 0, 1);
   return t * t * (3 - 2 * t);
@@ -27,6 +52,7 @@ const ScrollExpand = ({
   overlayScrim = 0.45,
   useWindowScroll = false,
   enabled = true,
+  glow = false,
   children,
   className = '',
   style,
@@ -41,6 +67,7 @@ const ScrollExpand = ({
   const overlayRef = useRef(null);
   const scrimRef = useRef(null);
   const hintRef = useRef(null);
+  const glowRef = useRef(null);
 
   const propsRef = useRef({});
   propsRef.current = {
@@ -93,6 +120,11 @@ const ScrollExpand = ({
       const inn = smoothstep(0.68, 1, p);
       overlayRef.current.style.opacity = `${inn}`;
       overlayRef.current.style.transform = `translate3d(0, ${18 * (1 - inn)}px, 0)`;
+    }
+
+    if (glowRef.current) {
+      const gone = smoothstep(0, 0.28, p);
+      glowRef.current.style.opacity = `${1 - gone}`;
     }
   }, []);
 
@@ -223,7 +255,7 @@ const ScrollExpand = ({
     );
 
   return (
-    
+
       <div
   ref={rootRef}
   className={`relative h-full w-full ${
@@ -234,9 +266,63 @@ const ScrollExpand = ({
   style={style}
   {...rest}
 >
-     
+
       <div ref={trackRef} className="relative w-full">
         <div ref={stageRef} className="sticky top-0 w-full overflow-hidden [--se-title-size:4rem]">
+
+          {/* ── Glow ring (only when glow prop is true) ── */}
+          {glow && (
+            <>
+              <style>{GLOW_STYLES}</style>
+              <div
+                ref={glowRef}
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  left: '50%',
+                  top: '50%',
+                  width: `${startWidth}%`,
+                  height: `${startHeight}%`,
+                  transform: 'translate(-50%, -50%)',
+                  borderRadius: '50%',
+                  pointerEvents: 'none',
+                  zIndex: 3,
+                  willChange: 'opacity',
+                  animation: 'seGlowPulse 3.2s ease-in-out infinite',
+                }}
+              >
+                {/* Rotating sharp arc 1 */}
+                <div style={{
+                  position: 'absolute',
+                  inset: -2,
+                  borderRadius: '50%',
+                  background: 'conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.55) 18%, rgba(255,255,255,0.0) 36%, transparent 100%)',
+                  WebkitMaskImage: 'radial-gradient(circle, transparent calc(100% - 2.5px), black calc(100% - 2.5px))',
+                  maskImage: 'radial-gradient(circle, transparent calc(100% - 2.5px), black calc(100% - 2.5px))',
+                  animation: 'seGlowSpin 5s linear infinite',
+                }} />
+                {/* Rotating diffuse arc 2 (opposite direction, slower) */}
+                <div style={{
+                  position: 'absolute',
+                  inset: -10,
+                  borderRadius: '50%',
+                  background: 'conic-gradient(from 180deg, transparent 0%, rgba(255,255,255,0.12) 22%, transparent 44%, transparent 100%)',
+                  WebkitMaskImage: 'radial-gradient(circle, transparent calc(100% - 10px), black calc(100% - 10px))',
+                  maskImage: 'radial-gradient(circle, transparent calc(100% - 10px), black calc(100% - 10px))',
+                  animation: 'seGlowSpinRev 9s linear infinite',
+                }} />
+                {/* Soft outer halo */}
+                <div style={{
+                  position: 'absolute',
+                  inset: -20,
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, transparent 48%, rgba(255,255,255,0.045) 70%, transparent 100%)',
+                  animation: 'seGlowSpinRev 14s linear infinite',
+                }} />
+              </div>
+            </>
+          )}
+
           <div
             ref={frameRef}
             className="absolute inset-0 [clip-path:inset(21%_29%_21%_29%_round_24px)] [will-change:clip-path]"
