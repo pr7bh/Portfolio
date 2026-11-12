@@ -17,7 +17,7 @@ FAISS_DIR = DATA_DIR / "faiss_index"
 HASH_FILE = DATA_DIR / "cv.hash"
 
 _embeddings = GoogleGenerativeAIEmbeddings(
-    model="models/text-embedding-004",
+    model="models/embedding-001",
     google_api_key=GEMINI_API_KEY,
 )
 
