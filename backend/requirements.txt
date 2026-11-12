@@ -5,7 +5,7 @@ pydantic==2.10.6
 
 # LangChain + Gemini
 langchain==0.3.14
-langchain-google-genai==2.0.9
+langchain-google-genai>=2.1.0,<3.0.0
 langchain-community==0.3.14
 
 # Fast vector search
