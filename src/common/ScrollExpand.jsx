@@ -5,9 +5,23 @@ import { useCallback, useEffect, useRef } from 'react';
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 
 const GLOW_STYLES = `
-  @keyframes seGlowBreathe {
-    0%,100% { opacity: 0.65; }
-    50%      { opacity: 1; }
+  @keyframes seGlowPulse {
+    0%,100% {
+      box-shadow:
+        0 0 0 1.5px rgba(255,255,255,0.55),
+        0 0 14px  4px rgba(255,255,255,0.40),
+        0 0 36px 12px rgba(255,255,255,0.18),
+        0 0 72px 28px rgba(255,255,255,0.08),
+        0 0 140px 65px rgba(255,255,255,0.03);
+    }
+    50% {
+      box-shadow:
+        0 0 0 2px   rgba(255,255,255,0.95),
+        0 0 20px  7px rgba(255,255,255,0.70),
+        0 0 52px 18px rgba(255,255,255,0.34),
+        0 0 105px 44px rgba(255,255,255,0.14),
+        0 0 190px 95px rgba(255,255,255,0.05);
+    }
   }
   @keyframes seGlowSpin {
     from { transform: rotate(0deg); }
@@ -277,32 +291,58 @@ const ScrollExpand = ({
                   transform: 'translate(-50%, -50%)',
                   borderRadius: '50%',
                   pointerEvents: 'none',
-                  willChange: 'opacity',
-                  animation: 'seGlowBreathe 3s ease-in-out infinite',
-                  /* Layered outer glow rings visible outside the circle */
-                  boxShadow: [
-                    '0 0 0 1px rgba(255,255,255,0.14)',
-                    '0 0 18px 4px rgba(255,255,255,0.10)',
-                    '0 0 48px 14px rgba(255,255,255,0.05)',
-                    '0 0 90px 30px rgba(255,255,255,0.025)',
-                  ].join(', '),
+                  /* box-shadow is animated by seGlowPulse keyframe */
+                  animation: 'seGlowPulse 3s ease-in-out infinite',
                 }}
               >
                 {/*
-                  Single rotating highlight arc.
-                  inset: -5 makes it 5px wider on each side than the circle.
-                  mask cuts out everything except a ~5px ring at the outer edge.
-                  The 5px outside the circle boundary is visible; the rest is
-                  behind the portrait image.
+                  Rotating comet arc — sits 6px outside the circle boundary.
+                  The mask cuts the conic-gradient down to an 8px ring; the
+                  portion inside the circle is hidden behind the portrait image,
+                  the 6px outside the circle edge is fully visible.
                 */}
                 <div style={{
                   position: 'absolute',
-                  inset: -5,
+                  inset: -6,
                   borderRadius: '50%',
-                  background: 'conic-gradient(from 0deg, transparent 0%, transparent 62%, rgba(255,255,255,0.0) 66%, rgba(255,255,255,0.72) 72%, rgba(255,255,255,0.0) 78%, transparent 82%, transparent 100%)',
-                  WebkitMaskImage: 'radial-gradient(circle, transparent calc(100% - 6px), black calc(100% - 6px))',
-                  maskImage: 'radial-gradient(circle, transparent calc(100% - 6px), black calc(100% - 6px))',
-                  animation: 'seGlowSpin 9s linear infinite',
+                  background: [
+                    'conic-gradient(from 0deg,',
+                    '  transparent   0%,',
+                    '  transparent  58%,',
+                    '  rgba(255,255,255,0.00) 63%,',
+                    '  rgba(255,255,255,0.95) 70%,',  /* bright comet head */
+                    '  rgba(255,255,255,0.40) 75%,',  /* tail fade */
+                    '  rgba(255,255,255,0.00) 81%,',
+                    '  transparent  85%,',
+                    '  transparent 100%',
+                    ')',
+                  ].join(' '),
+                  WebkitMaskImage: 'radial-gradient(circle, transparent calc(100% - 8px), black calc(100% - 8px))',
+                  maskImage:       'radial-gradient(circle, transparent calc(100% - 8px), black calc(100% - 8px))',
+                  animation: 'seGlowSpin 8s linear infinite',
+                }} />
+
+                {/*
+                  Second, slower arc on the opposite side — adds depth without clutter.
+                */}
+                <div style={{
+                  position: 'absolute',
+                  inset: -4,
+                  borderRadius: '50%',
+                  background: [
+                    'conic-gradient(from 180deg,',
+                    '  transparent   0%,',
+                    '  transparent  70%,',
+                    '  rgba(255,255,255,0.00) 73%,',
+                    '  rgba(255,255,255,0.45) 77%,',
+                    '  rgba(255,255,255,0.00) 81%,',
+                    '  transparent  84%,',
+                    '  transparent 100%',
+                    ')',
+                  ].join(' '),
+                  WebkitMaskImage: 'radial-gradient(circle, transparent calc(100% - 5px), black calc(100% - 5px))',
+                  maskImage:       'radial-gradient(circle, transparent calc(100% - 5px), black calc(100% - 5px))',
+                  animation: 'seGlowSpin 14s linear infinite',
                 }} />
               </div>
             </>
