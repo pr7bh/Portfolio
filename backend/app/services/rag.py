@@ -1,250 +1,93 @@
-from pathlib import Path
 import hashlib
-import json
-import re
+import logging
+from pathlib import Path
 
-from app.services.embeddings import (
-    create_embedding,
-    cosine_similarity,
-    EMBEDDING_MODEL,
+from pypdf import PdfReader
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+from app.config import GEMINI_API_KEY
+
+logger = logging.getLogger(__name__)
+
+DATA_DIR  = Path(__file__).resolve().parent.parent / "data"
+CV_PATH   = Path(__file__).resolve().parent.parent.parent.parent / "src" / "assets" / "cv.pdf"
+FAISS_DIR = DATA_DIR / "faiss_index"
+HASH_FILE = DATA_DIR / "cv.hash"
+
+_embeddings = GoogleGenerativeAIEmbeddings(
+    model="models/text-embedding-004",
+    google_api_key=GEMINI_API_KEY,
 )
 
-
-RESUME_PATH = (
-    Path(__file__).resolve().parent.parent
-    / "data"
-    / "resume.txt"
-)
-
-CACHE_PATH = (
-    Path(__file__).resolve().parent.parent
-    / "data"
-    / "embeddings_cache.json"
-)
-
-_EMBEDDING_DIMS = 768
+_retriever = None
 
 
-class ResumeVectorStore:
+def _cv_hash() -> str:
+    return hashlib.md5(CV_PATH.read_bytes()).hexdigest()
 
-    def __init__(self):
-        self.chunks = []
-        self.embeddings = []
-        self.is_built = False
 
-    def build(self):
+def _extract_pdf_text() -> str:
+    reader = PdfReader(str(CV_PATH))
+    return "\n\n".join(page.extract_text() or "" for page in reader.pages)
 
-        if self.is_built:
-            return
 
-        resume = RESUME_PATH.read_text(encoding="utf-8")
-        resume_hash = hashlib.md5(resume.encode("utf-8")).hexdigest()
+def _build_and_cache() -> FAISS:
+    logger.info("Building FAISS index from cv.pdf …")
+    text = _extract_pdf_text()
 
-        if self._load_cache(resume_hash):
-            self.is_built = True
-            return
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=600,
+        chunk_overlap=80,
+        separators=["\n\n", "\n", ". ", " ", ""],
+    )
+    chunks = splitter.split_text(text)
 
-        self.chunks = self._chunk_resume(resume)
+    store = FAISS.from_texts(chunks, _embeddings)
 
-        self.embeddings = [
-            create_embedding(chunk["text"])
-            for chunk in self.chunks
-        ]
+    FAISS_DIR.mkdir(parents=True, exist_ok=True)
+    store.save_local(str(FAISS_DIR))
+    HASH_FILE.write_text(_cv_hash(), encoding="utf-8")
 
-        self.is_built = True
-        self._save_cache(resume_hash)
+    logger.info("FAISS index built and saved (%d chunks).", len(chunks))
+    return store
 
-    def _load_cache(self, resume_hash: str) -> bool:
-        if not CACHE_PATH.exists():
-            return False
 
-        try:
-            data = json.loads(CACHE_PATH.read_text(encoding="utf-8"))
+def _load_or_build() -> FAISS:
+    current_hash = _cv_hash()
 
-            if (
-                data.get("resume_hash") != resume_hash
-                or data.get("embedding_model") != EMBEDDING_MODEL
-                or data.get("embedding_dims") != _EMBEDDING_DIMS
-            ):
-                return False
-
-            cached = data.get("chunks", [])
-
-            if not cached:
-                return False
-
-            for entry in cached:
-                if len(entry.get("embedding", [])) != _EMBEDDING_DIMS:
-                    return False
-
-            self.chunks = [
-                {"section": e["section"], "title": e["title"], "text": e["text"]}
-                for e in cached
-            ]
-            self.embeddings = [e["embedding"] for e in cached]
-            return True
-
-        except Exception:
-            return False
-
-    def _save_cache(self, resume_hash: str) -> None:
-        try:
-            data = {
-                "resume_hash": resume_hash,
-                "embedding_model": EMBEDDING_MODEL,
-                "embedding_dims": _EMBEDDING_DIMS,
-                "chunks": [
-                    {
-                        "section": chunk["section"],
-                        "title": chunk["title"],
-                        "text": chunk["text"],
-                        "embedding": embedding,
-                    }
-                    for chunk, embedding in zip(self.chunks, self.embeddings)
-                ],
-            }
-            CACHE_PATH.write_text(json.dumps(data), encoding="utf-8")
-        except Exception:
-            pass
-
-    def _chunk_resume(self, text: str):
-
-        chunks = []
-
-        # Split CV into major sections
-        sections = re.split(
-            r"\n(?=(?:Summary|Technical Skills|Experience|Projects|Education)\n)",
-            text.strip(),
-        )
-
-        for section in sections:
-
-            section = section.strip()
-
-            if not section:
-                continue
-
-            # --------------------------------
-            # Experience
-            # --------------------------------
-
-            if section.startswith("Experience"):
-
-                experience_parts = re.split(
-                    r"\n(?=(?:Software Developer|Software Engineer|Freelance Full Stack Developer)\n)",
-                    section,
-                )
-
-                for part in experience_parts:
-
-                    part = part.strip()
-
-                    if not part:
-                        continue
-
-                    if part == "Experience":
-                        continue
-
-                    title = part.split("\n")[0]
-
-                    chunks.append({
-                        "section": "Experience",
-                        "title": title,
-                        "text": part,
-                    })
-
-            # --------------------------------
-            # Projects
-            # --------------------------------
-
-            elif section.startswith("Projects"):
-
-                project_parts = re.split(
-                    r"\n(?=(?:Syncora|WebGeo|Predicted BA Capacity Margin Map))",
-                    section,
-                )
-
-                for part in project_parts:
-
-                    part = part.strip()
-
-                    if not part:
-                        continue
-
-                    if part == "Projects":
-                        continue
-
-                    title = part.split("\n")[0]
-
-                    chunks.append({
-                        "section": "Projects",
-                        "title": title,
-                        "text": part,
-                    })
-
-            # --------------------------------
-            # Other sections
-            # --------------------------------
-
-            else:
-
-                lines = section.split("\n")
-
-                title = lines[0]
-
-                chunks.append({
-                    "section": title,
-                    "title": title,
-                    "text": section,
-                })
-
-        return chunks
-
-    def search(
-        self,
-        question: str,
-        top_k: int = 3,
+    if (
+        FAISS_DIR.exists()
+        and HASH_FILE.exists()
+        and HASH_FILE.read_text(encoding="utf-8").strip() == current_hash
     ):
-
-        if not self.is_built:
-            self.build()
-
-        # Create embedding for user's question
-        question_embedding = create_embedding(
-            question
-        )
-
-        scored_chunks = []
-
-        # Compare question with every CV chunk
-        for chunk, embedding in zip(
-            self.chunks,
-            self.embeddings,
-        ):
-
-            similarity = cosine_similarity(
-                question_embedding,
-                embedding,
+        try:
+            store = FAISS.load_local(
+                str(FAISS_DIR),
+                _embeddings,
+                allow_dangerous_deserialization=True,
             )
+            logger.info("Loaded FAISS index from cache.")
+            return store
+        except Exception as exc:
+            logger.warning("Cache load failed (%s); rebuilding.", exc)
 
-            # Ignore weak matches
-            if similarity >= 0.30:
+    return _build_and_cache()
 
-                scored_chunks.append({
-                    "similarity": similarity,
-                    "section": chunk["section"],
-                    "title": chunk["title"],
-                    "text": chunk["text"],
-                })
 
-        # Highest similarity first
-        scored_chunks.sort(
-            key=lambda item: item["similarity"],
-            reverse=True,
+def build_retriever():
+    """Call once at startup to warm up the retriever."""
+    global _retriever
+    if _retriever is None:
+        store = _load_or_build()
+        _retriever = store.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 4},
         )
 
-        # Return only the best matches
-        return scored_chunks[:top_k]
 
-
-vector_store = ResumeVectorStore()
+def get_retriever():
+    if _retriever is None:
+        build_retriever()
+    return _retriever
