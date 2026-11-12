@@ -1,15 +1,19 @@
 import logging
 
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type
 from google import genai
 from google.genai import types as genai_types
+from google.genai.errors import ServerError
 
 from app.config import GEMINI_API_KEY
 from app.services.rag import get_retriever
 
 logger = logging.getLogger(__name__)
 
-_client = genai.Client(api_key=GEMINI_API_KEY)
+_client = genai.Client(
+    api_key=GEMINI_API_KEY,
+    http_options=genai_types.HttpOptions(timeout=20000),  # 20s per attempt
+)
 _MODEL = "models/gemini-3.8-flash"
 
 _SYSTEM = """
@@ -43,9 +47,9 @@ RESPONSE STYLE:
 
 
 @retry(
-    retry=retry_if_exception_type(Exception),
-    stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=1, max=8),
+    retry=retry_if_exception_type(ServerError),  # only retry on 503, not timeouts
+    stop=stop_after_attempt(2),
+    wait=wait_fixed(1),
     reraise=True,
 )
 def _call_llm(prompt: str) -> str:
