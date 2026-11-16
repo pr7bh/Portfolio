@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
-import AILogo from "../assets/AILogo.gif";
 import ReactMarkdown from "react-markdown";
+import Strands from "./Strands";
 function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
@@ -184,20 +184,13 @@ function AIChatbot() {
               <div
                 className="
                   relative
-                  flex
                   h-15
                   w-15
-                  items-center
-                  justify-center
-
                   rounded-xl
+                  overflow-hidden
                 "
               >
-                <img
-                  src={AILogo}
-                  alt="AI"
-                  className="h-15 w-15 object-contain"
-                />
+                <Strands glass energy={0.65} interactive={false} intro={false} />
 
                 {/* Online indicator */}
                 <span
@@ -358,7 +351,7 @@ function AIChatbot() {
                   bg-white/[0.06]
                 "
               >
-                <img src={AILogo} alt="AI" className="h-6 w-6 object-contain" />
+                <Strands glass energy={0.65} interactive={false} intro={false} />
               </div>
 
               {/* Message */}
@@ -724,8 +717,9 @@ function AIChatbot() {
           active:scale-95
         "
       >
-        {/* AI text */}
-        <img src={AILogo} alt="AI" className="h-20 w-20 object-contain" />
+        <div className="h-20 w-20">
+          <Strands glass energy={0.65} clickPulse />
+        </div>
       </button>
     </>
   );
