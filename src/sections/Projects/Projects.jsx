@@ -9,7 +9,6 @@ import realEstate from "../../assets/real-estate.jpg";
 import netflix from "../../assets/netflix.jpg";
 import cryptoverse from "../../assets/cryptoverse.jpg";
 import shoppingCart from "../../assets/shopping-cart.jpg";
-import snakeGame from "../../assets/snake-game.jpg";
 
 function Projects() {
   const projectsRef = useRef(null);
@@ -111,7 +110,7 @@ function Projects() {
 
     const advance = () => {
       if (paused) return;
-      const next = (activeSlideRef.current + 1) % 9;
+      const next = (activeSlideRef.current + 1) % items.length;
       scrollToCard(next);
     };
 
@@ -182,13 +181,6 @@ function Projects() {
       subtitle: "E-commerce shopping application",
       link: "https://shop-by-prabh.vercel.app/",
     },
-    {
-      src: snakeGame,
-      alt: "Snake Game developed using Java",
-      title: "Snake Game",
-      subtitle: "Classic game built with Java",
-      link: "https://github.com/pr7bh/Snake_Game_JAVA",
-    },
   ];
 
   const handleSelect = (_, item) => {
@@ -212,6 +204,16 @@ function Projects() {
       >
         Projects
       </motion.h2>
+
+      <motion.p
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.5, ease: "easeOut", delay: 0.15 }}
+        className="text-sm tracking-wide opacity-50"
+      >
+        Click any card to visit the project ↗
+      </motion.p>
 
       {isDesktop ? (
         /* Desktop — WebGL FlexCarousel, never mounted on mobile/tablet */
