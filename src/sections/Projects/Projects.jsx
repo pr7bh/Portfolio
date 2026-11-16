@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { IconExternalLink } from "@tabler/icons-react";
 import FlexCarousel from "../../common/FlexCarousel";
 import styles from "./ProjectsStyles.module.css";
 import { motion } from "motion/react";
@@ -284,7 +285,9 @@ function Projects() {
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     {hasLink && (
-                      <span className={styles.visitBadge}>Visit ↗</span>
+                      <span className={styles.visitBadge}>
+                        <IconExternalLink size={16} stroke={1.75} />
+                      </span>
                     )}
                   </div>
 
@@ -302,7 +305,9 @@ function Projects() {
                         {String(index + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
                       </span>
                       {hasLink && (
-                        <span className={styles.cardArrow}>→</span>
+                        <span className={styles.cardArrow}>
+                          <IconExternalLink size={15} stroke={1.75} />
+                        </span>
                       )}
                     </div>
                   </div>
