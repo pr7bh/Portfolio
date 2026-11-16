@@ -5,8 +5,6 @@ import { motion } from "motion/react";
 
 import geomind from "../../assets/geomind.png";
 import syncora from "../../assets/syncora.png";
-import webgeo from "../../assets/webgeo.jpg";
-import capacityMargin from "../../assets/capacity-margin.jpg";
 import realEstate from "../../assets/real-estate.jpg";
 import netflix from "../../assets/netflix.jpg";
 import cryptoverse from "../../assets/cryptoverse.jpg";
@@ -157,32 +155,18 @@ function Projects() {
       link: "https://syncora-by-prabh.vercel.app/",
     },
     {
-      src: webgeo,
-      alt: "WebGeo geospatial mapping platform",
-      title: "WebGeo",
-      subtitle: "Real-time geospatial platform • HERE Maps",
-      link: "#",
-    },
-    {
-      src: capacityMargin,
-      alt: "Predicted BA Capacity Margin Map",
-      title: "BA Capacity Margin",
-      subtitle: "Energy visualization • Forecasting • Maps",
-      link: "#",
-    },
-    {
       src: realEstate,
       alt: "Real Estate Finder",
       title: "Real Estate",
       subtitle: "Property discovery and search platform",
-      link: "https://real-estate-a73r.onrender.com/",
+      link: "https://singh-estate.vercel.app/",
     },
     {
       src: netflix,
       alt: "Netflix Clone",
       title: "Netflix Clone",
       subtitle: "Streaming platform UI",
-      link: "https://netflix-clone-yc80.onrender.com/",
+      link: "https://netflix-by-prabh.vercel.app/",
     },
     {
       src: cryptoverse,
@@ -196,7 +180,7 @@ function Projects() {
       alt: "Shopping Cart application",
       title: "Shopping Cart",
       subtitle: "E-commerce shopping application",
-      link: "https://github.com/pr7bh/Shopping_Cart",
+      link: "https://shop-by-prabh.vercel.app/",
     },
     {
       src: snakeGame,
