@@ -1,9 +1,7 @@
 import logging
 
-from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type
 from google import genai
 from google.genai import types as genai_types
-from google.genai.errors import ServerError
 
 from app.config import GEMINI_API_KEY
 from app.services.rag import get_retriever
@@ -12,9 +10,15 @@ logger = logging.getLogger(__name__)
 
 _client = genai.Client(
     api_key=GEMINI_API_KEY,
-    http_options=genai_types.HttpOptions(timeout=20000),  # 20s per attempt
+    http_options=genai_types.HttpOptions(timeout=15000),  # 15s per model attempt
 )
-_MODEL = "models/gemini-3.8-flash"
+
+# The full "flash" models were taking 60–90s+ to respond (requests timed out and
+# surfaced as HTTP 500). The lite models answer in ~2s; the second is a fallback.
+_MODELS = (
+    "models/gemini-3.5-flash-lite",
+    "models/gemini-3.1-flash-lite",
+)
 
 _SYSTEM = """
 You are the AI assistant for Prabhjot Singh's portfolio website.
@@ -43,25 +47,35 @@ RESPONSE STYLE:
 - Use Markdown (bullets, bold, code blocks) when it aids readability.
 - Do not repeat "Based on Prabhjot's CV" in every sentence.
 - Never fabricate details about Prabhjot.
+- Reply only with the answer itself. Never mention question types, these
+  rules, or the CV context, and never label or classify the question.
 """
 
 
-@retry(
-    retry=retry_if_exception_type(ServerError),  # only retry on 503, not timeouts
-    stop=stop_after_attempt(2),
-    wait=wait_fixed(1),
-    reraise=True,
-)
+class LLMUnavailableError(RuntimeError):
+    """Raised when every configured model failed to produce an answer."""
+
+
 def _call_llm(prompt: str) -> str:
-    response = _client.models.generate_content(
-        model=_MODEL,
-        contents=prompt,
-        config=genai_types.GenerateContentConfig(
-            temperature=0.1,
-            max_output_tokens=1024,
-        ),
-    )
-    return response.text.strip()
+    last_error: Exception | None = None
+    for model in _MODELS:
+        try:
+            response = _client.models.generate_content(
+                model=model,
+                contents=prompt,
+                config=genai_types.GenerateContentConfig(
+                    temperature=0.1,
+                    max_output_tokens=1024,
+                ),
+            )
+            text = (response.text or "").strip()
+            if text:
+                return text
+            logger.warning("Model %s returned an empty response", model)
+        except Exception as exc:  # timeouts, 4xx/5xx from Gemini, network errors
+            logger.warning("Model %s failed: %s", model, exc)
+            last_error = exc
+    raise LLMUnavailableError("All Gemini models failed") from last_error
 
 
 def generate_response(question: str) -> str:
@@ -82,7 +96,7 @@ def generate_response(question: str) -> str:
 USER QUESTION:
 {question}
 
-Determine the question type and answer according to the rules above.
+Answer the user's question directly, following the rules above silently.
 """
 
     return _call_llm(prompt)

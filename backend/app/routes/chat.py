@@ -5,7 +5,7 @@ from collections import defaultdict
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from app.services.llm import generate_response
+from app.services.llm import LLMUnavailableError, generate_response
 
 
 router = APIRouter()
@@ -49,7 +49,13 @@ class ChatRequest(BaseModel):
 @router.post("/chat")
 def chat(req: Request, body: ChatRequest):
     _check_rate_limit(req.client.host)
-    answer = generate_response(body.question)
+    try:
+        answer = generate_response(body.question)
+    except LLMUnavailableError:
+        raise HTTPException(
+            status_code=503,
+            detail="The AI assistant is temporarily unavailable. Please try again shortly.",
+        )
     return {
         "answer": answer
     }

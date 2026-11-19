@@ -13,8 +13,6 @@ langchain-community==0.3.14
 # Fast vector search
 faiss-cpu>=1.14.0
 
-# Retry logic
-tenacity==9.0.0
 
 # PDF parsing
 pypdf>=5.0.0
