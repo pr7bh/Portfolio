@@ -1,94 +1,199 @@
-.svg-cursor {
+/* The native cursor is hidden only once the custom cursor has mounted,
+   so a JS failure never leaves the visitor without a pointer. */
+@media (hover: hover) and (pointer: fine) {
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: none !important;
+  }
+
+  html.has-custom-cursor :is(input, textarea, [contenteditable="true"]) {
+    cursor: text !important;
+  }
+}
+
+.cursor {
+  --cursor-energy: 0;
   position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.cursor[data-visible="true"] {
+  opacity: 1;
+}
+
+/* Text fields: hand over entirely to the native I-beam */
+.cursor[data-state="text"] {
+  opacity: 0;
+}
+
+.cursor__dot,
+.cursor__ring,
+.cursor__trail {
+  position: absolute;
   left: 0;
   top: 0;
+  will-change: transform;
+}
 
-  width: 24px;
-  height: 24px;
-
-  pointer-events: none;
-  z-index: 99999;
-
-  color: #ffffff;
-
-  transform: translate3d(0, 0, 0);
-
+/* ── Dot: precise, zero-latency ───────────────────────────────── */
+.cursor__dot::before {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.45);
   transition:
-    opacity 0.2s ease,
-    color 0.2s ease;
+    transform 0.4s var(--ease-out-expo),
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-.svg-cursor__lines {
-  transform: scale(0.8) rotate(0deg);
-  transform-origin: 50% 50%;
+/* ── Ring: inertial, stretches along its motion ───────────────── */
+.cursor__squash {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
 
+.cursor__shape {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
   transition:
-    transform 0.6s cubic-bezier(0.76, -0.53, 0.32, 1.4);
+    width 0.55s var(--ease-out-expo),
+    height 0.55s var(--ease-out-expo),
+    margin 0.55s var(--ease-out-expo),
+    border-color 0.4s ease,
+    background-color 0.4s ease,
+    box-shadow 0.4s ease,
+    transform 0.25s var(--ease-out-expo);
 }
 
-.svg-cursor__lines line {
-  transform-origin: 50% 50%;
-
+.cursor__label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%) scale(0.6);
+  opacity: 0;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-indent: 0.24em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff;
   transition:
-    transform 0.6s cubic-bezier(0.76, -0.53, 0.32, 1.4);
+    opacity 0.3s ease,
+    transform 0.5s var(--ease-out-expo);
 }
 
-/* Default cursor */
-.svg-cursor--default .svg-cursor__lines {
-  transform: scale(0.8) rotate(0deg);
+/* ── Trail: a faint signal left in the dark ───────────────────── */
+.cursor__trail::before {
+  content: "";
+  position: absolute;
+  width: calc(4px - var(--i) * 0.45px);
+  height: calc(4px - var(--i) * 0.45px);
+  margin: calc((4px - var(--i) * 0.45px) / -2) 0 0 calc((4px - var(--i) * 0.45px) / -2);
+  border-radius: 50%;
+  background: rgb(147, 241, 255);
+  opacity: calc((0.5 - var(--i) * 0.07) * var(--cursor-energy));
 }
 
-.svg-cursor--default .svg-cursor__lines line:nth-child(1) {
-  transform: rotate(45deg);
+.cursor[data-reduced="true"] .cursor__trail {
+  display: none;
 }
 
-.svg-cursor--default .svg-cursor__lines line:nth-child(2) {
-  transform: scaleX(0.65) translateY(-7px);
+/* ── States ───────────────────────────────────────────────────── */
+.cursor[data-state="action"] .cursor__shape {
+  width: 54px;
+  height: 54px;
+  margin: -27px 0 0 -27px;
+  border-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.035);
+  box-shadow: 0 0 26px -6px rgba(255, 162, 76, 0.45);
 }
 
-.svg-cursor--default .svg-cursor__lines line:nth-child(3) {
-  transform: scaleY(0.65) rotate(90deg) translateY(7px);
+.cursor[data-state="action"] .cursor__dot::before {
+  transform: scale(0.55);
+  background: var(--warm);
+  box-shadow: 0 0 10px rgba(255, 162, 76, 0.7);
 }
 
-/* Action cursor */
-/* Action cursor */
-.svg-cursor--action {
-  animation: mutantCursorBounce 1s linear infinite;
+.cursor[data-state="close"] .cursor__shape {
+  width: 50px;
+  height: 50px;
+  margin: -25px 0 0 -25px;
+  border-color: rgba(255, 162, 76, 0.75);
 }
 
-.svg-cursor--action .svg-cursor__lines {
-  transform: scale(1) rotate(0deg);
+.cursor[data-state="close"] .cursor__dot::before {
+  transform: scale(0.55);
+  background: var(--warm);
 }
 
-.svg-cursor--action .svg-cursor__lines line:nth-child(1) {
-  transform: rotate(0deg);
+.cursor[data-state="view"] .cursor__shape,
+.cursor[data-state="drag"] .cursor__shape {
+  width: 76px;
+  height: 76px;
+  margin: -38px 0 0 -38px;
+  border-color: rgba(147, 241, 255, 0.45);
+  background-color: rgba(5, 5, 6, 0.55);
+  box-shadow: 0 0 30px -8px rgba(147, 241, 255, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
-.svg-cursor--action .svg-cursor__lines line:nth-child(2) {
-  transform: rotate(60deg);
+.cursor[data-state="drag"] .cursor__shape {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
 }
 
-.svg-cursor--action .svg-cursor__lines line:nth-child(3) {
-  transform: rotate(120deg);
+.cursor[data-state="view"] .cursor__label,
+.cursor[data-state="drag"] .cursor__label {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
 }
 
-/* Close cursor */
-.svg-cursor--close .svg-cursor__lines {
-  transform: scale(0.8) rotate(360deg);
+.cursor[data-state="drag"] .cursor__label::before {
+  content: "‹ ";
 }
 
-.svg-cursor--close .svg-cursor__lines line {
-  transform-origin: 50% 50%;
+.cursor[data-state="drag"] .cursor__label::after {
+  content: " ›";
 }
 
-.svg-cursor--close .svg-cursor__lines line:nth-child(1) {
-  transform: rotate(45deg);
+.cursor[data-state="view"] .cursor__dot::before,
+.cursor[data-state="drag"] .cursor__dot::before {
+  transform: scale(0);
 }
 
-.svg-cursor--close .svg-cursor__lines line:nth-child(2) {
-  transform: scaleX(0);
+/* Tactile press */
+.cursor[data-pressed="true"] .cursor__shape {
+  transform: scale(0.82);
 }
 
-.svg-cursor--close .svg-cursor__lines line:nth-child(3) {
-  transform: scaleY(1) rotate(-45deg);
+.cursor[data-pressed="true"] .cursor__dot::before {
+  transform: scale(1.5);
+}
+
+.cursor[data-pressed="true"][data-state="action"] .cursor__dot::before {
+  transform: scale(0.9);
+}
+
+.cursor[data-pressed="true"][data-state="view"] .cursor__dot::before,
+.cursor[data-pressed="true"][data-state="drag"] .cursor__dot::before {
+  transform: scale(0);
 }

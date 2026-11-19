@@ -1,78 +1,48 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import GlassSurface from "../../common/GlassSurface";
-import { motion, AnimatePresence } from "motion/react";
+import { useActiveSection } from "../../common/hooks";
+import { motion, AnimatePresence, useMotionValueEvent, useScroll } from "motion/react";
+
+const navItems = [
+  { label: "Experience", id: "experience" },
+  { label: "Projects", id: "projects" },
+  { label: "Skills", id: "skills" },
+  { label: "Education", id: "education" },
+  { label: "Contact", id: "contact" },
+];
+
+const SECTION_IDS = ["hero", ...navItems.map((item) => item.id)];
+const ease = [0.22, 1, 0.36, 1];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("");
+  const [hidden, setHidden] = useState(false);
+  const activeSection = useActiveSection(SECTION_IDS);
+  const { scrollY } = useScroll();
 
-  const navItems = [
-    { label: "Experience", id: "experience" },
-    { label: "Projects", id: "projects" },
-    { label: "Skills", id: "skills" },
-    { label: "Education", id: "education" },
-    { label: "Contact", id: "contact" },
-  ];
-
-  useEffect(() => {
-  const handleScroll = () => {
-    const scrollPosition = window.scrollY + 150;
-
-    let currentSection = "";
-
-    navItems.forEach((item) => {
-      const section = document.getElementById(item.id);
-
-      if (!section) return;
-
-      const sectionTop = section.offsetTop;
-      const sectionBottom = sectionTop + section.offsetHeight;
-
-      if (
-        scrollPosition >= sectionTop &&
-        scrollPosition < sectionBottom
-      ) {
-        currentSection = item.id;
-      }
-    });
-
-    setActiveSection(currentSection);
-  };
-
-  window.addEventListener("scroll", handleScroll, {
-    passive: true,
+  // Hide while reading downwards, reveal as soon as the visitor scrolls up.
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const delta = y - (scrollY.getPrevious() ?? 0);
+    if (y < 160) setHidden(false);
+    else if (delta > 6) setHidden(true);
+    else if (delta < -6) setHidden(false);
   });
 
-  handleScroll();
-
-  return () => {
-    window.removeEventListener("scroll", handleScroll);
-  };
-}, []);
-
-  const toggleMenu = () => {
-    setIsOpen((prev) => !prev);
-  };
-
   const scrollToSection = (id) => {
-    const section = document.getElementById(id);
-
-    if (section) {
-      section.scrollIntoView({
-        behavior: "smooth",
-      });
-    }
-
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setIsOpen(false);
   };
+
+  const concealed = hidden && !isOpen;
 
   return (
     <>
       {/* ================= DESKTOP NAVBAR ================= */}
       <motion.nav
+        aria-label="Primary"
         initial={{ opacity: 0, y: -24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
+        animate={{ opacity: concealed ? 0 : 1, y: concealed ? -110 : 0 }}
+        transition={{ duration: 0.5, ease }}
         className="fixed left-1/2 top-3 z-1000 hidden -translate-x-1/2 px-3 md:block"
       >
         <GlassSurface
@@ -88,62 +58,54 @@ const Navbar = () => {
           opacity={0.85}
           mixBlendMode="normal"
         >
-          <div className="relative flex h-17.5 items-center justify-center px-7 ">
+          <div className="relative flex h-17.5 items-center justify-center px-7">
             <ul className="flex items-center gap-10">
-              {navItems.map((item) => (
-                <li key={item.id}>
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection(item.id)}
-                    className="
-          group
-          relative
-          cursor-pointer
-          bg-transparent
-          px-1
-          py-2
-          text-base
-          font-medium
-          text-white
-        "
-                  >
-                    <span className="relative z-10">{item.label}</span>
-
-                    <span
-                      className={`
-            pointer-events-none
-            absolute
-            bottom-0
-            left-0
-            h-0.5
-            w-full
-            origin-center
-            scale-x-0
-            rounded-full
-            bg-white
-            transition-transform
-            duration-300
-            ease-out
-            group-hover:scale-x-100
-            ${activeSection === item.id ? "scale-x-100" : ""}
-          `}
-                    />
-                  </button>
-                </li>
-              ))}
+              {navItems.map((item) => {
+                const isActive = activeSection === item.id;
+                return (
+                  <li key={item.id}>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection(item.id)}
+                      aria-current={isActive ? "true" : undefined}
+                      className={`group relative cursor-pointer bg-transparent px-1 py-2 text-base font-medium transition-colors duration-300 ${
+                        isActive ? "text-white" : "text-white/70 hover:text-white"
+                      }`}
+                    >
+                      <span className="relative z-10">{item.label}</span>
+                      {isActive ? (
+                        <motion.span
+                          layoutId="nav-underline"
+                          className="pointer-events-none absolute bottom-0 left-0 h-0.5 w-full rounded-full"
+                          style={{ background: "linear-gradient(90deg, var(--cool), #fff, var(--warm))" }}
+                          transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                        />
+                      ) : (
+                        <span className="pointer-events-none absolute bottom-0 left-0 h-0.5 w-full origin-center scale-x-0 rounded-full bg-white/60 transition-transform duration-300 ease-out group-hover:scale-x-100" />
+                      )}
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </GlassSurface>
       </motion.nav>
 
       {/* ================= MOBILE PILL NAVBAR ================= */}
-      <nav className="fixed left-1/2 top-3 z-1100 -translate-x-1/2 md:hidden">
+      <motion.nav
+        aria-label="Primary"
+        initial={false}
+        animate={{ opacity: concealed ? 0 : 1, y: concealed ? -90 : 0 }}
+        transition={{ duration: 0.45, ease }}
+        className="fixed left-1/2 top-3 z-1100 -translate-x-1/2 md:hidden"
+      >
         <div className="flex items-center gap-3 rounded-2xl border border-white/15 bg-black/35 px-4 backdrop-blur-xl shadow-[0_4px_24px_rgba(0,0,0,0.35)]" style={{ height: 52 }}>
 
           {/* Hamburger */}
           <button
             type="button"
-            onClick={toggleMenu}
+            onClick={() => setIsOpen((prev) => !prev)}
             aria-label={isOpen ? "Close navigation" : "Open navigation"}
             aria-expanded={isOpen}
             className="flex h-8 w-8 flex-col items-center justify-center gap-1.5"
@@ -175,7 +137,7 @@ const Navbar = () => {
             </svg>
           </a>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* ================= FULL SCREEN MOBILE MENU ================= */}
       <AnimatePresence>
@@ -189,15 +151,15 @@ const Navbar = () => {
             className="fixed inset-0 z-1050 md:hidden pointer-events-auto"
           >
             <motion.div
-              initial={{ scale: 0.96 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.96 }}
-              transition={{ duration: 0.3 }}
-              className="absolute inset-0 overflow-hidden border-0 bg-black/55 backdrop-blur-2xl"
+              initial={{ clipPath: "circle(0% at 50% 28px)" }}
+              animate={{ clipPath: "circle(150% at 50% 28px)" }}
+              exit={{ clipPath: "circle(0% at 50% 28px)" }}
+              transition={{ duration: 0.6, ease }}
+              className="absolute inset-0 overflow-hidden border-0 bg-black/80 backdrop-blur-2xl"
             >
               {/* Ambient glows */}
-              <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-white/4 blur-3xl" />
+              <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[rgba(147,241,255,0.06)] blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-[rgba(255,162,76,0.07)] blur-3xl" />
 
               {/* Nav items */}
               <div className="relative flex h-full flex-col items-start justify-center px-10">
@@ -208,16 +170,19 @@ const Navbar = () => {
                       initial={{ opacity: 0, x: -24 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -24 }}
-                      transition={{ duration: 0.3, delay: index * 0.06 }}
+                      transition={{ duration: 0.45, delay: 0.15 + index * 0.06, ease }}
                     >
                       <button
                         type="button"
                         onClick={() => scrollToSection(item.id)}
+                        aria-current={activeSection === item.id ? "true" : undefined}
                         className="group flex w-full items-center gap-5 py-3 text-left"
                       >
                         <span
-                          style={{ fontFamily: "'Nippo', sans-serif", letterSpacing: "0.08em" }}
-                          className="w-7 text-xs text-white/25 transition-colors duration-200 group-hover:text-white/50"
+                          style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.08em" }}
+                          className={`w-7 text-xs transition-colors duration-200 ${
+                            activeSection === item.id ? "text-(--warm)" : "text-white/25 group-hover:text-white/50"
+                          }`}
                         >
                           {String(index + 1).padStart(2, "0")}
                         </span>

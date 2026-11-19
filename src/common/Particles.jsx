@@ -182,15 +182,27 @@ const Particles = ({
 
     const particles = new Mesh(gl, { mode: gl.POINTS, geometry, program });
 
-    let animationFrameId;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let animationFrameId = 0;
     let lastTime = performance.now();
     let elapsed = 0;
+    let lastScrollY = window.scrollY;
+    let scrollKick = 0;
+    let boost = 0;
+
+    const onScroll = () => {
+      const y = window.scrollY;
+      scrollKick = Math.min(1, Math.abs(y - lastScrollY) / 60);
+      lastScrollY = y;
+    };
 
     const update = t => {
-      animationFrameId = requestAnimationFrame(update);
-      const delta = t - lastTime;
+      animationFrameId = document.hidden || reduceMotion ? 0 : requestAnimationFrame(update);
+      const delta = Math.min(50, t - lastTime);
       lastTime = t;
-      elapsed += delta * speed;
+      boost += (scrollKick - boost) * 0.08;
+      scrollKick *= 0.9;
+      elapsed += delta * speed * (1 + boost * 5);
 
       program.uniforms.uTime.value = elapsed * 0.001;
 
@@ -211,14 +223,26 @@ const Particles = ({
       renderer.render({ scene: particles, camera });
     };
 
+    const onVisibility = () => {
+      if (!document.hidden && !animationFrameId && !reduceMotion) {
+        lastTime = performance.now();
+        animationFrameId = requestAnimationFrame(update);
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('visibilitychange', onVisibility);
     animationFrameId = requestAnimationFrame(update);
 
     return () => {
       window.removeEventListener('resize', resize);
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('visibilitychange', onVisibility);
       if (moveParticlesOnHover) {
         container.removeEventListener('mousemove', handleMouseMove);
       }
       cancelAnimationFrame(animationFrameId);
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
       if (container.contains(gl.canvas)) {
         container.removeChild(gl.canvas);
       }

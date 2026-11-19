@@ -5,9 +5,9 @@ const ThemeContext = createContext();
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem('theme') || 'dark'
-  );
+  // Every section is designed white-on-black; a stale 'light' value in
+  // localStorage would otherwise render white text on a white page.
+  const [theme, setTheme] = useState('dark');
 
   useEffect(() => {
     document.body.setAttribute('data-theme', theme);

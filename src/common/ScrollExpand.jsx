@@ -53,6 +53,8 @@ const ScrollExpand = ({
   useWindowScroll = false,
   enabled = true,
   glow = false,
+  backdrop = null,
+  onProgress,
   children,
   className = '',
   style,
@@ -81,7 +83,8 @@ const ScrollExpand = ({
     smoothing,
     overlayScrim,
     useWindowScroll,
-    enabled
+    enabled,
+    onProgress
   };
 
   const applyProgress = useCallback(p => {
@@ -89,6 +92,7 @@ const ScrollExpand = ({
     const media = mediaRef.current;
     if (!frame || !media) return;
     const c = propsRef.current;
+    c.onProgress?.(p);
 
     const e = smoothstep(0, 1, p);
 
@@ -119,6 +123,8 @@ const ScrollExpand = ({
     if (overlayRef.current) {
       const inn = smoothstep(0.68, 1, p);
       overlayRef.current.style.opacity = `${inn}`;
+      // Links in the overlay must not be clickable while it is still invisible.
+      overlayRef.current.style.pointerEvents = inn > 0.6 ? 'auto' : 'none';
       overlayRef.current.style.transform = `translate3d(0, ${18 * (1 - inn)}px, 0)`;
     }
 
@@ -269,6 +275,12 @@ const ScrollExpand = ({
 
       <div ref={trackRef} className="relative w-full">
         <div ref={stageRef} className="sticky top-0 w-full overflow-hidden [--se-title-size:4rem]">
+
+          {backdrop ? (
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+              {backdrop}
+            </div>
+          ) : null}
 
           {/* ── Glow ring (only when glow prop is true) ── */}
           {glow && (

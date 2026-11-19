@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { IconExternalLink } from "@tabler/icons-react";
-import FlexCarousel from "../../common/FlexCarousel";
-import styles from "./ProjectsStyles.module.css";
 import { motion } from "motion/react";
+import FlexCarousel from "../../common/FlexCarousel";
+import SectionHeading from "../../common/SectionHeading";
+import { useMediaQuery } from "../../common/hooks";
+import ProjectPreview from "./ProjectPreview";
+import styles from "./ProjectsStyles.module.css";
 
 import geomind from "../../assets/geomind.png";
 import syncora from "../../assets/syncora.png";
@@ -11,29 +14,74 @@ import netflix from "../../assets/netflix.jpg";
 import cryptoverse from "../../assets/cryptoverse.jpg";
 import shoppingCart from "../../assets/shopping-cart.jpg";
 
+const items = [
+  {
+    src: geomind,
+    alt: "GeoMind AI geospatial intelligence platform",
+    title: "GeoMind AI",
+    subtitle: "Geospatial AI platform • LLM • Maps",
+    link: "https://geo-mind-by-prabh.vercel.app/",
+    accent: "#7fd6bd",
+  },
+  {
+    src: syncora,
+    alt: "Syncora GenAI application",
+    title: "Syncora",
+    subtitle: "GenAI meeting assistant • RAG • Gemini",
+    link: "https://syncora-by-prabh.vercel.app/",
+    accent: "#a9b8ff",
+  },
+  {
+    src: realEstate,
+    alt: "Real Estate Finder",
+    title: "Real Estate",
+    subtitle: "Property discovery and search platform",
+    link: "https://singh-estate.vercel.app/",
+    accent: "#e6c39b",
+  },
+  {
+    src: netflix,
+    alt: "Netflix Clone",
+    title: "Netflix Clone",
+    subtitle: "Streaming platform UI",
+    link: "https://netflix-by-prabh.vercel.app/",
+    accent: "#ff3b3b",
+  },
+  {
+    src: cryptoverse,
+    alt: "Cryptoverse cryptocurrency application",
+    title: "Cryptoverse",
+    subtitle: "Cryptocurrency tracking application",
+    link: "https://cryptoverse7.vercel.app/",
+    accent: "#f5b84c",
+  },
+  {
+    src: shoppingCart,
+    alt: "Shopping Cart application",
+    title: "Shopping Cart",
+    subtitle: "E-commerce shopping application",
+    link: "https://shop-by-prabh.vercel.app/",
+    accent: "#ff8f6b",
+  },
+];
+
+const pad = (n) => String(n).padStart(2, "0");
+
 function Projects() {
   const projectsRef = useRef(null);
-  const wheelCountRef = useRef(0);
   const scrollContainerRef = useRef(null);
   const cardRefs = useRef([]);
   const activeSlideRef = useRef(0);
+  const previewOpenRef = useRef(false);
 
-  const [isInView, setIsInView] = useState(false);
-  const [captureWheel, setCaptureWheel] = useState(false);
   const [carouselReady, setCarouselReady] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(
-    () => window.matchMedia("(min-width: 1024px)").matches
-  );
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [activeSlide, setActiveSlide] = useState(0);
-
-  const MAX_WHEEL_SCROLLS = 25;
+  const [preview, setPreview] = useState(null);
 
   useEffect(() => {
-    const mql = window.matchMedia("(min-width: 1024px)");
-    const handler = (e) => setIsDesktop(e.matches);
-    mql.addEventListener("change", handler);
-    return () => mql.removeEventListener("change", handler);
-  }, []);
+    previewOpenRef.current = preview !== null;
+  }, [preview]);
 
   useEffect(() => {
     const mountObserver = new IntersectionObserver(
@@ -48,35 +96,6 @@ function Projects() {
     if (projectsRef.current) mountObserver.observe(projectsRef.current);
     return () => mountObserver.disconnect();
   }, []);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          wheelCountRef.current = 0;
-          setCaptureWheel(true);
-          setIsInView(true);
-        } else {
-          setIsInView(false);
-          setCaptureWheel(false);
-          wheelCountRef.current = 0;
-        }
-      },
-      { threshold: 0.35 }
-    );
-    if (projectsRef.current) observer.observe(projectsRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!isInView || !captureWheel) return;
-    const handleWheel = () => {
-      wheelCountRef.current += 1;
-      if (wheelCountRef.current >= MAX_WHEEL_SCROLLS) setCaptureWheel(false);
-    };
-    window.addEventListener("wheel", handleWheel, { passive: true });
-    return () => window.removeEventListener("wheel", handleWheel);
-  }, [isInView, captureWheel]);
 
   // Track which mobile card is centred
   useEffect(() => {
@@ -94,42 +113,18 @@ function Projects() {
       },
       { root: container, threshold: 0.5 }
     );
-    cardRefs.current.forEach((el) => { if (el) observer.observe(el); });
+    cardRefs.current.forEach((el) => {
+      if (el) observer.observe(el);
+    });
     return () => observer.disconnect();
   }, [isDesktop]);
 
   // Keep a ref in sync so the autoplay interval never reads a stale slide index
-  useEffect(() => { activeSlideRef.current = activeSlide; }, [activeSlide]);
-
-  // Autoplay — advance every 3.5 s, pause while user is touching
   useEffect(() => {
-    if (isDesktop) return;
-    const container = scrollContainerRef.current;
-    if (!container) return;
+    activeSlideRef.current = activeSlide;
+  }, [activeSlide]);
 
-    let paused = false;
-
-    const advance = () => {
-      if (paused) return;
-      const next = (activeSlideRef.current + 1) % items.length;
-      scrollToCard(next);
-    };
-
-    const interval = setInterval(advance, 3500);
-    const pause  = () => { paused = true; };
-    const resume = () => { setTimeout(() => { paused = false; }, 1200); };
-
-    container.addEventListener("touchstart", pause,  { passive: true });
-    container.addEventListener("touchend",   resume, { passive: true });
-
-    return () => {
-      clearInterval(interval);
-      container.removeEventListener("touchstart", pause);
-      container.removeEventListener("touchend",   resume);
-    };
-  }, [isDesktop]);
-
-  const scrollToCard = (index) => {
+  const scrollToCard = useCallback((index) => {
     const container = scrollContainerRef.current;
     const card = cardRefs.current[index];
     if (!container || !card) return;
@@ -137,88 +132,71 @@ function Projects() {
       left: card.offsetLeft - (container.offsetWidth - card.offsetWidth) / 2,
       behavior: "smooth",
     });
-  };
+  }, []);
 
-  const items = [
-    {
-      src: geomind,
-      alt: "GeoMind AI geospatial intelligence platform",
-      title: "GeoMind AI",
-      subtitle: "Geospatial AI platform • LLM • Maps",
-      link: "https://geo-mind-by-prabh.vercel.app/",
-    },
-    {
-      src: syncora,
-      alt: "Syncora GenAI application",
-      title: "Syncora",
-      subtitle: "GenAI meeting assistant • RAG • Gemini",
-      link: "https://syncora-by-prabh.vercel.app/",
-    },
-    {
-      src: realEstate,
-      alt: "Real Estate Finder",
-      title: "Real Estate",
-      subtitle: "Property discovery and search platform",
-      link: "https://singh-estate.vercel.app/",
-    },
-    {
-      src: netflix,
-      alt: "Netflix Clone",
-      title: "Netflix Clone",
-      subtitle: "Streaming platform UI",
-      link: "https://netflix-by-prabh.vercel.app/",
-    },
-    {
-      src: cryptoverse,
-      alt: "Cryptoverse cryptocurrency application",
-      title: "Cryptoverse",
-      subtitle: "Cryptocurrency tracking application",
-      link: "https://cryptoverse7.vercel.app/",
-    },
-    {
-      src: shoppingCart,
-      alt: "Shopping Cart application",
-      title: "Shopping Cart",
-      subtitle: "E-commerce shopping application",
-      link: "https://shop-by-prabh.vercel.app/",
-    },
-  ];
+  // Autoplay — advance every 3.5 s, pause while touching or previewing
+  useEffect(() => {
+    if (isDesktop) return;
+    const container = scrollContainerRef.current;
+    if (!container) return;
 
-  const handleSelect = (_, item) => {
-    if (item?.link && item.link !== "#") {
-      window.open(item.link, "_blank", "noopener,noreferrer");
-    }
-  };
+    let paused = false;
+    const advance = () => {
+      if (paused || previewOpenRef.current) return;
+      scrollToCard((activeSlideRef.current + 1) % items.length);
+    };
+
+    const interval = setInterval(advance, 3500);
+    const pause = () => {
+      paused = true;
+    };
+    const resume = () => {
+      setTimeout(() => {
+        paused = false;
+      }, 1200);
+    };
+
+    container.addEventListener("touchstart", pause, { passive: true });
+    container.addEventListener("touchend", resume, { passive: true });
+
+    return () => {
+      clearInterval(interval);
+      container.removeEventListener("touchstart", pause);
+      container.removeEventListener("touchend", resume);
+    };
+  }, [isDesktop, scrollToCard]);
+
+  const closePreview = useCallback(() => setPreview(null), []);
 
   return (
     <section
       ref={projectsRef}
       id="projects"
-      className="m-0 flex w-screen max-w-none flex-col items-center gap-6 p-0 pt-25"
+      className="m-0 flex w-full max-w-none flex-col items-center overflow-x-clip p-0 pt-24"
     >
-      <motion.h2
-        initial={{ opacity: 0, y: 32 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.5 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="sectionTitle"
-      >
-        Projects
-      </motion.h2>
+      <SectionHeading index="02" kicker="Selected work" title="Projects" />
 
-      <motion.p
-        initial={{ opacity: 0, y: 16 }}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.5 }}
-        transition={{ duration: 0.5, ease: "easeOut", delay: 0.15 }}
-        className="text-sm tracking-wide opacity-50"
+        transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+        className="meta -mt-8 flex items-center gap-2 px-5 text-center text-white/45 md:-mt-14"
       >
-        Click any card to visit the project ↗
-      </motion.p>
+        {isDesktop
+          ? "Drag to browse · click the centred project to preview"
+          : "Swipe · tap to preview"}
+        <IconExternalLink size={13} stroke={1.75} aria-hidden="true" />
+      </motion.div>
 
       {isDesktop ? (
         /* Desktop — WebGL FlexCarousel, never mounted on mobile/tablet */
-        <div className="relative m-0 h-175 min-h-100 w-screen max-w-none overflow-hidden p-0">
+        <div
+          className="relative m-0 h-175 min-h-100 w-full max-w-none overflow-hidden p-0"
+          data-cursor="view"
+          data-cursor-label="View"
+          data-cursor-drag="Drag"
+        >
           {carouselReady && (
             <FlexCarousel
               items={items}
@@ -227,7 +205,7 @@ function Projects() {
               cardHeight={0.5}
               gap={12}
               squeeze={0.2}
-              focusOnClick
+              focusOnClick={false}
               captions
               fit="natural"
               radius={0}
@@ -243,31 +221,37 @@ function Projects() {
               followCursor={false}
               autoplay={false}
               interval={4}
-              captureWheel={captureWheel}
-              onSelect={handleSelect}
+              captureWheel={false}
+              onSelect={(index) => setPreview(index)}
               className="relative m-0 h-full w-full p-0"
             />
           )}
         </div>
       ) : (
         /* Mobile / tablet — scroll-snap card carousel */
-        <div className={styles.mobileWrapper}>
+        <div className={`${styles.mobileWrapper} mt-8`}>
           <div ref={scrollContainerRef} className={styles.scrollTrack}>
             {items.map((item, index) => {
-              const hasLink = item.link && item.link !== "#";
               const isActive = index === activeSlide;
               return (
                 <div
-                  key={index}
-                  ref={(el) => { cardRefs.current[index] = el; }}
+                  key={item.title}
+                  ref={(el) => {
+                    cardRefs.current[index] = el;
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Preview ${item.title}`}
                   className={[
                     styles.card,
                     isActive ? styles.cardActive : styles.cardInactive,
-                    hasLink ? styles.cardClickable : "",
+                    styles.cardClickable,
                   ].join(" ")}
-                  onClick={() => {
-                    if (hasLink) {
-                      window.open(item.link, "_blank", "noopener,noreferrer");
+                  onClick={() => setPreview(index)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setPreview(index);
                     }
                   }}
                 >
@@ -276,39 +260,45 @@ function Projects() {
                     alt={item.alt || item.title}
                     className={styles.cardImg}
                     draggable={false}
+                    loading="lazy"
                   />
                   <div className={styles.cardGradient} />
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-8 top-0 h-px"
+                    style={{ background: `linear-gradient(90deg, transparent, ${item.accent}, transparent)` }}
+                  />
 
                   {/* Number badge + Visit link */}
                   <div className={styles.cardTop}>
-                    <span className={styles.numBadge}>
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    {hasLink && (
-                      <span className={styles.visitBadge}>
-                        <IconExternalLink size={16} stroke={1.75} />
-                      </span>
-                    )}
+                    <span className={styles.numBadge}>{pad(index + 1)}</span>
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Visit ${item.title} live site`}
+                      className={styles.visitBadge}
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    >
+                      <IconExternalLink size={16} stroke={1.75} />
+                    </a>
                   </div>
 
                   {/* Frosted glass title overlay */}
                   <div className={styles.cardPanel}>
                     {item.subtitle && (
-                      <span className={styles.cardSubtitle}>
-                        {item.subtitle}
-                      </span>
+                      <span className={styles.cardSubtitle}>{item.subtitle}</span>
                     )}
                     <span className={styles.cardTitle}>{item.title}</span>
                     <hr className={styles.cardRule} />
                     <div className={styles.cardMeta}>
                       <span className={styles.cardCount}>
-                        {String(index + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
+                        {pad(index + 1)} / {pad(items.length)}
                       </span>
-                      {hasLink && (
-                        <span className={styles.cardArrow}>
-                          <IconExternalLink size={15} stroke={1.75} />
-                        </span>
-                      )}
+                      <span className={styles.cardArrow} style={{ color: item.accent }}>
+                        <IconExternalLink size={15} stroke={1.75} />
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -317,18 +307,21 @@ function Projects() {
           </div>
 
           <div className={styles.dots}>
-            {items.map((_, index) => (
-              <div
-                key={index}
-                className={
-                  index === activeSlide ? styles.dotActive : styles.dot
-                }
+            {items.map((item, index) => (
+              <button
+                key={item.title}
+                type="button"
+                aria-label={`Show ${item.title}`}
+                aria-current={index === activeSlide}
+                className={index === activeSlide ? styles.dotActive : styles.dot}
                 onClick={() => scrollToCard(index)}
               />
             ))}
           </div>
         </div>
       )}
+
+      <ProjectPreview items={items} index={preview} onClose={closePreview} onNavigate={setPreview} />
     </section>
   );
 }

@@ -3,15 +3,58 @@ import githubDark from "../../assets/github-dark.svg";
 import linkedinLight from "../../assets/linkedin-light.svg";
 import linkedinDark from "../../assets/linkedin-dark.svg";
 import CV from "../../assets/cv.pdf";
-import heroImage from "../../assets/hero.png";
+import heroImage from "../../assets/hero.jpg";
 import SpecularButton from "../../common/SpecularButton";
 
 import { useTheme } from "../../common/ThemeContext";
 import { useEffect, useRef, useState } from "react";
 import Typed from "typed.js";
 import ScrollExpand from "../../common/ScrollExpand";
+import HeroPortal from "../../common/HeroPortal";
+import { Magnetic } from "../../common/Interactive";
 import { IconPhone } from "@tabler/icons-react";
 import { motion } from "motion/react";
+
+const ease = [0.22, 1, 0.36, 1];
+
+function HeroTitle() {
+  let n = 0;
+  return (
+    <div className="flex flex-col items-center gap-[0.4em]">
+      <span className="sr-only">Prabhjot Singh</span>
+      <span aria-hidden="true" className="flex flex-wrap justify-center gap-x-[0.28em]">
+        {["PRABHJOT", "SINGH"].map((word) => (
+          <span key={word} className="inline-flex overflow-hidden pb-[0.06em]">
+            {[...word].map((ch) => {
+              const i = n++;
+              return (
+                <motion.span
+                  key={i}
+                  className="inline-block"
+                  initial={{ y: "110%" }}
+                  animate={{ y: "0%" }}
+                  transition={{ duration: 1.1, delay: 0.7 + i * 0.045, ease }}
+                >
+                  {ch}
+                </motion.span>
+              );
+            })}
+          </span>
+        ))}
+      </span>
+      <motion.span
+        aria-hidden="true"
+        className="meta"
+        initial={{ opacity: 0, letterSpacing: "0.6em" }}
+        animate={{ opacity: 1, letterSpacing: "0.32em" }}
+        transition={{ duration: 1.6, delay: 1.4, ease }}
+        style={{ fontSize: "clamp(0.55rem, 1vw, 0.78rem)", color: "rgba(255,255,255,0.72)" }}
+      >
+        Full Stack · GenAI Developer
+      </motion.span>
+    </div>
+  );
+}
 
 // Calculate startWidth/startHeight/startRadius so the initial
 // clip-path is a perfect circle of diameter = 55vmin.
@@ -28,6 +71,8 @@ const getCircleProps = () => {
 
 function Hero() {
   const typedElement = useRef(null);
+  const progressRef = useRef(0);
+  const [portalUnsupported, setPortalUnsupported] = useState(false);
   const [circleProps, setCircleProps] = useState(getCircleProps);
 
   useEffect(() => {
@@ -63,7 +108,7 @@ function Hero() {
       <ScrollExpand
         src={heroImage}
         alt="Prabhjot Singh"
-        title="PRABHJOT SINGH"
+        title={<HeroTitle />}
         useWindowScroll
         startWidth={circleProps.startWidth}
         startHeight={circleProps.startHeight}
@@ -75,7 +120,16 @@ function Hero() {
         smoothing={0.1}
         overlayScrim={0.4}
         enabled
-        glow
+        glow={portalUnsupported}
+        onProgress={(p) => {
+          progressRef.current = p;
+        }}
+        backdrop={
+          <HeroPortal
+            progressRef={progressRef}
+            onUnsupported={() => setPortalUnsupported(true)}
+          />
+        }
         scrollHint={
           <>
             <style>{`
@@ -173,13 +227,13 @@ function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
             className="
-              text-5xl
+              text-[2rem]
               font-bold
               tracking-tight
               drop-shadow-[0_5px_20px_rgba(0,0,0,0.8)]
-              sm:text-6xl
-              md:text-7xl
-              lg:text-8xl
+              sm:text-5xl
+              md:text-6xl
+              lg:text-7xl
               pb-4
             "
           >
@@ -214,56 +268,44 @@ function Hero() {
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.7 }}
             className="mt-1 flex items-center gap-5"
           >
-  {/* GitHub */}
-            <a
-              href="https://github.com/pr7bh"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub"
-              className="
-                flex h-11 w-11 items-center justify-center
-                rounded-full
-                transition-all duration-300
-                hover:-translate-y-1 hover:scale-110
-              "
-            >
-              <img src={githubIcon} alt="GitHub" className="w-6" />
-            </a>
+            <Magnetic strength={0.45}>
+              <a
+                href="https://github.com/pr7bh"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="flex h-11 w-11 items-center justify-center rounded-full transition-transform duration-300 hover:scale-110"
+              >
+                <img src={githubIcon} alt="" className="w-6" />
+              </a>
+            </Magnetic>
 
-            {/* LinkedIn */}
-            <a
-              href="https://www.linkedin.com/in/prabhjot-singh-40301b243/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-              className="
-                flex h-11 w-11 items-center justify-center
-                rounded-full
-                transition-all duration-300
-                hover:-translate-y-1 hover:scale-110
-              "
-            >
-              <img src={linkedinIcon} alt="LinkedIn" className="w-6" />
-            </a>
+            <Magnetic strength={0.45}>
+              <a
+                href="https://www.linkedin.com/in/prabhjot-singh-40301b243/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="flex h-11 w-11 items-center justify-center rounded-full transition-transform duration-300 hover:scale-110"
+              >
+                <img src={linkedinIcon} alt="" className="w-6" />
+              </a>
+            </Magnetic>
 
-            {/* Call */}
-            <a
-              href="tel:+917056952556"
-              aria-label="Call"
-              className="
-                flex h-11 w-11 items-center justify-center
-                rounded-full
-                transition-all duration-300
-                hover:-translate-y-1 hover:scale-110
-              "
-            >
-              <IconPhone
-                size={23}
-                strokeWidth={1}
-                className="text-white"
-                fill="currentColor"
-              />
-            </a>
+            <Magnetic strength={0.45}>
+              <a
+                href="tel:+917056952556"
+                aria-label="Call"
+                className="flex h-11 w-11 items-center justify-center rounded-full transition-transform duration-300 hover:scale-110"
+              >
+                <IconPhone
+                  size={23}
+                  strokeWidth={1}
+                  className="text-white"
+                  fill="currentColor"
+                />
+              </a>
+            </Magnetic>
           </motion.div>
 
           {/* Description directly on image */}
@@ -295,6 +337,7 @@ function Hero() {
             transition={{ duration: 0.6, ease: "easeOut", delay: 1.1 }}
             className="mt-7"
           >
+            <Magnetic strength={0.25}>
             <SpecularButton
               size="lg"
               radius={18}
@@ -316,6 +359,7 @@ function Hero() {
             >
               View CV
             </SpecularButton>
+            </Magnetic>
           </motion.div>
         </div>
       </ScrollExpand>

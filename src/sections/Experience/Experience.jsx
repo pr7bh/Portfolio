@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
-import Folder from "../../common/Folder";
 import { motion } from "motion/react";
+import SectionHeading from "../../common/SectionHeading";
+import Timeline from "../../common/Timeline";
 
 const experienceData = [
   {
@@ -39,462 +39,55 @@ const experienceData = [
   },
 ];
 
+const renderContent = (item, isLeft) => (
+  <>
+    <div className="meta mb-4" style={{ color: "var(--warm)" }}>
+      {item.year}
+    </div>
+    <h3 style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)", lineHeight: 1.08, letterSpacing: "-0.025em", fontWeight: 700 }}>
+      {item.role}
+    </h3>
+    <div className="mt-3 text-base font-semibold text-white/85">{item.company}</div>
+    <div className="mt-1 text-sm text-white/40">{item.location}</div>
+    <ul className="mt-7 space-y-3.5">
+      {item.points.map((point, i) => (
+        <motion.li
+          key={point}
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 0.6, delay: 0.1 + i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+          className="relative text-sm leading-6 text-white/60 transition-colors duration-300 hover:text-white md:text-[0.95rem] md:leading-7"
+        >
+          <span
+            aria-hidden="true"
+            className={`absolute top-3 hidden h-1 w-1 rounded-full bg-white/40 md:block ${
+              isLeft ? "-right-3.5" : "-left-3.5"
+            }`}
+          />
+          {point}
+        </motion.li>
+      ))}
+    </ul>
+  </>
+);
+
 function Experience() {
-  const sectionRef = useRef(null);
-  const cometRef = useRef(null);
-  const mobileCometRef = useRef(null);
-
-  useEffect(() => {
-    let ticking = false;
-
-    const updateComet = () => {
-      const section = sectionRef.current;
-      const comet = cometRef.current;
-      const mobileComet = mobileCometRef.current;
-
-      if (!section || (!comet && !mobileComet)) return;
-
-      const rect = section.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-
-      const start = viewportHeight * 0.25;
-      const end = -rect.height * 0.75;
-
-      const distance = start - end;
-      const travelled = start - rect.top;
-
-      let progress = travelled / distance;
-
-      progress = Math.max(0, Math.min(1, progress));
-
-      const opacity = progress > 0 && progress < 1 ? "1" : "0";
-      if (comet) comet.style.opacity = opacity;
-      if (mobileComet) mobileComet.style.opacity = opacity;
-    };
-
-    const handleScroll = () => {
-      if (ticking) return;
-
-      ticking = true;
-
-      window.requestAnimationFrame(() => {
-        updateComet();
-        ticking = false;
-      });
-    };
-
-    window.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
-
-    window.addEventListener("resize", handleScroll);
-
-    handleScroll();
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
-    };
-  }, []);
-
   return (
     <section
-      ref={sectionRef}
       id="experience"
-      className="
-        relative
-        flex
-        w-full
-        flex-col
-        items-center
-        overflow-hidden
-        px-5
-        py-24
-        md:px-10
-      "
+      className="relative flex w-full flex-col items-center overflow-hidden px-5 py-24 md:px-10"
     >
-      {/* Heading */}
-      <motion.h2
-        initial={{ opacity: 0, y: 32 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.5 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="sectionTitle mb-20 text-center"
-      >
-        Experience
-      </motion.h2>
-
-      {/* Timeline */}
-      <div
-        data-experience-timeline
-        className="
-          relative
-          w-full
-          max-w-6xl
-        "
-      >
-        {/* ================= CENTER LINE ================= */}
-
-        <div
-          className="
-            pointer-events-none
-            absolute
-            bottom-0
-            left-1/2
-            top-0
-            hidden
-            w-px
-            -translate-x-1/2
-            bg-white/15
-            md:block
-          "
-        />
-
-        {/* Soft line glow */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            bottom-0
-            left-1/2
-            top-0
-            hidden
-            w-0.75
-            -translate-x-1/2
-            bg-linear-to-b
-            from-transparent
-            via-white/10
-            to-transparent
-            blur-[3px]
-            md:block
-          "
-        />
-
-        {/* ================= SCROLL COMET ================= */}
-
-        <div
-          ref={cometRef}
-          className="
-                pointer-events-none
-                fixed
-                left-1/2
-                top-1/2
-                z-999
-                hidden
-                h-1
-                w-1
-                -translate-x-1/2
-                -translate-y-1/2
-                md:block
-            "
-        >
-          {/* Long comet trail */}
-          <div
-            className="
-              absolute
-              bottom-0
-              left-1/2
-              h-32
-              w-0.5
-              -translate-x-1/2
-              bg-linear-to-t
-              from-transparent
-              via-white/20
-              to-white
-              blur-[1px]
-            "
-          />
-
-          {/* Outer glow */}
-          <div
-            className="
-              absolute
-              left-1/2
-              top-1/2
-              h-10
-              w-10
-              -translate-x-1/2
-              -translate-y-1/2
-              rounded-full
-              bg-white/20
-              blur-xl
-            "
-          />
-
-          {/* Comet head */}
-          <div
-            className="
-              absolute
-              left-1/2
-              top-1/2
-              h-3
-              w-3
-              -translate-x-1/2
-              -translate-y-1/2
-              rounded-full
-              bg-white
-              shadow-[0_0_8px_2px_rgba(255,255,255,0.95),0_0_25px_8px_rgba(255,255,255,0.35)]
-            "
-          />
-
-          {/* Tiny bright core */}
-          <div
-            className="
-              absolute
-              left-1/2
-              top-1/2
-              h-1
-              w-1
-              -translate-x-1/2
-              -translate-y-1/2
-              rounded-full
-              bg-white
-            "
-          />
-        </div>
-
-        {/* Mobile / tablet comet — tracks the left-5 timeline line */}
-        <div
-          ref={mobileCometRef}
-          aria-hidden="true"
-          className="
-            pointer-events-none
-            fixed
-            left-5
-            top-1/2
-            z-999
-            block
-            h-1
-            w-1
-            -translate-x-1/2
-            -translate-y-1/2
-            md:hidden
-          "
-        >
-          {/* Trail */}
-          <div
-            className="
-              absolute
-              bottom-0
-              left-1/2
-              h-32
-              w-0.5
-              -translate-x-1/2
-              bg-linear-to-t
-              from-transparent
-              via-white/20
-              to-white
-              blur-[1px]
-            "
-          />
-          {/* Outer glow */}
-          <div
-            className="
-              absolute
-              left-1/2
-              top-1/2
-              h-10
-              w-10
-              -translate-x-1/2
-              -translate-y-1/2
-              rounded-full
-              bg-white/20
-              blur-xl
-            "
-          />
-          {/* Head */}
-          <div
-            className="
-              absolute
-              left-1/2
-              top-1/2
-              h-3
-              w-3
-              -translate-x-1/2
-              -translate-y-1/2
-              rounded-full
-              bg-white
-              shadow-[0_0_8px_2px_rgba(255,255,255,0.95),0_0_25px_8px_rgba(255,255,255,0.35)]
-            "
-          />
-          {/* Core */}
-          <div
-            className="
-              absolute
-              left-1/2
-              top-1/2
-              h-1
-              w-1
-              -translate-x-1/2
-              -translate-y-1/2
-              rounded-full
-              bg-white
-            "
-          />
-        </div>
-
-        {/* ================= EXPERIENCE ITEMS ================= */}
-
-        <div className="relative flex flex-col gap-28 md:gap-36">
-          {experienceData.map((item, index) => {
-            const isLeft = index % 2 === 0;
-
-            return (
-              <motion.article
-                key={`${item.company}-${item.year}`}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-                className="
-          relative
-          grid
-          w-full
-          grid-cols-1
-          md:grid-cols-[1fr_80px_1fr]
-          md:items-start
-        "
-              >
-                {/* EXPERIENCE CONTENT */}
-                <div
-                  className={`
-            pl-10
-            ${
-              isLeft
-                ? "md:col-start-1 md:pr-10 md:pl-0 md:text-right"
-                : "md:col-start-3 md:pl-10 md:text-left"
-            }
-          `}
-                >
-                  <div
-                    className={`
-              mx-auto max-w-xl
-              ${isLeft ? "md:mr-0 md:ml-auto" : "md:ml-0 md:mr-auto"}
-            `}
-                  >
-                    <p className="mb-2 text-sm font-semibold tracking-[0.12em] text-slate-400">
-                      {item.year}
-                    </p>
-
-                    <h3 className="text-2xl font-bold tracking-tight text-white transition-all duration-300 hover:[text-shadow:0_0_12px_rgba(255,255,255,0.65)] md:text-3xl">
-                      {item.role}
-                    </h3>
-
-                    <p className="mt-2 text-base font-semibold text-white/80">
-                      {item.company}
-                    </p>
-
-                    <p className="mt-1 text-sm text-white/40">
-                      {item.location}
-                    </p>
-
-                    <ul
-                      className={`
-                mt-6 space-y-3
-                ${isLeft ? "md:ml-auto" : ""}
-              `}
-                    >
-                      {item.points.map((point) => (
-                        <li
-                          key={point}
-                          className="
-                    relative pl-5 text-sm leading-6 text-white/60
-                    transition-all duration-300
-                    hover:text-white
-                    hover:[text-shadow:0_0_8px_rgba(255,255,255,0.4)]
-                    md:pl-0 md:text-base
-                  "
-                        >
-                          <span
-                            className={`
-                      absolute top-2.5 hidden h-1.5 w-1.5
-                      rounded-full bg-white/50 md:block
-                      ${isLeft ? "-right-3" : "-left-3"}
-                    `}
-                          />
-                          {point}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                {/* CENTER NODE */}
-                <div className="pointer-events-none relative hidden md:col-start-2 md:row-start-1 md:flex md:justify-center">
-                  <div className="relative z-20 mt-1 h-5 w-5 rounded-full border border-white/40 bg-slate-950 shadow-[0_0_20px_rgba(255,255,255,0.12)]">
-                    <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white" />
-                  </div>
-                </div>
-
-                {/* MOBILE NODE */}
-                <div className="absolute left-0 top-1 z-20 flex h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full border border-white/40 bg-slate-950 shadow-[0_0_12px_rgba(255,255,255,0.2)] md:hidden">
-                  <div className="h-2 w-2 rounded-full bg-white" />
-                </div>
-
-                {/* EXPERIENCE FOLDER */}
-                <div
-                  className={`
-            relative z-10 mt-8 flex justify-center
-            md:row-start-1 md:mt-0
-            ${
-              isLeft
-                ? "md:col-start-3 md:justify-start md:pl-10"
-                : "md:col-start-1 md:justify-end md:pr-10"
-            }
-          `}
-                >
-                  <Folder
-                    size={1.25}
-                    color="#64748B"
-                    className="custom-folder"
-                    items={[
-                      <div
-                        key="role"
-                        className="flex h-full w-full items-center justify-center p-2 text-center"
-                      >
-                        <span className="text-xs font-bold text-neutral-800">
-                          {item.role}
-                        </span>
-                      </div>,
-
-                      <div
-                        key="company"
-                        className="flex h-full w-full items-center justify-center p-2 text-center"
-                      >
-                        <span className="text-xs font-bold text-neutral-800">
-                          {item.company}
-                        </span>
-                      </div>,
-
-                      <div
-                        key="period"
-                        className="flex h-full w-full items-center justify-center p-2 text-center"
-                      >
-                        <span className="text-xs font-bold text-neutral-800">
-                          {item.year}
-                        </span>
-                      </div>,
-                    ]}
-                  />
-                </div>
-              </motion.article>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Mobile line */}
-      <div
-        className="
-          pointer-events-none
-          absolute
-          bottom-24
-          left-5
-          top-40
-          w-px
-          bg-white/10
-          md:hidden
-        "
+      <SectionHeading index="01" kicker="Career trajectory" title="Experience" />
+      <Timeline
+        items={experienceData}
+        getKey={(item) => `${item.company}-${item.year}`}
+        renderContent={renderContent}
+        details={(item) => [
+          { label: "Role", value: item.role },
+          { label: "Company", value: item.company },
+          { label: "Period", value: item.year },
+        ]}
       />
     </section>
   );
