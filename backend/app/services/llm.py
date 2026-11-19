@@ -4,7 +4,7 @@ from google import genai
 from google.genai import types as genai_types
 
 from app.config import GEMINI_API_KEY
-from app.services.rag import get_retriever
+from app.services.rag import get_cv_text, get_retriever, use_full_context
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,9 @@ There are four question types:
      from the CV only.
 
 RESPONSE STYLE:
-- Be concise and helpful.
+- Be concise and helpful, and answer in natural, friendly sentences
+  (e.g. "Prabhjot lives in …"), not bare fragments.
+- Contact details and location listed in the CV are public and fine to share.
 - Use Markdown (bullets, bold, code blocks) when it aids readability.
 - Do not repeat "Based on Prabhjot's CV" in every sentence.
 - Never fabricate details about Prabhjot.
@@ -83,9 +85,11 @@ def generate_response(question: str) -> str:
     if not question:
         return "Please ask me a question."
 
-    retriever = get_retriever()
-    docs = retriever.invoke(question)
-    context = "\n\n".join(doc.page_content for doc in docs)
+    if use_full_context():
+        context = get_cv_text()
+    else:
+        docs = get_retriever().invoke(question)
+        context = "\n\n".join(doc.page_content for doc in docs)
 
     prompt = f"""{_SYSTEM}
 

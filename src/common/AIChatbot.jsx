@@ -212,7 +212,7 @@ function AIChatbot() {
                       isLoading ? "animate-pulse bg-(--cool)" : "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"
                     }`}
                   />
-                  {isLoading ? (slowBackend ? "Waking up" : "Thinking") : "Online · RAG on CV"}
+                  {isLoading ? (slowBackend ? "Waking up" : "Thinking") : "Online · Grounded in CV"}
                 </div>
               </div>
             </div>

@@ -108,3 +108,21 @@ def get_retriever():
     if _retriever is None:
         build_retriever()
     return _retriever
+
+
+# A one-page CV (~3.5k chars) fits in the prompt many times over. Sending it
+# whole guarantees header facts (name, location, contact) are always visible;
+# similarity search alone missed them for questions like "where does he live?".
+FULL_CONTEXT_MAX_CHARS = 12000
+_cv_text: str | None = None
+
+
+def get_cv_text() -> str:
+    global _cv_text
+    if _cv_text is None:
+        _cv_text = _extract_pdf_text().strip()
+    return _cv_text
+
+
+def use_full_context() -> bool:
+    return len(get_cv_text()) <= FULL_CONTEXT_MAX_CHARS

@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes.chat import router as chat_router
-from app.services.rag import build_retriever
+from app.services.rag import build_retriever, use_full_context
 
 logging.basicConfig(level=logging.INFO)
 
@@ -34,8 +34,10 @@ app.include_router(chat_router, prefix="/api")
 
 @app.on_event("startup")
 def startup():
-    # Pre-build FAISS index on cold start so first request is fast
-    build_retriever()
+    # Read the CV once; the FAISS index is only needed if the CV is too long
+    # to send in full.
+    if not use_full_context():
+        build_retriever()
 
 
 @app.get("/")
