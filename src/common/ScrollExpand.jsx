@@ -123,13 +123,11 @@ const ScrollExpand = ({
       const top = (fh - nh * cover) / 2;
       const fx = left + c.mediaFocus.x * nw * cover;
       const fy = top + c.mediaFocus.y * nh * cover;
+      // object-fit: cover crops the picture to the element's own box, so the
+      // usable pixels around the focus end at 0 and fw / fh — not at the
+      // un-cropped image edges.
       const room = (halfW, halfH) =>
-        Math.max(
-          halfW / (fx - left),
-          halfW / (left + nw * cover - fx),
-          halfH / (fy - top),
-          halfH / (top + nh * cover - fy)
-        );
+        Math.max(halfW / fx, halfW / (fw - fx), halfH / fy, halfH / (fh - fy));
       const fullScale = Math.max(1, room(fw / 2, fh / 2));
       const needed = room((fw * w) / 200, (fh * h) / 200);
       const ez = e;
