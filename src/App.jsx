@@ -11,7 +11,8 @@ import { useMediaQuery } from './common/hooks';
 import MoveToTop from './common/MoveToTop';
 import AIChatbot from './common/AIChatbot';
 import SoundHint from "./common/SoundHint";
-import { lazy, Suspense } from 'react';
+import { installUISounds } from "./common/uiSounds";
+import { lazy, Suspense, useEffect } from 'react';
 import { MotionConfig } from 'motion/react';
 
 // Lazy-load everything below the fold — deferred until needed
@@ -25,6 +26,9 @@ const Footer     = lazy(() => import('./sections/Footer/Footer'));
 function App() {
   const { theme } = useTheme();
   const isSmall = useMediaQuery('(max-width: 767px)');
+
+  // Futuristic click / tap sounds (only while sound is on).
+  useEffect(() => installUISounds(), []);
 
   return (
     <MotionConfig reducedMotion="user">

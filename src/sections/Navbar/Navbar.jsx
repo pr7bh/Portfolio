@@ -179,6 +179,7 @@ function MobileNav({ isOpen, setIsOpen, concealed, activeSection, scrollToSectio
             type="button"
             onClick={() => scrollToSection("hero")}
             aria-label="Back to top"
+            data-sfx="nav"
             className="relative grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-xl"
           >
             <span
@@ -313,6 +314,7 @@ function MobileNav({ isOpen, setIsOpen, concealed, activeSection, scrollToSectio
                       <button
                         type="button"
                         onClick={() => scrollToSection(item.id)}
+                        data-sfx="nav"
                         aria-current={isActive ? "true" : undefined}
                         className="group relative flex w-full items-center gap-4 py-4 text-left"
                       >

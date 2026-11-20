@@ -31,6 +31,9 @@ let bus = null;
 let padFilter = null;
 let echo = null;
 let analyser = null;
+let sfxBus = null; // UI sound effects: dry
+let sfxSpace = null; // UI sound effects: send into the reverb
+let sfxEcho = null; // UI sound effects: their own echo
 
 let playing = false;
 let schedulerId = 0;
@@ -94,7 +97,9 @@ function build() {
   limiter.connect(analyser);
   analyser.connect(ctx.destination);
 
-  // Everything feeds the bus; the bus goes out dry and into the reverb.
+  // Music feeds the bus → master. The master (the music's mute fader)
+  // goes out dry and into a shared reverb whose output skips the fader,
+  // so interface sounds keep their room while the music is muted.
   bus = ctx.createGain();
   bus.connect(master);
 
@@ -102,9 +107,32 @@ function build() {
   reverb.buffer = makeImpulse(5, 2.6);
   const wet = ctx.createGain();
   wet.gain.value = 0.7;
-  bus.connect(reverb);
+  const reverbLowCut = ctx.createBiquadFilter(); // keep the sub drone out of the room
+  reverbLowCut.type = "highpass";
+  reverbLowCut.frequency.value = 180;
+  master.connect(reverbLowCut);
+  reverbLowCut.connect(reverb);
   reverb.connect(wet);
-  wet.connect(master);
+  wet.connect(limiter);
+
+  // Interface sounds: independent of the music, always on.
+  sfxBus = ctx.createGain();
+  sfxBus.gain.value = 0.9;
+  sfxBus.connect(limiter);
+  sfxSpace = ctx.createGain();
+  sfxSpace.gain.value = 0.5;
+  sfxSpace.connect(reverb);
+  sfxEcho = ctx.createDelay(1);
+  sfxEcho.delayTime.value = STEP_SECONDS * 2;
+  const sfxFeedback = ctx.createGain();
+  sfxFeedback.gain.value = 0.35;
+  const sfxEchoTone = ctx.createBiquadFilter();
+  sfxEchoTone.type = "lowpass";
+  sfxEchoTone.frequency.value = 2600;
+  sfxEcho.connect(sfxEchoTone);
+  sfxEchoTone.connect(sfxFeedback);
+  sfxFeedback.connect(sfxEcho);
+  sfxEchoTone.connect(sfxBus);
 
   // Pads breathe through a slowly sweeping low-pass filter.
   padFilter = ctx.createBiquadFilter();
@@ -265,17 +293,31 @@ function stopScheduler() {
 
 let suspendTimer = 0;
 
-export async function play() {
-  if (!ctx && !build()) return;
-  wanted = true;
+// While the music is off the context sleeps, waking only for interface
+// sounds and dozing off again once they've rung out.
+function scheduleIdleSuspend(ms) {
   window.clearTimeout(suspendTimer);
-  // iOS mutes Web Audio when the silent switch is on unless the page
-  // declares it is playing media (Safari 17+).
+  suspendTimer = window.setTimeout(() => {
+    if (playing || !ctx) return;
+    ctx.suspend();
+  }, ms);
+}
+
+// iOS mutes Web Audio when the silent switch is on unless the page
+// declares it is playing media (Safari 17+).
+function declarePlayback() {
   try {
     if (navigator.audioSession) navigator.audioSession.type = "playback";
   } catch {
     /* unsupported */
   }
+}
+
+export async function play() {
+  if (!ctx && !build()) return;
+  wanted = true;
+  window.clearTimeout(suspendTimer);
+  declarePlayback();
   // Without a user gesture the browser keeps this pending (autoplay policy).
   await ctx.resume();
   if (!wanted || ctx.state !== "running") return;
@@ -307,15 +349,28 @@ export function pause({ remember = true } = {}) {
   master.gain.setValueAtTime(master.gain.value, t);
   master.gain.linearRampToValueAtTime(0, t + 0.9);
   playing = false;
+  stopScheduler(); // already-queued notes fade out with the master
   emit();
-  suspendTimer = window.setTimeout(() => {
-    stopScheduler();
-    ctx.suspend();
-  }, 1000);
+  scheduleIdleSuspend(6000);
 }
 
 export function toggle() {
   return playing ? pause() : play();
+}
+
+/** Audio graph for interface sounds. They play whether or not the music
+    is on; call this from a click/tap handler so the browser lets the
+    context wake. Returns null only if Web Audio is unavailable. */
+export function getSfxGraph() {
+  if (!ctx && !build()) return null;
+  if (!playing) {
+    // Always (re)wake: a suspend() may still be in flight from the idle timer.
+    window.clearTimeout(suspendTimer);
+    declarePlayback();
+    ctx.resume();
+    scheduleIdleSuspend(4000);
+  }
+  return { ctx, out: sfxBus, space: sfxSpace, echo: sfxEcho };
 }
 
 export function getAnalyser() {
