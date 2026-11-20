@@ -98,7 +98,9 @@ const ScrollExpand = ({
     lastProgress.current = p;
     c.onProgress?.(p);
 
-    const e = smoothstep(0, 1, p);
+    // The frame finishes opening at 78% of the scroll so the hero content
+    // (which fades in from 68%) never sits over a black border.
+    const e = smoothstep(0, 0.78, p);
 
     const w = c.startWidth + (100 - c.startWidth) * e;
     const h = c.startHeight + (100 - c.startHeight) * e;
@@ -130,7 +132,7 @@ const ScrollExpand = ({
         );
       const fullScale = Math.max(1, room(fw / 2, fh / 2));
       const needed = room((fw * w) / 200, (fh * h) / 200);
-      const ez = smoothstep(0, 0.85, p);
+      const ez = e;
       const scale = Math.max(needed, c.mediaZoom + (fullScale - c.mediaZoom) * ez);
       media.style.transformOrigin = `${fx}px ${fy}px`;
       media.style.transform = `translate3d(${fw / 2 - fx}px, ${fh / 2 - fy}px, 0) scale(${scale})`;
@@ -182,9 +184,23 @@ const ScrollExpand = ({
     let stageH = 0;
     let running = false;
 
+    let lvhProbe = null;
+    const largeViewportHeight = () => {
+      if (!CSS.supports?.('height', '100lvh')) return 0;
+      if (!lvhProbe) {
+        lvhProbe = document.createElement('div');
+        lvhProbe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:100lvh;visibility:hidden;pointer-events:none';
+        document.body.appendChild(lvhProbe);
+      }
+      return lvhProbe.offsetHeight;
+    };
+
     const measure = () => {
       const c = propsRef.current;
-      stageH = c.useWindowScroll ? window.innerHeight : root.clientHeight;
+      // On phones the visible height changes as the browser bar slides in
+      // and out. Size to the *large* viewport (bar hidden) so the stage never
+      // comes up short and leaves a black band, and so the page doesn't jump.
+      stageH = c.useWindowScroll ? Math.max(window.innerHeight, largeViewportHeight()) : root.clientHeight;
       if (stageH <= 0) return;
       stage.style.height = `${stageH}px`;
       track.style.height = `${stageH * (1 + Math.max(0, c.scrollDistance) + Math.max(0, c.holdDistance))}px`;
@@ -255,6 +271,7 @@ const ScrollExpand = ({
       scroller.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
       ro.disconnect();
+      lvhProbe?.remove();
     };
   }, [applyProgress, useWindowScroll]);
 
