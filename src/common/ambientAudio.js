@@ -39,6 +39,7 @@ let nextStepAt = 0;
 let chordIndex = 0;
 let pendingStartCleanup = null;
 let wanted = false; // guards a resume() that resolves after the visitor muted
+let armed = false; // waiting for the first gesture to start the music
 const listeners = new Set();
 
 const emit = () => listeners.forEach((fn) => fn());
@@ -268,10 +269,18 @@ export async function play() {
   if (!ctx && !build()) return;
   wanted = true;
   window.clearTimeout(suspendTimer);
+  // iOS mutes Web Audio when the silent switch is on unless the page
+  // declares it is playing media (Safari 17+).
+  try {
+    if (navigator.audioSession) navigator.audioSession.type = "playback";
+  } catch {
+    /* unsupported */
+  }
   // Without a user gesture the browser keeps this pending (autoplay policy).
   await ctx.resume();
   if (!wanted || ctx.state !== "running") return;
   pendingStartCleanup?.();
+  armed = false;
   if (playing) return;
   startScheduler();
   const t = ctx.currentTime;
@@ -285,6 +294,7 @@ export async function play() {
 
 export function pause({ remember = true } = {}) {
   wanted = false;
+  armed = false;
   if (remember) writePref(false);
   pendingStartCleanup?.();
   if (!ctx || !playing) {
@@ -317,6 +327,11 @@ function subscribe(fn) {
   return () => listeners.delete(fn);
 }
 
+/** True while sound is on but waiting for the visitor's first click/tap. */
+export function useSoundArmed() {
+  return useSyncExternalStore(subscribe, () => armed && !playing, () => false);
+}
+
 export function useAmbientSound() {
   const isPlaying = useSyncExternalStore(subscribe, () => playing, () => false);
   return { playing: isPlaying, toggle };
@@ -336,9 +351,12 @@ if (typeof window !== "undefined") {
     // Only these count as a "user activation" for audio.
     const events = ["pointerdown", "pointerup", "touchend", "keydown", "click"];
     events.forEach((ev) => window.addEventListener(ev, resume, { passive: true }));
+    armed = true;
     pendingStartCleanup = () => {
       events.forEach((ev) => window.removeEventListener(ev, resume));
       pendingStartCleanup = null;
+      armed = false;
+      emit();
     };
 
     // Attempt a true autoplay once the page has loaded.

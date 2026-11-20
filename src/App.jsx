@@ -10,6 +10,7 @@ import { useTheme } from './common/ThemeContext';
 import { useMediaQuery } from './common/hooks';
 import MoveToTop from './common/MoveToTop';
 import AIChatbot from './common/AIChatbot';
+import SoundHint from "./common/SoundHint";
 import { lazy, Suspense } from 'react';
 import { MotionConfig } from 'motion/react';
 
@@ -54,6 +55,7 @@ function App() {
           <Navbar />
           <MoveToTop />
           <AIChatbot />
+          <SoundHint />
           <CustomCursor />
 
           <main>
