@@ -107,26 +107,36 @@ const ScrollExpand = ({
     const r = c.startRadius + (c.endRadius - c.startRadius) * e;
     frame.style.clipPath = `inset(${iy}% ${ix}% ${iy}% ${ix}% round ${r}px)`;
 
-    // A zoom-out start (mediaZoom < 1) must reach full cover before the frame
-    // does, or the image would leave a gap at the frame's edges.
-    const ez = c.mediaZoom < 1 ? smoothstep(0, 0.7, p) : e;
-    const scale = c.mediaZoom + (1 - c.mediaZoom) * ez;
-    // mediaFocus ({x, y} as fractions of the source image) keeps a subject
-    // centred inside the small start frame, then eases back to a plain
-    // full-bleed cover image as the frame expands.
     const nw = media.naturalWidth || media.videoWidth;
     const nh = media.naturalHeight || media.videoHeight;
     if (c.mediaFocus && nw && nh) {
+      // mediaFocus ({x, y} as fractions of the source image) pins that point
+      // to the centre of the frame at every stage of the expansion. The
+      // image is scaled just enough that, once shifted, it still covers the
+      // visible part of the frame — never leaving a gap at an edge.
       const fw = media.clientWidth;
       const fh = media.clientHeight;
       const cover = Math.max(fw / nw, fh / nh);
-      const fx = (fw - nw * cover) / 2 + c.mediaFocus.x * nw * cover;
-      const fy = (fh - nh * cover) / 2 + c.mediaFocus.y * nh * cover;
+      const left = (fw - nw * cover) / 2;
+      const top = (fh - nh * cover) / 2;
+      const fx = left + c.mediaFocus.x * nw * cover;
+      const fy = top + c.mediaFocus.y * nh * cover;
+      const room = (halfW, halfH) =>
+        Math.max(
+          halfW / (fx - left),
+          halfW / (left + nw * cover - fx),
+          halfH / (fy - top),
+          halfH / (top + nh * cover - fy)
+        );
+      const fullScale = Math.max(1, room(fw / 2, fh / 2));
+      const needed = room((fw * w) / 200, (fh * h) / 200);
+      const ez = smoothstep(0, 0.85, p);
+      const scale = Math.max(needed, c.mediaZoom + (fullScale - c.mediaZoom) * ez);
       media.style.transformOrigin = `${fx}px ${fy}px`;
-      media.style.transform = `translate3d(${(fw / 2 - fx) * (1 - ez)}px, ${(fh / 2 - fy) * (1 - ez)}px, 0) scale(${scale})`;
+      media.style.transform = `translate3d(${fw / 2 - fx}px, ${fh / 2 - fy}px, 0) scale(${scale})`;
     } else {
       media.style.transformOrigin = '';
-      media.style.transform = `scale(${scale})`;
+      media.style.transform = `scale(${c.mediaZoom + (1 - c.mediaZoom) * e})`;
     }
     media.style.filter = `grayscale(${1 - e})`;
 
