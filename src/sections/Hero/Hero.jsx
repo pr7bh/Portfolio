@@ -12,6 +12,7 @@ import Typed from "typed.js";
 import ScrollExpand from "../../common/ScrollExpand";
 import HeroPortal from "../../common/HeroPortal";
 import { Magnetic } from "../../common/Interactive";
+import { useMediaQuery } from "../../common/hooks";
 import { IconPhone } from "@tabler/icons-react";
 import { motion } from "motion/react";
 
@@ -69,7 +70,11 @@ const getCircleProps = () => {
   };
 };
 
+// Where the face sits in hero.jpg (fractions of width / height).
+const FACE_FOCUS = { x: 0.487, y: 0.44 };
+
 function Hero() {
+  const isMobile = useMediaQuery("(max-width: 767px)");
   const typedElement = useRef(null);
   const progressRef = useRef(0);
   const [portalUnsupported, setPortalUnsupported] = useState(false);
@@ -114,7 +119,8 @@ function Hero() {
         startHeight={circleProps.startHeight}
         startRadius={circleProps.startRadius}
         endRadius={0}
-        mediaZoom={1.1}
+        mediaZoom={isMobile ? 0.82 : 1.12}
+        mediaFocus={FACE_FOCUS}
         scrollDistance={1.2}
         holdDistance={0.25}
         smoothing={0.1}

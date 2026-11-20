@@ -46,6 +46,7 @@ const ScrollExpand = ({
   startRadius = 24,
   endRadius = 0,
   mediaZoom = 1.35,
+  mediaFocus = null,
   scrollDistance = 1.2,
   holdDistance = 0.35,
   smoothing = 0.1,
@@ -71,6 +72,7 @@ const ScrollExpand = ({
   const hintRef = useRef(null);
   const glowRef = useRef(null);
 
+  const lastProgress = useRef(0);
   const propsRef = useRef({});
   propsRef.current = {
     startWidth,
@@ -78,6 +80,7 @@ const ScrollExpand = ({
     startRadius,
     endRadius,
     mediaZoom,
+    mediaFocus,
     scrollDistance,
     holdDistance,
     smoothing,
@@ -92,6 +95,7 @@ const ScrollExpand = ({
     const media = mediaRef.current;
     if (!frame || !media) return;
     const c = propsRef.current;
+    lastProgress.current = p;
     c.onProgress?.(p);
 
     const e = smoothstep(0, 1, p);
@@ -103,7 +107,27 @@ const ScrollExpand = ({
     const r = c.startRadius + (c.endRadius - c.startRadius) * e;
     frame.style.clipPath = `inset(${iy}% ${ix}% ${iy}% ${ix}% round ${r}px)`;
 
-    media.style.transform = `scale(${c.mediaZoom + (1 - c.mediaZoom) * e})`;
+    // A zoom-out start (mediaZoom < 1) must reach full cover before the frame
+    // does, or the image would leave a gap at the frame's edges.
+    const ez = c.mediaZoom < 1 ? smoothstep(0, 0.7, p) : e;
+    const scale = c.mediaZoom + (1 - c.mediaZoom) * ez;
+    // mediaFocus ({x, y} as fractions of the source image) keeps a subject
+    // centred inside the small start frame, then eases back to a plain
+    // full-bleed cover image as the frame expands.
+    const nw = media.naturalWidth || media.videoWidth;
+    const nh = media.naturalHeight || media.videoHeight;
+    if (c.mediaFocus && nw && nh) {
+      const fw = media.clientWidth;
+      const fh = media.clientHeight;
+      const cover = Math.max(fw / nw, fh / nh);
+      const fx = (fw - nw * cover) / 2 + c.mediaFocus.x * nw * cover;
+      const fy = (fh - nh * cover) / 2 + c.mediaFocus.y * nh * cover;
+      media.style.transformOrigin = `${fx}px ${fy}px`;
+      media.style.transform = `translate3d(${(fw / 2 - fx) * (1 - ez)}px, ${(fh / 2 - fy) * (1 - ez)}px, 0) scale(${scale})`;
+    } else {
+      media.style.transformOrigin = '';
+      media.style.transform = `scale(${scale})`;
+    }
     media.style.filter = `grayscale(${1 - e})`;
 
     if (scrimRef.current) scrimRef.current.style.opacity = `${c.overlayScrim * e}`;
@@ -257,6 +281,7 @@ const ScrollExpand = ({
         src={src}
         alt={alt}
         draggable={false}
+        onLoad={() => applyProgress(lastProgress.current)}
       />
     );
 
