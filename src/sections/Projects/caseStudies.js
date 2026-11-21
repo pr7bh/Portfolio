@@ -34,11 +34,19 @@ export const CASE_STUDIES = {
     ],
   },
   "Real Estate": {
-    kind: "Property discovery",
-    overview: "A property discovery and search platform for browsing listings. Open the live site to explore it.",
-    built: [],
-    flow: [],
-    stack: [],
+    kind: "Full-stack property marketplace",
+    overview:
+      "A MERN marketplace where people list homes to rent or sell, and buyers search, filter and contact the owner directly. Signed-in users manage their own listings and profile.",
+    built: [
+      "Express + MongoDB REST API for listings and users, with create, update and delete protected by JWT (httpOnly cookie) auth.",
+      "Email sign-up with bcrypt-hashed passwords, plus one-click Google sign-in through Firebase Auth.",
+      "Search with filters for rent / sale, offers, parking and furnished, plus sorting and \"show more\" pagination.",
+      "Listing editor with multi-image uploads to Firebase Storage; listing pages with a Swiper gallery, share link and a pre-filled email to the landlord.",
+      "React front end with Redux Toolkit (persisted session) and private routes for profile and listing management.",
+    ],
+    flow: ["React + Redux Toolkit", "Express API (JWT auth)", "MongoDB", "Firebase Auth & Storage"],
+    stack: ["React", "Redux Toolkit", "React Router", "Node.js", "Express", "MongoDB", "JWT", "Firebase", "Swiper"],
+    repo: "https://github.com/pr7bh/real-estate",
   },
   "Netflix Clone": {
     kind: "Full-stack streaming catalogue",
