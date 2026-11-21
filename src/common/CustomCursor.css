@@ -101,14 +101,18 @@
 
 /* ── Trail: a faint signal left in the dark ───────────────────── */
 .cursor__trail::before {
+  --size: calc(5px - var(--i) * 0.28px);
   content: "";
   position: absolute;
-  width: calc(4px - var(--i) * 0.45px);
-  height: calc(4px - var(--i) * 0.45px);
-  margin: calc((4px - var(--i) * 0.45px) / -2) 0 0 calc((4px - var(--i) * 0.45px) / -2);
+  width: var(--size);
+  height: var(--size);
+  margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
   border-radius: 50%;
-  background: rgb(147, 241, 255);
-  opacity: calc((0.5 - var(--i) * 0.07) * var(--cursor-energy));
+  background: rgb(var(--trail-rgb));
+  box-shadow:
+    0 0 6px 1px rgba(var(--trail-rgb), 0.55),
+    0 0 16px 3px rgba(var(--trail-rgb), 0.18);
+  opacity: calc((0.75 - var(--i) * 0.048) * var(--cursor-energy));
 }
 
 .cursor[data-reduced="true"] .cursor__trail {

@@ -2,7 +2,13 @@ import { useEffect, useRef } from "react";
 import { useMediaQuery } from "./hooks";
 import "./CustomCursor.css";
 
-const TRAIL = 6;
+const TRAIL = 14;
+// Trail colour runs from the cool signal blue to the warm amber.
+const trailColour = (i) => {
+  const t = i / (TRAIL - 1);
+  const mix = (a, b) => Math.round(a + (b - a) * t);
+  return `${mix(147, 255)}, ${mix(241, 162)}, ${mix(255, 76)}`;
+};
 const INTERACTIVE = 'a[href], button, [role="button"], label, summary, select, .custom-cursor--action';
 const TEXT_ENTRY =
   'input:not([type="button"]):not([type="submit"]):not([type="checkbox"]):not([type="radio"]), textarea, [contenteditable="true"]';
@@ -89,7 +95,7 @@ function CustomCursor() {
 
       let tail = 0;
       if (!reduce) {
-        const f = 1 - Math.pow(0.55, dt);
+        const f = 1 - Math.pow(0.5, dt);
         let px = pointer.x;
         let py = pointer.y;
         for (let i = 0; i < TRAIL; i++) {
@@ -101,7 +107,7 @@ function CustomCursor() {
           py = p.y;
         }
         tail = Math.hypot(pointer.x - px, pointer.y - py);
-        energy += (Math.min(1, tail / 70) - energy) * (1 - Math.pow(0.8, dt));
+        energy += (Math.min(1, tail / 90) - energy) * (1 - Math.pow(0.8, dt));
         root.style.setProperty("--cursor-energy", energy.toFixed(3));
       }
 
@@ -195,7 +201,7 @@ function CustomCursor() {
             trailRefs.current[i] = el;
           }}
           className="cursor__trail"
-          style={{ "--i": i }}
+          style={{ "--i": i, "--trail-rgb": trailColour(i) }}
         />
       ))}
       <div ref={ringRef} className="cursor__ring">

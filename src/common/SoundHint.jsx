@@ -26,16 +26,17 @@ export default function SoundHint() {
       {armed && ready && (
         <motion.div
           key="sound-hint"
-          initial={{ opacity: 0, y: 24, filter: "blur(6px)" }}
+          initial={{ opacity: 0, y: -16, filter: "blur(6px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          exit={{ opacity: 0, y: 16, filter: "blur(6px)" }}
+          exit={{ opacity: 0, y: -12, filter: "blur(6px)" }}
           transition={{ duration: 0.6, ease }}
-          className="pointer-events-none fixed inset-x-0 bottom-24 z-1100 flex justify-center px-4 md:bottom-auto md:top-24"
+          className="pointer-events-none fixed inset-x-0 top-20 z-1100 flex justify-center px-4 md:top-24"
         >
           <div className="pointer-events-auto flex items-center gap-1 rounded-full border border-white/12 bg-[rgba(8,8,10,0.72)] p-1 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
             <button
               type="button"
               onClick={() => play()}
+              data-magnetic="0.2"
               data-cursor="action"
               data-cursor-label="Play"
               className="flex items-center gap-3 rounded-full py-2 pl-3.5 pr-3 text-white/85 transition-colors hover:text-white"

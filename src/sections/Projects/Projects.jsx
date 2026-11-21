@@ -5,14 +5,16 @@ import FlexCarousel from "../../common/FlexCarousel";
 import SectionHeading from "../../common/SectionHeading";
 import { useMediaQuery } from "../../common/hooks";
 import ProjectPreview from "./ProjectPreview";
+import Holo from "../../common/Holo";
+import GitHubPulse from "./GitHubPulse";
 import styles from "./ProjectsStyles.module.css";
 
-import geomind from "../../assets/geomind.png";
-import syncora from "../../assets/syncora.png";
-import realEstate from "../../assets/real-estate.jpg";
-import netflix from "../../assets/netflix.jpg";
-import cryptoverse from "../../assets/cryptoverse.jpg";
-import shoppingCart from "../../assets/shopping-cart.jpg";
+import geomind from "../../assets/geomind.webp";
+import syncora from "../../assets/syncora.webp";
+import realEstate from "../../assets/real-estate.webp";
+import netflix from "../../assets/netflix.webp";
+import cryptoverse from "../../assets/cryptoverse.webp";
+import shoppingCart from "../../assets/shopping-cart.webp";
 
 const items = [
   {
@@ -184,8 +186,8 @@ function Projects() {
         className="meta -mt-8 flex items-center gap-2 px-5 text-center text-white/45 md:-mt-14"
       >
         {isDesktop
-          ? "Drag to browse · click the centred project to preview"
-          : "Swipe · tap to preview"}
+          ? "Drag to browse · click the centred project for its case study"
+          : "Swipe · tap for the case study"}
         <IconExternalLink size={13} stroke={1.75} aria-hidden="true" />
       </motion.div>
 
@@ -255,6 +257,7 @@ function Projects() {
                     }
                   }}
                 >
+                  <Holo className="absolute inset-0" gyro active={isActive} max={8}>
                   <img
                     src={item.src}
                     alt={item.alt || item.title}
@@ -301,6 +304,7 @@ function Projects() {
                       </span>
                     </div>
                   </div>
+                  </Holo>
                 </div>
               );
             })}
@@ -320,6 +324,8 @@ function Projects() {
           </div>
         </div>
       )}
+
+      <GitHubPulse />
 
       <ProjectPreview items={items} index={preview} onClose={closePreview} onNavigate={setPreview} />
     </section>

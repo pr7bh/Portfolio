@@ -297,7 +297,7 @@ function Constellation() {
             <span className="text-sm text-white/70">{activeCluster.skills.map((s) => s.name).join("  ·  ")}</span>
           </>
         ) : (
-          <span className="meta text-white/35">Hover or focus a cluster to explore</span>
+          <span className="meta text-white/55">Hover or focus a cluster to explore</span>
         )}
       </div>
     </div>
@@ -398,7 +398,7 @@ function MobileUniverse() {
         </div>
       </motion.div>
 
-      <div className="meta mt-2 text-white/40">{TOTAL} technologies · 6 systems</div>
+      <div className="meta mt-2 text-white/55">{TOTAL} technologies · 6 systems</div>
 
       <div className="mt-8 flex w-full gap-2 overflow-x-auto px-5 pb-1" role="group" aria-label="Skill categories">
         {CLUSTERS.map((c) => {

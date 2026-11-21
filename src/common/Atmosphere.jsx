@@ -1,5 +1,6 @@
 import { motion, useScroll, useSpring } from "motion/react";
 import { useActiveSection } from "./hooks";
+import { getMood } from "./fx";
 
 const SECTIONS = ["hero", "experience", "projects", "skills", "education", "contact"];
 
@@ -13,6 +14,10 @@ const LIGHTS = {
   education: { warm: [28, -20, 0.7], cool: [-28, 22, 0.4] },
   contact: { warm: [0, 34, 1], cool: [-24, -28, 0.5] },
 };
+
+// Lighting follows the visitor's local time: amber dawn, bright day,
+// deep sunset, cool night (see getMood).
+const mood = getMood();
 
 const blob = (rgb) => ({
   width: "90vmax",
@@ -35,16 +40,16 @@ function Atmosphere() {
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-20 overflow-hidden">
         <motion.div
           className="absolute rounded-full"
-          style={blob("255, 162, 76")}
+          style={blob(mood.warm)}
           initial={false}
-          animate={{ x: `${lights.warm[0]}vw`, y: `${lights.warm[1]}vh`, opacity: lights.warm[2] }}
+          animate={{ x: `${lights.warm[0]}vw`, y: `${lights.warm[1]}vh`, opacity: Math.min(1, lights.warm[2] * mood.warmBoost) }}
           transition={transition}
         />
         <motion.div
           className="absolute rounded-full"
-          style={blob("147, 241, 255")}
+          style={blob(mood.cool)}
           initial={false}
-          animate={{ x: `${lights.cool[0]}vw`, y: `${lights.cool[1]}vh`, opacity: lights.cool[2] }}
+          animate={{ x: `${lights.cool[0]}vw`, y: `${lights.cool[1]}vh`, opacity: Math.min(1, lights.cool[2] * mood.coolBoost) }}
           transition={transition}
         />
       </div>

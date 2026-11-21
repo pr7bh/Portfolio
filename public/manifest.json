@@ -1,33 +1,26 @@
 {
+  "id": "/",
   "name": "Prabhjot Singh | Full Stack Developer",
-  "short_name": "Prabhjot Singh",
+  "short_name": "Prabhjot",
   "description": "Portfolio of Prabhjot Singh — Full Stack Developer & GenAI Engineer",
-  "icons": [
-    {
-      "src": "/favicon.svg",
-      "type": "image/svg+xml",
-      "sizes": "any"
-    },
-    {
-      "src": "/icon-192.png",
-      "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-512.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/favicon.ico",
-      "type": "image/x-icon",
-      "sizes": "48x48 32x32 16x16"
-    }
-  ],
-  "start_url": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
   "theme_color": "#050506",
-  "background_color": "#050506"
+  "background_color": "#050506",
+  "categories": ["portfolio", "developer", "technology"],
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any" },
+    { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "maskable" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Projects", "short_name": "Projects", "url": "/#projects", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Contact", "short_name": "Contact", "url": "/#contact", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Open terminal", "short_name": "Terminal", "url": "/?terminal", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
+  ]
 }

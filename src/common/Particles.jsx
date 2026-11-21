@@ -2,6 +2,9 @@
 
 import { useEffect, useRef } from 'react';
 import { Renderer, Camera, Geometry, Program, Mesh } from 'ogl';
+import { getMusicLevel } from './ambientAudio';
+import { onInterfaceClick } from './uiSounds';
+import { onWarp } from './fx';
 
 const defaultColors = ['#ffffff', '#ffffff', '#ffffff'];
 
@@ -32,13 +35,17 @@ const vertex = /* glsl */ `
   uniform float uSpread;
   uniform float uBaseSize;
   uniform float uSizeRandomness;
+  uniform float uPulse;
   
   varying vec4 vRandom;
+  varying float vPulse;
   varying vec3 vColor;
   
   void main() {
     vRandom = random;
     vColor = color;
+    // Music / click energy: some particles swell more than others.
+    vPulse = uPulse * smoothstep(0.25, 1.0, random.y);
     
     vec3 pos = position * uSpread;
     pos.z *= 10.0;
@@ -57,6 +64,7 @@ const vertex = /* glsl */ `
       gl_PointSize = (uBaseSize * (1.0 + uSizeRandomness * (random.x - 0.5))) / length(mvPos.xyz);
     }
 
+    gl_PointSize *= 1.0 + vPulse * 1.4;
     gl_Position = projectionMatrix * mvPos;
   }
 `;
@@ -68,6 +76,7 @@ const fragment = /* glsl */ `
   uniform float uAlphaParticles;
   varying vec4 vRandom;
   varying vec3 vColor;
+  varying float vPulse;
   
   void main() {
     vec2 uv = gl_PointCoord.xy;
@@ -80,7 +89,10 @@ const fragment = /* glsl */ `
       gl_FragColor = vec4(vColor + 0.2 * sin(uv.yxx + uTime + vRandom.y * 6.28), 1.0);
     } else {
       float circle = smoothstep(0.5, 0.4, d) * 0.8;
-      gl_FragColor = vec4(vColor + 0.2 * sin(uv.yxx + uTime + vRandom.y * 6.28), circle);
+      // Pulsing particles glow toward the site's cool/warm signal colours.
+      vec3 tint = mix(vec3(0.58, 0.95, 1.0), vec3(1.0, 0.64, 0.3), vRandom.z);
+      vec3 col = mix(vColor, tint, clamp(vPulse * 0.9, 0.0, 0.85));
+      gl_FragColor = vec4(col + 0.2 * sin(uv.yxx + uTime + vRandom.y * 6.28), circle * (1.0 + vPulse * 0.6));
     }
   }
 `;
@@ -98,6 +110,7 @@ const Particles = ({
   cameraDistance = 20,
   disableRotation = false,
   pixelRatio = 1,
+  reactive = false,
   className
 }) => {
   const containerRef = useRef(null);
@@ -174,7 +187,8 @@ const Particles = ({
         uSpread: { value: particleSpread },
         uBaseSize: { value: particleBaseSize * pixelRatio },
         uSizeRandomness: { value: sizeRandomness },
-        uAlphaParticles: { value: alphaParticles ? 1 : 0 }
+        uAlphaParticles: { value: alphaParticles ? 1 : 0 },
+        uPulse: { value: 0 }
       },
       transparent: true,
       depthTest: false
@@ -189,6 +203,16 @@ const Particles = ({
     let lastScrollY = window.scrollY;
     let scrollKick = 0;
     let boost = 0;
+    let pulse = 0;
+    let burst = 0;
+    const offClick = reactive ? onInterfaceClick(() => {
+      burst = 1;
+    }) : null;
+    // Warp jumps and hyperdrive: the field rushes past.
+    let warp = 0;
+    const offWarp = reactive ? onWarp(({ intensity }) => {
+      warp = Math.max(warp, intensity);
+    }) : null;
 
     const onScroll = () => {
       const y = window.scrollY;
@@ -202,9 +226,16 @@ const Particles = ({
       lastTime = t;
       boost += (scrollKick - boost) * 0.08;
       scrollKick *= 0.9;
-      elapsed += delta * speed * (1 + boost * 5);
+      if (reactive) {
+        const level = Math.min(1, getMusicLevel() * 2.6);
+        pulse += (level - pulse) * 0.12;
+        burst *= 0.93;
+        warp *= 0.965;
+      }
+      elapsed += delta * speed * (1 + boost * 5 + pulse * 1.5 + burst * 8 + warp * 60);
 
       program.uniforms.uTime.value = elapsed * 0.001;
+      program.uniforms.uPulse.value = Math.min(1.4, pulse + burst * 0.9 + warp * 0.8);
 
       if (moveParticlesOnHover) {
         particles.position.x = -mouseRef.current.x * particleHoverFactor;
@@ -238,6 +269,8 @@ const Particles = ({
       window.removeEventListener('resize', resize);
       window.removeEventListener('scroll', onScroll);
       document.removeEventListener('visibilitychange', onVisibility);
+      offClick?.();
+      offWarp?.();
       if (moveParticlesOnHover) {
         container.removeEventListener('mousemove', handleMouseMove);
       }
@@ -259,7 +292,8 @@ const Particles = ({
     sizeRandomness,
     cameraDistance,
     disableRotation,
-    pixelRatio
+    pixelRatio,
+    reactive
   ]);
 
   return <div ref={containerRef} className={`relative w-full h-full ${className}`} />;

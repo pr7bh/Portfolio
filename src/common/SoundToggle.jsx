@@ -41,6 +41,7 @@ export default function SoundToggle({ className = "", showLabel = false }) {
     <button
       type="button"
       data-sound-toggle
+      data-magnetic="0.3"
       data-cursor="action"
       data-cursor-label={playing ? "Mute" : "Play"}
       onClick={toggle}

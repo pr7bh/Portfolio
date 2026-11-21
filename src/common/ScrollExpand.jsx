@@ -306,6 +306,9 @@ const ScrollExpand = ({
         src={src}
         alt={alt}
         draggable={false}
+        // The hero photo is the page's main image: fetch it first.
+        fetchPriority="high"
+        decoding="async"
         onLoad={() => applyProgress(lastProgress.current)}
       />
     );
@@ -439,7 +442,7 @@ const ScrollExpand = ({
           {scrollHint ? (
             <div
               ref={hintRef}
-              className="absolute inset-x-0 bottom-5 text-center text-[0.8125rem] tracking-[0.02em] text-white/55 pointer-events-none [will-change:opacity,transform]"
+              className="absolute inset-x-0 bottom-6 flex justify-center pointer-events-none [will-change:opacity,transform] md:bottom-8"
             >
               {scrollHint}
             </div>

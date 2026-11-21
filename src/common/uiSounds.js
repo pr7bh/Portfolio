@@ -1,4 +1,5 @@
-import { getSfxGraph } from "./ambientAudio";
+import { getLiveSfxGraph, getSfxGraph } from "./ambientAudio";
+import { haptic } from "./fx";
 
 /* ──────────────────────────────────────────────────────────────────
    Futuristic interface sounds, synthesised on the fly. They're always
@@ -117,6 +118,41 @@ const SOUNDS = {
       tone(g, { type: "triangle", from: midiToHz(n), at: t + i * 0.055, attack: 0.006, decay: 0.45, peak: 0.05, space: 0.6 })
     );
   },
+  type(g, t) {
+    // Terminal key click: tiny, slightly random so it doesn't buzz.
+    const f = 1800 + Math.random() * 900;
+    tone(g, { type: "square", from: f, at: t, attack: 0.001, decay: 0.018, peak: 0.012 });
+  },
+  boot(g, t) {
+    hiss(g, { at: t, from: 300, to: 5200, q: 1.1, attack: 0.25, decay: 0.5, peak: 0.08, space: 0.7 });
+    tone(g, { type: "sawtooth", from: 110, to: 880, at: t, attack: 0.02, decay: 0.55, peak: 0.03, glide: 0.45 });
+    [57, 64, 69, 76].forEach((n, i) =>
+      tone(g, { type: "triangle", from: midiToHz(n), at: t + 0.32 + i * 0.07, attack: 0.008, decay: 0.9, peak: 0.045, space: 0.8 })
+    );
+  },
+  warp(g, t) {
+    // Hyperdrive: a long rising roar with a bright chord on arrival.
+    hiss(g, { at: t, from: 120, to: 7000, q: 0.9, attack: 0.9, decay: 1.3, peak: 0.11, space: 0.8 });
+    tone(g, { type: "sawtooth", from: 55, to: 880, at: t, attack: 0.05, decay: 1.6, peak: 0.035, glide: 1.2 });
+    tone(g, { type: "sawtooth", from: 82.4, to: 1318, at: t + 0.04, attack: 0.05, decay: 1.6, peak: 0.025, glide: 1.25 });
+    [69, 76, 81, 88].forEach((n, i) =>
+      tone(g, { type: "triangle", from: midiToHz(n), at: t + 1.15 + i * 0.06, attack: 0.01, decay: 1.4, peak: 0.045, space: 0.9 })
+    );
+  },
+  jump(g, t) {
+    // Short warp for nav jumps.
+    hiss(g, { at: t, from: 400, to: 4800, q: 1.2, attack: 0.12, decay: 0.35, peak: 0.07, space: 0.6 });
+  },
+  achievement(g, t) {
+    [76, 79, 83, 88].forEach((n, i) =>
+      tone(g, { type: "triangle", from: midiToHz(n), at: t + i * 0.07, attack: 0.005, decay: 0.5, peak: 0.05, space: 0.7 })
+    );
+    tone(g, { from: midiToHz(100), at: t + 0.3, attack: 0.004, decay: 0.8, peak: 0.02, dest: "echo" });
+  },
+  error(g, t) {
+    tone(g, { type: "square", from: 220, at: t, attack: 0.004, decay: 0.09, peak: 0.03 });
+    tone(g, { type: "square", from: 165, at: t + 0.1, attack: 0.004, decay: 0.14, peak: 0.03 });
+  },
   space(g, t, { x = 0.5, y = 0.5 } = {}) {
     const idx = Math.min(PENTATONIC.length - 1, Math.floor(x * PENTATONIC.length));
     const note = PENTATONIC[idx] + (y < 0.4 ? 12 : 0);
@@ -178,10 +214,38 @@ function onClick(e) {
   if (nowMs - lastAt < 35) return;
   lastAt = nowMs;
 
+  haptic(kind);
+  if (clickListeners.size) {
+    let { clientX: x, clientY: y } = e;
+    // Keyboard "clicks" have no position: use the element's centre.
+    if (e.detail === 0 && e.target.getBoundingClientRect) {
+      const r = e.target.getBoundingClientRect();
+      x = r.left + r.width / 2;
+      y = r.top + r.height / 2;
+    }
+    clickListeners.forEach((fn) => fn({ kind, x, y }));
+  }
   SOUNDS[kind](g, g.ctx.currentTime + 0.01, {
     x: e.clientX / window.innerWidth,
     y: e.clientY / window.innerHeight,
   });
+}
+
+/** Play an interface sound from code. `live` only plays if audio is
+    already running (use it for sounds that aren't a direct response to a
+    click or key press). */
+export function playSfx(kind, { live = false, x, y } = {}) {
+  if (!live) haptic(kind);
+  const g = live ? getLiveSfxGraph() : getSfxGraph();
+  if (!g || !SOUNDS[kind]) return;
+  SOUNDS[kind](g, g.ctx.currentTime + 0.005, { x, y });
+}
+
+/* Particles and the like listen for interface clicks. */
+const clickListeners = new Set();
+export function onInterfaceClick(fn) {
+  clickListeners.add(fn);
+  return () => clickListeners.delete(fn);
 }
 
 let installed = false;

@@ -77,10 +77,24 @@ function makeImpulse(seconds, decay) {
   return buffer;
 }
 
-function build() {
+let built = false;
+
+/* The bare context is cheap; the graph (generated reverb and noise
+   buffers) is not. Browsers keep audio suspended until the visitor's first
+   click, so the graph is only built once sound can actually play, keeping
+   that work out of page load. */
+function ensureContext() {
+  if (ctx) return true;
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   if (!AudioCtx) return false;
   ctx = new AudioCtx();
+  return true;
+}
+
+function build() {
+  if (built) return true;
+  if (!ensureContext()) return false;
+  built = true;
 
   master = ctx.createGain();
   master.gain.value = 0;
@@ -314,13 +328,14 @@ function declarePlayback() {
 }
 
 export async function play() {
-  if (!ctx && !build()) return;
+  if (!ensureContext()) return;
   wanted = true;
   window.clearTimeout(suspendTimer);
   declarePlayback();
   // Without a user gesture the browser keeps this pending (autoplay policy).
   await ctx.resume();
   if (!wanted || ctx.state !== "running") return;
+  build();
   pendingStartCleanup?.();
   armed = false;
   if (playing) return;
@@ -362,7 +377,7 @@ export function toggle() {
     is on; call this from a click/tap handler so the browser lets the
     context wake. Returns null only if Web Audio is unavailable. */
 export function getSfxGraph() {
-  if (!ctx && !build()) return null;
+  if (!build()) return null;
   if (!playing) {
     // Always (re)wake: a suspend() may still be in flight from the idle timer.
     window.clearTimeout(suspendTimer);
@@ -371,6 +386,36 @@ export function getSfxGraph() {
     scheduleIdleSuspend(4000);
   }
   return { ctx, out: sfxBus, space: sfxSpace, echo: sfxEcho };
+}
+
+/** The interface-sound graph only if audio is already running: for sounds
+    that aren't a response to a click (e.g. typing on the boot screen).
+    Sounds queued on a sleeping context would all fire at once on wake. */
+export function getLiveSfxGraph() {
+  if (!built || ctx.state !== "running") return null;
+  return { ctx, out: sfxBus, space: sfxSpace, echo: sfxEcho };
+}
+
+/** Hyperdrive: the pad filter opens wide and settles back. */
+export function musicSweep(seconds = 2.6) {
+  if (!playing || !padFilter) return;
+  const f = padFilter.frequency;
+  const t = ctx.currentTime;
+  f.cancelScheduledValues(t);
+  f.setValueAtTime(f.value, t);
+  f.exponentialRampToValueAtTime(5200, t + seconds * 0.4);
+  f.exponentialRampToValueAtTime(900, t + seconds);
+}
+
+/** 0..1 loudness of the music right now (0 when muted). */
+let levelData = null;
+export function getMusicLevel() {
+  if (!playing || !analyser) return 0;
+  levelData ??= new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(levelData);
+  let sum = 0;
+  for (let i = 1; i < 10; i++) sum += levelData[i];
+  return sum / (9 * 255);
 }
 
 export function getAnalyser() {
@@ -415,7 +460,9 @@ if (typeof window !== "undefined") {
     };
 
     // Attempt a true autoplay once the page has loaded.
-    const attempt = () => play();
+    // Once the page has settled: creating an audio context isn't free.
+    const attempt = () =>
+      window.requestIdleCallback ? window.requestIdleCallback(() => play(), { timeout: 1000 }) : play();
     if (document.readyState === "complete") attempt();
     else window.addEventListener("load", attempt, { once: true });
   }

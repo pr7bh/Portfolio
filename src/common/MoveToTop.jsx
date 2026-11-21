@@ -37,7 +37,7 @@ function MoveToTop() {
         duration-500
         ease-out
         md:bottom-8
-        md:right-8
+        md:left-8
         ${
           visible
             ? "translate-y-0 scale-100 opacity-100"
@@ -49,6 +49,7 @@ function MoveToTop() {
         type="button"
         onClick={moveToTop}
         aria-label="Move to top"
+        data-magnetic="0.35"
         className="custom-cursor--action group"
       >
         <GlassSurface

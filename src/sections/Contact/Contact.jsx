@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { IconAlertCircle, IconArrowUpRight, IconCheck, IconSparkles } from "@tabler/icons-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -8,6 +8,7 @@ import Strands from "../../common/Strands";
 import { Magnetic } from "../../common/Interactive";
 import { useMediaQuery } from "../../common/hooks";
 import { MESSAGE_MAX, VALIDATORS } from "./validation";
+import { AvailabilityBadge, BookCallButton } from "../../common/Availability";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -131,6 +132,24 @@ function Contact() {
   const [hints, setHints] = useState({});
   const [messageLength, setMessageLength] = useState(0);
   const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  // "Book a call" (and the terminal) can start the message for the visitor.
+  useEffect(() => {
+    const onPrefill = (e) => {
+      const box = document.getElementById("message");
+      if (!box) return;
+      const text = e.detail?.message || "";
+      if (!box.value.trim()) box.value = text;
+      setMessageLength(box.value.trim().length);
+      // Wait for the smooth scroll to land before moving focus.
+      window.setTimeout(() => {
+        const name = document.getElementById("name");
+        (name && !name.value ? name : box).focus({ preventScroll: true });
+      }, 700);
+    };
+    window.addEventListener("contact:prefill", onPrefill);
+    return () => window.removeEventListener("contact:prefill", onPrefill);
+  }, []);
 
   // Validate one field and record the outcome. Errors appear once a field
   // is left (blur) or on submit; after that they update live while typing.
@@ -298,6 +317,11 @@ function Contact() {
 
           <motion.div {...reveal(0.1)} className="mt-6 max-w-md text-base leading-7 text-white/55">
             Send a message and I&rsquo;ll get back to you soon.
+          </motion.div>
+
+          <motion.div {...reveal(0.15)} className="mt-8 flex flex-wrap items-center gap-3">
+            <AvailabilityBadge />
+            <BookCallButton />
           </motion.div>
 
           <motion.ul {...reveal(0.2)} className="mt-12 border-t border-white/10">

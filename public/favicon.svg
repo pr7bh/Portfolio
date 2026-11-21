@@ -1,47 +1,46 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <radialGradient id="bg" cx="0.6" cy="0.4" r="0.85">
-      <stop offset="0" stop-color="#1d1813"/>
-      <stop offset="0.55" stop-color="#0b0b0d"/>
+    <radialGradient id="bg" cx="0.5" cy="0.3" r="0.95">
+      <stop offset="0" stop-color="#151a1d"/>
+      <stop offset="0.55" stop-color="#0a0a0c"/>
       <stop offset="1" stop-color="#050506"/>
     </radialGradient>
-    <linearGradient id="signal" gradientUnits="userSpaceOnUse" x1="18" y1="52" x2="46" y2="14">
-      <stop offset="0" stop-color="#93f1ff"/>
-      <stop offset="0.5" stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#ffa24c"/>
+    <linearGradient id="sig" gradientUnits="userSpaceOnUse" x1="15" y1="47" x2="50" y2="17">
+      <stop offset="0" stop-color="#5fe6ff"/>
+      <stop offset="0.48" stop-color="#e9fbff"/>
+      <stop offset="1" stop-color="#ff9a3d"/>
     </linearGradient>
-    <radialGradient id="core">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="0.3" stop-color="#ffd2a3"/>
-      <stop offset="0.6" stop-color="#ffa24c" stop-opacity="0.55"/>
-      <stop offset="1" stop-color="#ffa24c" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="spark">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="0.35" stop-color="#93f1ff"/>
-      <stop offset="1" stop-color="#93f1ff" stop-opacity="0"/>
-    </radialGradient>
-    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="2.2" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.4"/>
     </filter>
+    <radialGradient id="spark">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="0.4" stop-color="#ffb46b"/>
+      <stop offset="1" stop-color="#ff9a3d" stop-opacity="0"/>
+    </radialGradient>
   </defs>
 
   <rect width="64" height="64" rx="15" fill="url(#bg)"/>
-  <rect x="1" y="1" width="62" height="62" rx="14" fill="none" stroke="#fff" stroke-opacity="0.12" stroke-width="1.5"/>
+  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" fill="none" stroke="#fff" stroke-opacity="0.1" stroke-width="1.5"/>
 
-  <!-- Faint outer orbit -->
-  <circle cx="33" cy="27" r="19.5" fill="none" stroke="#93f1ff" stroke-opacity="0.18" stroke-width="1.1"/>
-
-  <!-- "P": stem + portal ring as the bowl -->
-  <g filter="url(#glow)" fill="none" stroke="url(#signal)" stroke-linecap="round" stroke-width="5">
-    <path d="M21 27 V51"/>
-    <circle cx="33" cy="27" r="12"/>
+  <!-- HUD corner brackets -->
+  <g fill="none" stroke-width="1.5" stroke-linecap="round">
+    <path d="M9 15 V9 H15" stroke="#93f1ff" stroke-opacity="0.55"/>
+    <path d="M49 9 H55 V15" stroke="#ffa24c" stroke-opacity="0.45"/>
+    <path d="M55 49 V55 H49" stroke="#ffa24c" stroke-opacity="0.3"/>
+    <path d="M15 55 H9 V49" stroke="#93f1ff" stroke-opacity="0.4"/>
   </g>
 
-  <!-- Signal core -->
-  <circle cx="33" cy="27" r="7.5" fill="url(#core)"/>
+  <!-- P and S drawn as one circuit trace -->
+  <g fill="none" stroke="url(#sig)" stroke-linecap="round" stroke-linejoin="round">
+    <path id="trace" stroke-width="4.6" stroke-opacity="0.55" filter="url(#soft)"
+          d="M16 46 V18 H27.5 L31.5 22 V27.5 L27.5 31.5 H16 M50 18 H40.5 L37 21.5 V28 L40.5 31.5 H46.5 L50 35 V42.5 L46.5 46 H37"/>
+    <path stroke-width="3.8"
+          d="M16 46 V18 H27.5 L31.5 22 V27.5 L27.5 31.5 H16 M50 18 H40.5 L37 21.5 V28 L40.5 31.5 H46.5 L50 35 V42.5 L46.5 46 H37"/>
+  </g>
 
-  <!-- Orbiting spark on the outer orbit -->
-  <circle cx="49.9" cy="17.25" r="5" fill="url(#spark)"/>
+  <!-- Circuit nodes -->
+  <circle cx="16" cy="46" r="3.1" fill="#050506" stroke="#5fe6ff" stroke-width="1.8"/>
+  <circle cx="50" cy="18" r="6" fill="url(#spark)"/>
+  <circle cx="50" cy="18" r="2.2" fill="#fff"/>
 </svg>

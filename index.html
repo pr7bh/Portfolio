@@ -18,13 +18,24 @@
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#050506" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Prabhjot" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://prabhjotsinghrainu.vercel.app/" />
     <meta property="og:title" content="Prabhjot Singh | Full Stack Developer &amp; GenAI Engineer" />
     <meta property="og:description" content="Full Stack Developer with 2+ years of experience in React.js, FastAPI, and GenAI. Explore projects, skills, and experience." />
-    <meta property="og:image" content="https://prabhjotsinghrainu.vercel.app/og-image.png" />
+    <meta property="og:image" content="https://prabhjotsinghrainu.vercel.app/og-cover.jpg" />
+    <meta property="og:image:secure_url" content="https://prabhjotsinghrainu.vercel.app/og-cover.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Prabhjot Singh — Full Stack and GenAI Developer. Open to roles." />
     <meta property="og:site_name" content="Prabhjot Singh Portfolio" />
     <meta property="og:locale" content="en_US" />
 
@@ -33,7 +44,13 @@
     <meta name="twitter:url" content="https://prabhjotsinghrainu.vercel.app/" />
     <meta name="twitter:title" content="Prabhjot Singh | Full Stack Developer &amp; GenAI Engineer" />
     <meta name="twitter:description" content="Full Stack Developer with 2+ years of experience in React.js, FastAPI, and GenAI." />
-    <meta name="twitter:image" content="https://prabhjotsinghrainu.vercel.app/og-image.png" />
+    <meta name="twitter:image" content="https://prabhjotsinghrainu.vercel.app/og-cover.jpg" />
+    <meta name="twitter:image:alt" content="Prabhjot Singh — Full Stack and GenAI Developer. Open to roles." />
+
+    <!-- Brand font: preloaded so the hero title doesn't reflow when it arrives -->
+    <link rel="preload" href="/fonts/Nippo-Bold.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/Nippo-Medium.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/Nippo-Regular.woff2" as="font" type="font/woff2" crossorigin />
 
     <!-- Google Fonts — non-render-blocking -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -100,8 +117,105 @@
       ]
     }
     </script>
+    <!-- Loading splash: plain HTML/CSS so it shows from the very first
+         frame, before any JavaScript. AppLoader dissolves it once the site
+         is ready (or hands over to the first-visit boot screen). -->
+    <style>
+      /* Dark from the first frame. Only on body: with a background on html
+         too, body's would paint over the -z-10 particle layer. */
+      body { background: #050506; }
+      #splash {
+        position: fixed; inset: 0; z-index: 99999;
+        display: grid; place-items: center;
+        background:
+          radial-gradient(420px circle at 50% 46%, rgba(147, 241, 255, 0.07), transparent 65%),
+          radial-gradient(360px circle at 58% 60%, rgba(255, 162, 76, 0.05), transparent 60%),
+          #050506;
+        color: #f4f2ee;
+        font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), filter 0.7s ease;
+      }
+      #splash.splash--out { opacity: 0; transform: scale(1.08); filter: blur(8px); pointer-events: none; }
+      #splash::after {
+        content: ""; position: absolute; inset: 0; pointer-events: none;
+        background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.022) 0 1px, transparent 1px 3px);
+      }
+      .splash__core { display: flex; flex-direction: column; align-items: center; gap: 30px; }
+      .splash__emblem { position: relative; width: 132px; height: 132px; display: grid; place-items: center; }
+      .splash__ring, .splash__orbit { position: absolute; inset: 0; border-radius: 50%; }
+      .splash__ring {
+        background: conic-gradient(from 0deg, transparent 0 55%, rgba(147,241,255,0.9) 75%, #fff 80%, rgba(255,162,76,0.9) 86%, transparent 92%);
+        -webkit-mask: radial-gradient(circle, transparent 63px, #000 64px, #000 65.5px, transparent 66px);
+                mask: radial-gradient(circle, transparent 63px, #000 64px, #000 65.5px, transparent 66px);
+        animation: splashSpin 1.6s linear infinite;
+        will-change: transform;
+      }
+      .splash__orbit { border: 1px solid rgba(255,255,255,0.08); }
+      .splash__orbit::before {
+        content: ""; position: absolute; inset: 14px; border-radius: 50%;
+        border: 1px dashed rgba(147,241,255,0.14);
+        animation: splashSpin 14s linear infinite reverse;
+        will-change: transform;
+      }
+      .splash__mark { width: 66px; height: 60px; overflow: visible; }
+      /* Only the crisp line draws in (a repaint per frame); the blurred glow
+         under it just fades in once it's drawn, which is much cheaper. */
+      .splash__trace { stroke-dasharray: 1; stroke-dashoffset: 1; animation: splashDraw 0.9s cubic-bezier(0.65, 0, 0.35, 1) 0.1s forwards; }
+      .splash__glow { opacity: 0; animation: splashFade 0.5s ease 0.85s forwards; }
+      .splash__spark { transform-box: fill-box; transform-origin: center; opacity: 0; animation: splashSpark 1.8s ease-in-out 0.9s infinite; }
+      .splash__node { opacity: 0; animation: splashFade 0.3s ease 0.05s forwards; }
+      .splash__name { font-size: 11px; letter-spacing: 0.42em; text-indent: 0.42em; color: rgba(244,242,238,0.85); }
+      .splash__name b { color: #ffa24c; font-weight: 400; }
+      .splash__bar { position: relative; width: 168px; height: 1px; overflow: hidden; background: rgba(255,255,255,0.1); }
+      .splash__bar::before {
+        content: ""; position: absolute; inset: 0; width: 40%; will-change: transform;
+        background: linear-gradient(90deg, transparent, #93f1ff, #fff, #ffa24c, transparent);
+        box-shadow: 0 0 10px rgba(147,241,255,0.8);
+        animation: splashScan 1.1s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+      }
+      .splash__status { margin-top: -14px; font-size: 9px; letter-spacing: 0.3em; text-indent: 0.3em; text-transform: uppercase; color: rgba(244,242,238,0.5); }
+      .splash__status::after { content: "_"; animation: splashBlink 0.9s steps(1) infinite; }
+      @keyframes splashSpin { to { transform: rotate(360deg); } }
+      @keyframes splashDraw { to { stroke-dashoffset: 0; } }
+      @keyframes splashFade { to { opacity: 1; } }
+      @keyframes splashSpark { 0%, 100% { opacity: 0.75; transform: scale(0.85); } 50% { opacity: 1; transform: scale(1.35); } }
+      @keyframes splashScan { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+      @keyframes splashBlink { 50% { opacity: 0; } }
+      @media (prefers-reduced-motion: reduce) {
+        .splash__ring, .splash__orbit::before, .splash__bar::before, .splash__status::after { animation: none; }
+        .splash__trace { animation: none; stroke-dashoffset: 0; }
+        .splash__spark, .splash__node, .splash__glow { animation: none; opacity: 1; }
+      }
+    </style>
   </head>
   <body>
+    <div id="splash" aria-hidden="true">
+      <div class="splash__core">
+        <div class="splash__emblem">
+          <div class="splash__orbit"></div>
+          <div class="splash__ring"></div>
+          <svg class="splash__mark" viewBox="11 12 44 40">
+            <defs>
+              <linearGradient id="splash-sig" gradientUnits="userSpaceOnUse" x1="15" y1="47" x2="50" y2="17">
+                <stop offset="0" stop-color="#5fe6ff" /><stop offset="0.48" stop-color="#e9fbff" /><stop offset="1" stop-color="#ff9a3d" />
+              </linearGradient>
+              <filter id="splash-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2" /></filter>
+              <radialGradient id="splash-spark"><stop offset="0" stop-color="#fff" /><stop offset="0.4" stop-color="#ffb46b" /><stop offset="1" stop-color="#ff9a3d" stop-opacity="0" /></radialGradient>
+            </defs>
+            <g fill="none" stroke="url(#splash-sig)" stroke-linecap="round" stroke-linejoin="round">
+              <path class="splash__glow" stroke-width="4.6" stroke-opacity="0.5" filter="url(#splash-glow)" d="M16 46 V18 H27.5 L31.5 22 V27.5 L27.5 31.5 H16 M50 18 H40.5 L37 21.5 V28 L40.5 31.5 H46.5 L50 35 V42.5 L46.5 46 H37" />
+              <path class="splash__trace" pathLength="1" stroke-width="3.8" d="M16 46 V18 H27.5 L31.5 22 V27.5 L27.5 31.5 H16 M50 18 H40.5 L37 21.5 V28 L40.5 31.5 H46.5 L50 35 V42.5 L46.5 46 H37" />
+            </g>
+            <circle class="splash__node" cx="16" cy="46" r="3.1" fill="#050506" stroke="#5fe6ff" stroke-width="1.8" />
+            <circle class="splash__spark" cx="50" cy="18" r="6" fill="url(#splash-spark)" />
+            <circle class="splash__spark" cx="50" cy="18" r="2.2" fill="#fff" />
+          </svg>
+        </div>
+        <div class="splash__name">PRABHJOT<b>.</b>SYS</div>
+        <div class="splash__bar"></div>
+        <div class="splash__status">Loading interface</div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes.chat import router as chat_router
+from app.routes.github import router as github_router
 from app.services.rag import build_retriever, use_full_context
 
 logging.basicConfig(level=logging.INFO)
@@ -30,6 +31,7 @@ app.add_middleware(
 )
 
 app.include_router(chat_router, prefix="/api")
+app.include_router(github_router, prefix="/api")
 
 
 @app.on_event("startup")

@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Mesh, Program, Renderer, Triangle } from "ogl";
+import { getMusicLevel } from "./ambientAudio";
+import { onWarp } from "./fx";
 
 const vertex = /* glsl */ `
 attribute vec2 position;
@@ -18,6 +20,9 @@ uniform vec2 uMouse;
 uniform float uProgress;
 uniform float uIntro;
 uniform float uRadius;
+uniform float uBeat;   // 0..1 music loudness (bass-weighted), smoothed
+uniform float uFlow;   // ring travel; runs fast during hyperdrive
+uniform float uWarp;   // 0..1 hyperdrive intensity
 
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
@@ -53,19 +58,19 @@ void main() {
   float t = uTime;
 
   float e = uProgress * uProgress * (3.0 - 2.0 * uProgress);
-  float R = uRadius * (1.0 + e * 2.6);
+  float R = uRadius * (1.0 + e * 2.6) * (1.0 + uBeat * 0.03);
   float d = r - R;
   float outside = smoothstep(-0.004, 0.03, d);
 
   // Log-spaced filaments drifting outward: a tunnel of light around the portal.
   float lr = log(max(r, 1e-3));
   float warp = fbm(dir * 1.8 + vec2(lr * 1.5 - t * 0.12, t * 0.05));
-  float rings = pow(1.0 - abs(sin(lr * 16.0 - t * 0.55 + warp * 4.0)), 10.0);
-  float filaments = rings * outside * exp(-max(d, 0.0) * 2.8);
+  float rings = pow(1.0 - abs(sin(lr * 16.0 - uFlow + warp * 4.0)), mix(10.0, 6.0, uBeat));
+  float filaments = rings * outside * exp(-max(d, 0.0) * mix(2.8, 1.6, max(uBeat, uWarp)));
 
   // Corona hugging the rim, thickness modulated by noise.
   float n = fbm(dir * 3.0 + vec2(t * 0.08, -t * 0.05));
-  float corona = exp(-abs(d) * mix(64.0, 18.0, n)) * (0.3 + 0.95 * n);
+  float corona = exp(-abs(d) * mix(64.0, 18.0, n)) * (0.3 + 0.95 * n) * (1.0 + uBeat * 0.9 + uWarp);
 
   float haze = exp(-max(d, 0.0) * 3.0) * 0.12 * outside;
 
@@ -76,7 +81,7 @@ void main() {
   float side = 0.5 + 0.5 * sin(ang + t * 0.08);
   vec3 tint = mix(vec3(0.58, 0.94, 1.0), vec3(1.0, 0.64, 0.30), side);
 
-  vec3 col = vec3(1.0, 0.97, 0.92) * corona * 0.85 + tint * (filaments * 0.42 + haze);
+  vec3 col = vec3(1.0, 0.97, 0.92) * corona * 0.85 + tint * (filaments * (0.42 + uBeat * 0.7 + uWarp * 1.2) + haze);
   col *= facing;
   col *= smoothstep(1.5, 0.25, length(p));
   col *= 0.92 + 0.16 * hash(gl_FragCoord.xy + fract(t * 7.0) * 91.0);
@@ -135,6 +140,9 @@ function HeroPortal({ progressRef, onUnsupported }) {
         uTime: { value: 0 },
         uMouse: { value: [0, 0] },
         uProgress: { value: 0 },
+        uBeat: { value: 0 },
+        uFlow: { value: 0 },
+        uWarp: { value: 0 },
         uIntro: { value: reduce ? 1 : 0 },
         uRadius: { value: PORTRAIT_RADIUS },
       },
@@ -148,6 +156,13 @@ function HeroPortal({ progressRef, onUnsupported }) {
     let last = performance.now();
     const born = last;
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+    let beat = 0;
+    let flow = 0;
+    let warp = 0;
+    const offWarp = onWarp(({ intensity }) => {
+      warp = Math.max(warp, intensity);
+      schedule();
+    });
 
     const draw = () => {
       if (u.uProgress.value < 0.97) renderer.render({ scene: mesh });
@@ -165,11 +180,20 @@ function HeroPortal({ progressRef, onUnsupported }) {
         mouse.y += (mouse.ty - mouse.y) * k;
         const t = Math.min(1, Math.max(0, (now - born - 500) / 1800));
         u.uIntro.value = 1 - Math.pow(1 - t, 3);
+
+        // Pulse with the music: quick attack, slower release.
+        const level = Math.min(1, getMusicLevel() * 2.4);
+        beat += (level - beat) * (level > beat ? 1 - Math.exp(-dt * 18) : 1 - Math.exp(-dt * 4));
+        warp *= Math.exp(-dt * 1.6);
+        flow += dt * (0.55 + beat * 0.9 + warp * 9);
       }
 
       u.uTime.value = time;
       u.uMouse.value = [mouse.x, mouse.y];
       u.uProgress.value = progressRef?.current ?? 0;
+      u.uBeat.value = beat;
+      u.uFlow.value = flow;
+      u.uWarp.value = warp;
       draw();
 
       if (!reduce) schedule();
@@ -208,6 +232,7 @@ function HeroPortal({ progressRef, onUnsupported }) {
 
     return () => {
       if (raf) cancelAnimationFrame(raf);
+      offWarp();
       ro.disconnect();
       io.disconnect();
       window.removeEventListener("pointermove", onPointer);

@@ -1,4 +1,6 @@
 import { motion } from "motion/react";
+import { IconTerminal2 } from "@tabler/icons-react";
+import { openTerminal } from "../../common/profile";
 
 function Footer() {
   const currentYear = new Date().getFullYear();
@@ -25,8 +27,21 @@ function Footer() {
         PRABHJOT SINGH
       </motion.div>
 
-      <div className="mx-auto mt-8 flex max-w-6xl flex-col items-center justify-between gap-2 border-t border-white/10 pt-6 text-[0.68rem] uppercase tracking-[0.2em] text-white/40 md:flex-row" style={{ fontFamily: "var(--font-mono)" }}>
+      <div className="mx-auto mt-8 flex max-w-6xl flex-col items-center justify-between gap-2 border-t border-white/10 pt-6 text-[0.68rem] uppercase tracking-[0.2em] text-white/55 md:flex-row" style={{ fontFamily: "var(--font-mono)" }}>
         <span>&copy; {currentYear} Prabhjot Singh. All rights reserved.</span>
+        <button
+          type="button"
+          data-sfx="open"
+          data-magnetic="0.25"
+          onClick={() => openTerminal()}
+          className="group order-first inline-flex items-center gap-2 rounded-full border border-white/12 px-3.5 py-1.5 text-white/55 transition-colors hover:border-(--cool)/50 hover:text-white md:order-none"
+        >
+          <IconTerminal2 size={14} stroke={1.6} className="text-(--cool)" />
+          <span>Open terminal</span>
+          <kbd className="hidden rounded border border-white/15 px-1.5 text-[0.6rem] text-white/55 md:inline">
+            {/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘K" : "Ctrl K"}
+          </kbd>
+        </button>
         <span>Built with React, WebGL &amp; Motion</span>
       </div>
     </footer>

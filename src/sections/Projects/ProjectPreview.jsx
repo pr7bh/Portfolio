@@ -1,7 +1,13 @@
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import { IconArrowLeft, IconArrowRight, IconArrowUpRight, IconX } from "@tabler/icons-react";
+import { IconArrowDown, IconArrowLeft, IconArrowRight, IconArrowUpRight, IconBrandGithub, IconX } from "@tabler/icons-react";
 import { Magnetic } from "../../common/Interactive";
+import Holo from "../../common/Holo";
+import { unlock } from "../../common/achievements";
+import { CASE_STUDIES } from "./caseStudies";
+
+// Distinct case studies opened this visit (three earns "Curator").
+const viewed = new Set();
 
 const ease = [0.22, 1, 0.36, 1];
 const pad = (n) => String(n).padStart(2, "0");
@@ -58,6 +64,15 @@ function Overlay({ items, index, onClose, onNavigate }) {
   }, [index, count, onClose, onNavigate]);
 
   const tags = item.subtitle.split("•").map((t) => t.trim()).filter(Boolean);
+  const study = CASE_STUDIES[item.title];
+  const repos = study?.repos || (study?.repo ? [{ label: "GitHub", url: study.repo }] : []);
+  const hasDetail = Boolean(study && (study.built.length || study.flow.length));
+
+  useEffect(() => {
+    viewed.add(item.title);
+    if (viewed.size >= 3) unlock("curator");
+    dialogRef.current?.scrollTo({ top: 0 });
+  }, [item.title]);
 
   return (
     <motion.div
@@ -92,7 +107,7 @@ function Overlay({ items, index, onClose, onNavigate }) {
         />
       </AnimatePresence>
 
-      <div className="pointer-events-none relative z-10 flex min-h-full items-center justify-center">
+      <div className="pointer-events-none relative z-10 flex min-h-[100dvh] items-center justify-center">
         <div className="pointer-events-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-5 pb-28 pt-24 md:px-10 lg:grid-cols-[1.4fr_1fr] lg:gap-16">
           <AnimatePresence mode="wait">
             <motion.div
@@ -103,14 +118,16 @@ function Overlay({ items, index, onClose, onNavigate }) {
               exit={{ clipPath: "inset(0% 0% 100% 0% round 28px)", opacity: 0, transition: { duration: 0.4, ease } }}
               transition={{ duration: 0.9, ease }}
             >
-              <motion.img
-                src={item.src}
-                alt={item.alt}
-                draggable={false}
-                className="absolute inset-0 h-full w-full object-cover"
-                style={{ x: imgX, y: imgY, scale: 1.12 }}
-              />
-              <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/45 via-transparent to-transparent" />
+              <Holo className="absolute inset-0" max={7}>
+                <motion.img
+                  src={item.src}
+                  alt={item.alt}
+                  draggable={false}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  style={{ x: imgX, y: imgY, scale: 1.12 }}
+                />
+                <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/45 via-transparent to-transparent" />
+              </Holo>
               <span
                 aria-hidden="true"
                 className="absolute inset-x-10 top-0 h-px"
@@ -142,6 +159,11 @@ function Overlay({ items, index, onClose, onNavigate }) {
               >
                 {item.title}
               </motion.h3>
+              {study?.kind && (
+                <motion.p variants={fade} className="meta mt-4" style={{ color: item.accent }}>
+                  {study.kind}
+                </motion.p>
+              )}
 
               <motion.ul variants={fade} className="mt-7 flex flex-wrap gap-2" aria-label="Highlights">
                 {tags.map((tag) => (
@@ -151,7 +173,7 @@ function Overlay({ items, index, onClose, onNavigate }) {
                 ))}
               </motion.ul>
 
-              <motion.div variants={fade} className="mt-10">
+              <motion.div variants={fade} className="mt-10 flex flex-wrap items-center gap-3">
                 <Magnetic strength={0.25}>
                   <a
                     href={item.link}
@@ -167,11 +189,36 @@ function Overlay({ items, index, onClose, onNavigate }) {
                     />
                   </a>
                 </Magnetic>
+                {repos.map((r) => (
+                  <a
+                    key={r.url}
+                    href={r.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-4 text-sm font-medium text-white/85 transition-colors duration-300 hover:border-white/50 hover:text-white"
+                  >
+                    <IconBrandGithub size={17} stroke={1.6} />
+                    {r.label}
+                  </a>
+                ))}
               </motion.div>
+              {hasDetail && (
+                <motion.button
+                  type="button"
+                  variants={fade}
+                  onClick={() => document.getElementById("case-study")?.scrollIntoView({ behavior: "smooth" })}
+                  className="meta mt-8 inline-flex items-center gap-2 text-white/55 transition-colors hover:text-white"
+                >
+                  <IconArrowDown size={14} stroke={1.75} className="animate-bounce" />
+                  Case study
+                </motion.button>
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
+
+      {hasDetail && <CaseStudy key={`study-${index}`} study={study} accent={item.accent} />}
 
       <button
         ref={closeRef}
@@ -205,6 +252,80 @@ function Overlay({ items, index, onClose, onNavigate }) {
         </button>
       </div>
     </motion.div>
+  );
+}
+
+const reveal = {
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.25 },
+  transition: { duration: 0.8, ease },
+};
+
+/* The scrollable write-up below the hero: what it is, what was built, how
+   it fits together, and the stack. */
+function CaseStudy({ study, accent }) {
+  return (
+    <section
+      id="case-study"
+      aria-label="Case study"
+      className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-36 md:px-10"
+    >
+      <div className="grid grid-cols-1 gap-14 border-t border-white/10 pt-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+        <motion.div {...reveal}>
+          <p className="meta" style={{ color: accent }}>01 — Overview</p>
+          <p className="mt-6 text-xl leading-relaxed text-white/80 md:text-2xl">{study.overview}</p>
+        </motion.div>
+
+        {study.built.length > 0 && (
+          <motion.div {...reveal}>
+            <p className="meta" style={{ color: accent }}>02 — What I built</p>
+            <ul className="mt-6 space-y-4">
+              {study.built.map((b, i) => (
+                <li key={b} className="flex gap-4 text-base leading-7 text-white/75">
+                  <span className="meta mt-1.5 shrink-0 text-white/40">{String(i + 1).padStart(2, "0")}</span>
+                  {b}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        )}
+      </div>
+
+      {study.flow.length > 0 && (
+        <motion.div {...reveal} className="mt-20">
+          <p className="meta" style={{ color: accent }}>03 — How it fits together</p>
+          <ol className="case-flow mt-8" style={{ "--accent": accent }}>
+            {study.flow.map((step, i) => (
+              <motion.li
+                key={step}
+                className="case-flow__node"
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, ease, delay: 0.15 + i * 0.12 }}
+              >
+                <span className="meta text-white/45">{String(i + 1).padStart(2, "0")}</span>
+                <span className="mt-2 block text-sm font-medium text-white/90">{step}</span>
+              </motion.li>
+            ))}
+          </ol>
+        </motion.div>
+      )}
+
+      {study.stack.length > 0 && (
+        <motion.div {...reveal} className="mt-20">
+          <p className="meta" style={{ color: accent }}>04 — Stack</p>
+          <ul className="mt-6 flex flex-wrap gap-2.5">
+            {study.stack.map((t) => (
+              <li key={t} className="rounded-xl border border-white/12 bg-white/[0.03] px-4 py-2 text-sm text-white/80">
+                {t}
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+      )}
+    </section>
   );
 }
 

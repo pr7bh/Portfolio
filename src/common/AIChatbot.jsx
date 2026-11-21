@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { unlock } from "./achievements";
 import ReactMarkdown from "react-markdown";
 import { AnimatePresence, motion } from "motion/react";
 import {
@@ -113,6 +114,7 @@ function AIChatbot() {
     }
 
     retryQuestionRef.current = trimmedQuestion;
+    unlock("oracle");
     setQuestion("");
     setIsLoading(true);
     setSlowBackend(false);
@@ -154,6 +156,19 @@ function AIChatbot() {
       setIsLoading(false);
     }
   };
+
+  // Other parts of the site (the terminal) can open the chat and ask.
+  const askRef = useRef(askQuestion);
+  askRef.current = askQuestion;
+  useEffect(() => {
+    const onAsk = (e) => {
+      setIsOpen(true);
+      const q = e.detail?.question;
+      if (q) window.setTimeout(() => askRef.current(q), 350);
+    };
+    window.addEventListener("ai:ask", onAsk);
+    return () => window.removeEventListener("ai:ask", onAsk);
+  }, []);
 
   const close = () => {
     setIsOpen(false);
@@ -414,7 +429,7 @@ function AIChatbot() {
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={isOpen ? "Close AI assistant" : "Open AI assistant"}
         aria-expanded={isOpen}
-        className="group fixed bottom-2 right-0 z-10001 flex h-20 w-20 items-center justify-center rounded-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-110 active:scale-95"
+        className="group fixed bottom-[21px] right-4 z-10001 flex h-15 w-15 items-center justify-center rounded-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-110 active:scale-95 md:bottom-[25px] md:right-8 md:h-17 md:w-17"
       >
         <span
           aria-hidden="true"
@@ -425,7 +440,7 @@ function AIChatbot() {
         >
           Ask my AI
         </span>
-        <div className="h-20 w-20">
+        <div className="h-full w-full">
           <Strands glass energy={isOpen ? 0.85 : 0.65} listening={isLoading} clickPulse maxDevicePixelRatio={1.5} />
         </div>
       </button>

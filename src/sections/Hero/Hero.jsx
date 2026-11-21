@@ -3,7 +3,7 @@ import githubDark from "../../assets/github-dark.svg";
 import linkedinLight from "../../assets/linkedin-light.svg";
 import linkedinDark from "../../assets/linkedin-dark.svg";
 import CV from "../../assets/cv.pdf";
-import heroImage from "../../assets/hero.jpg";
+import heroImage from "../../assets/hero.webp";
 import SpecularButton from "../../common/SpecularButton";
 
 import { useTheme } from "../../common/ThemeContext";
@@ -15,13 +15,30 @@ import { Magnetic } from "../../common/Interactive";
 import { useMediaQuery } from "../../common/hooks";
 import { IconPhone } from "@tabler/icons-react";
 import { motion } from "motion/react";
+import { AvailabilityBadge } from "../../common/Availability";
+import ScrollCue from "../../common/ScrollCue";
+import { getMood } from "../../common/fx";
+import { useIntroReady } from "../../common/introGate";
 
 const ease = [0.22, 1, 0.36, 1];
 
+const greeting = getMood().greeting;
+
 function HeroTitle() {
+  const ready = useIntroReady();
   let n = 0;
   return (
     <div className="flex flex-col items-center gap-[0.4em]">
+      {/* Greeting for the visitor's local time of day */}
+      <motion.span
+        className="meta mb-[0.6em]"
+        initial={{ opacity: 0, y: -8 }}
+        animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: -8 }}
+        transition={{ duration: 1, delay: 0.35, ease }}
+        style={{ fontSize: "clamp(0.55rem, 0.9vw, 0.7rem)", color: "rgba(255,255,255,0.75)", letterSpacing: "0.28em" }}
+      >
+        {greeting}
+      </motion.span>
       <span className="sr-only">Prabhjot Singh</span>
       <span aria-hidden="true" className="flex flex-wrap justify-center gap-x-[0.28em]">
         {["PRABHJOT", "SINGH"].map((word) => (
@@ -33,7 +50,7 @@ function HeroTitle() {
                   key={i}
                   className="inline-block"
                   initial={{ y: "110%" }}
-                  animate={{ y: "0%" }}
+                  animate={{ y: ready ? "0%" : "110%" }}
                   transition={{ duration: 1.1, delay: 0.7 + i * 0.045, ease }}
                 >
                   {ch}
@@ -46,10 +63,11 @@ function HeroTitle() {
       <motion.span
         aria-hidden="true"
         className="meta"
-        initial={{ opacity: 0, letterSpacing: "0.6em" }}
-        animate={{ opacity: 1, letterSpacing: "0.32em" }}
-        transition={{ duration: 1.6, delay: 1.4, ease }}
-        style={{ fontSize: "clamp(0.55rem, 1vw, 0.78rem)", color: "rgba(255,255,255,0.72)" }}
+        // Fade/blur instead of animating letter-spacing, which moves layout.
+        initial={{ opacity: 0, y: 8, filter: "blur(6px)" }}
+        animate={ready ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 8, filter: "blur(6px)" }}
+        transition={{ duration: 1.4, delay: 1.4, ease }}
+        style={{ fontSize: "clamp(0.55rem, 1vw, 0.78rem)", color: "rgba(255,255,255,0.72)", letterSpacing: "0.32em" }}
       >
         Full Stack · GenAI Developer
       </motion.span>
@@ -70,7 +88,7 @@ const getCircleProps = () => {
   };
 };
 
-// Where the face sits in hero.jpg (fractions of width / height).
+// Where the face sits in hero.webp (fractions of width / height).
 const FACE_FOCUS = { x: 0.487, y: 0.44 };
 
 function Hero() {
@@ -136,66 +154,7 @@ function Hero() {
             onUnsupported={() => setPortalUnsupported(true)}
           />
         }
-        scrollHint={
-          <>
-            <style>{`
-              @keyframes heroDot {
-                0%        { transform: translateX(-50%) translateY(0px);  opacity: 1;   }
-                65%       { transform: translateX(-50%) translateY(30px); opacity: 0;   }
-                66%, 100% { transform: translateX(-50%) translateY(0px);  opacity: 0;   }
-              }
-              @keyframes heroPulse {
-                0%, 100% { opacity: 0.45; }
-                50%      { opacity: 1;    }
-              }
-            `}</style>
-            <div
-              style={{
-                display: "inline-flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "10px",
-                animation: "heroPulse 2.4s ease-in-out infinite",
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "'Nippo', sans-serif",
-                  fontSize: "0.56rem",
-                  fontWeight: 400,
-                  letterSpacing: "0.32em",
-                  textTransform: "uppercase",
-                  color: "rgba(255,255,255,0.8)",
-                  textShadow: "0 2px 10px rgba(0,0,0,0.9)",
-                }}
-              >
-                Scroll
-              </span>
-              <div
-                style={{
-                  position: "relative",
-                  width: "1px",
-                  height: "46px",
-                  background: "rgba(255,255,255,0.18)",
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: "50%",
-                    width: "5px",
-                    height: "5px",
-                    borderRadius: "50%",
-                    background: "rgba(255,255,255,0.95)",
-                    boxShadow: "0 0 7px rgba(255,255,255,0.5)",
-                    animation: "heroDot 1.7s ease-in-out infinite",
-                  }}
-                />
-              </div>
-            </div>
-          </>
-        }
+        scrollHint={<ScrollCue />}
       >
         {/* Dark image overlay */}
         <div
@@ -227,6 +186,15 @@ function Hero() {
             text-white
           "
         >
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
+            className="mb-5"
+          >
+            <AvailabilityBadge />
+          </motion.div>
+
           {/* Name */}
           <motion.h1
             initial={{ opacity: 0, y: 40 }}

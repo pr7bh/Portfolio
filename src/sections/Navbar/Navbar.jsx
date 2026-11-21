@@ -8,6 +8,8 @@ import {
 } from "@tabler/icons-react";
 import GlassSurface from "../../common/GlassSurface";
 import SoundToggle from "../../common/SoundToggle";
+import LogoMark from "../../common/LogoMark";
+import { warpTo } from "../../common/fx";
 import { useActiveSection } from "../../common/hooks";
 import { motion, AnimatePresence, useMotionValueEvent, useScroll, useSpring } from "motion/react";
 import CV from "../../assets/cv.pdf";
@@ -46,14 +48,14 @@ const Navbar = () => {
       setIsOpen(false);
       return;
     }
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    warpTo(id);
   };
 
   useEffect(() => {
     if (isOpen || !pendingScroll.current) return;
     const id = pendingScroll.current;
     pendingScroll.current = null;
-    requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }));
+    requestAnimationFrame(() => warpTo(id));
   }, [isOpen]);
 
   const concealed = hidden && !isOpen;
@@ -69,7 +71,7 @@ const Navbar = () => {
         className="fixed left-1/2 top-3 z-1000 hidden -translate-x-1/2 px-3 md:block"
       >
         <GlassSurface
-          width={730}
+          width={800}
           height={70}
           borderRadius={20}
           displace={0.3}
@@ -82,6 +84,17 @@ const Navbar = () => {
           mixBlendMode="normal"
         >
           <div className="relative flex h-17.5 items-center justify-center px-7">
+            <button
+              type="button"
+              onClick={() => scrollToSection("hero")}
+              aria-label="Back to top"
+              data-sfx="nav"
+              data-magnetic="0.35"
+              className="grid h-11 w-11 place-items-center rounded-xl transition-colors hover:bg-white/[0.06]"
+            >
+              <LogoMark size={30} />
+            </button>
+            <span className="mx-6 h-5 w-px bg-white/15" aria-hidden="true" />
             <ul className="flex items-center gap-10">
               {navItems.map((item) => {
                 const isActive = activeSection === item.id;
@@ -90,6 +103,7 @@ const Navbar = () => {
                     <button
                       type="button"
                       onClick={() => scrollToSection(item.id)}
+                      data-magnetic="0.35"
                       aria-current={isActive ? "true" : undefined}
                       className={`group relative cursor-pointer bg-transparent px-1 py-2 text-base font-medium transition-colors duration-300 ${
                         isActive ? "text-white" : "text-white/70 hover:text-white"
@@ -191,7 +205,7 @@ function MobileNav({ isOpen, setIsOpen, concealed, activeSection, scrollToSectio
               }}
             />
             <span className="absolute inset-px rounded-[11px] bg-[#0a0a0c]" aria-hidden="true" />
-            <span className="relative text-sm font-bold tracking-tight text-white">PS</span>
+            <LogoMark size={26} animated className="relative" />
           </button>
 
           {/* Live section readout */}

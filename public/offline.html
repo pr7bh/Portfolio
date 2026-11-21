@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#050506" />
+    <title>Offline · Prabhjot Singh</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background:
+          radial-gradient(520px circle at 50% 40%, rgba(147, 241, 255, 0.08), transparent 60%),
+          #050506;
+        color: #f4f2ee;
+        font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      main { max-width: 460px; }
+      img { width: 56px; height: 56px; }
+      h1 { font-size: 1.4rem; margin: 28px 0 10px; letter-spacing: -0.01em; }
+      p { color: rgba(244, 242, 238, 0.6); line-height: 1.7; font-size: 0.85rem; margin: 0; }
+      .log { margin-top: 24px; font-size: 0.75rem; color: rgba(244, 242, 238, 0.45); }
+      .log b { color: #ffa24c; font-weight: 400; }
+      button {
+        margin-top: 28px;
+        padding: 12px 22px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+        font: inherit;
+        font-size: 0.7rem;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+      button:hover { border-color: rgba(255, 255, 255, 0.6); }
+      button:focus-visible { outline: 1.5px solid #93f1ff; outline-offset: 4px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="/favicon.svg" alt="" />
+      <h1>Signal lost.</h1>
+      <p>You're offline and this page hasn't been saved on this device yet. Reconnect and it'll load right up.</p>
+      <div class="log">&gt; ping prabhjot.sys ........ <b>no route</b></div>
+      <button type="button" onclick="location.reload()">Retry connection</button>
+    </main>
+    <script>
+      window.addEventListener("online", () => location.reload());
+    </script>
+  </body>
+</html>
