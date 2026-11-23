@@ -138,7 +138,6 @@ const ScrollExpand = ({
       media.style.transformOrigin = '';
       media.style.transform = `scale(${c.mediaZoom + (1 - c.mediaZoom) * e})`;
     }
-    media.style.filter = `grayscale(${1 - e})`;
 
     if (scrimRef.current) scrimRef.current.style.opacity = `${c.overlayScrim * e}`;
 
@@ -283,7 +282,7 @@ const ScrollExpand = ({
             object-cover
             origin-center
             select-none
-            [will-change:transform,filter]
+            [will-change:transform]
             "
         src={src}
         poster={poster}
@@ -301,7 +300,7 @@ const ScrollExpand = ({
             object-cover
             origin-center
             select-none
-            [will-change:transform,filter]
+            [will-change:transform]
             "
         src={src}
         alt={alt}
