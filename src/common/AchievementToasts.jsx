@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
   IconCompass,
+  IconDeviceGamepad2,
   IconKey,
   IconLayoutGrid,
   IconMoonStars,
@@ -24,6 +25,7 @@ const BADGE_ICONS = {
   secret: IconKey,
   hyperdrive: IconRocket,
   curator: IconLayoutGrid,
+  arcade: IconDeviceGamepad2,
   oracle: IconSparkles,
   nightowl: IconMoonStars,
   completionist: IconTrophy,

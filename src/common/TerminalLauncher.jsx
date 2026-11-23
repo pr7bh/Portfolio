@@ -1,9 +1,10 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "motion/react";
 import { playSfx } from "./uiSounds";
 import { unlock } from "./achievements";
 
 const Terminal = lazy(() => import("./Terminal"));
+const MatrixRain = lazy(() => import("./MatrixRain"));
 
 const SECRET = "hire"; // typed anywhere on the page: runs `sudo hire-me`
 
@@ -20,6 +21,24 @@ export default function TerminalLauncher() {
 
   const close = useCallback(() => setState(null), []);
 
+  // `matrix` in the terminal: full-screen rain, then back to the terminal.
+  const [matrix, setMatrix] = useState(false);
+  const matrixOn = useRef(false);
+  matrixOn.current = matrix;
+  const endMatrix = useCallback(() => {
+    setMatrix(false);
+    // Reopen once the exit key is released, so it can't type into the input.
+    window.setTimeout(() => setState({ command: null }), 250);
+  }, []);
+  useEffect(() => {
+    const on = () => {
+      setState(null);
+      setMatrix(true);
+    };
+    window.addEventListener("fx:matrix", on);
+    return () => window.removeEventListener("fx:matrix", on);
+  }, []);
+
   useEffect(() => {
     if (state) unlock("terminal");
   }, [state]);
@@ -31,6 +50,7 @@ export default function TerminalLauncher() {
       setState((s) => (s ? null : { command: null }));
     };
     const onKey = (e) => {
+      if (matrixOn.current) return; // keys exit the rain instead
       // Keys on the boot screen belong to it ("press any key to enter").
       if (document.querySelector('[data-boot-screen]')) return;
       // Ctrl+K / ⌘K toggles from anywhere, even while typing in the terminal.
@@ -72,6 +92,7 @@ export default function TerminalLauncher() {
           <Terminal key="terminal" initial={state.command} onClose={close} />
         )}
       </AnimatePresence>
+      <AnimatePresence>{matrix && <MatrixRain key="matrix" onDone={endMatrix} />}</AnimatePresence>
     </Suspense>
   );
 }

@@ -12,6 +12,7 @@ export const BADGES = [
   { id: "hyperdrive", title: "Hyperdrive", desc: "Engaged the warp drive.", hint: "↑↑↓↓←→←→… you know the rest." },
   { id: "curator", title: "Curator", desc: "Opened three case studies.", hint: "Go deep on the projects." },
   { id: "oracle", title: "Oracle", desc: "Asked the AI a question.", hint: "Someone is waiting to chat." },
+  { id: "arcade", title: "High Score", desc: "Scored 10+ in terminal snake.", hint: "The terminal has games." },
   { id: "nightowl", title: "Night Owl", desc: "Visited between midnight and 5 am.", hint: "Come back when the city sleeps." },
   { id: "completionist", title: "Completionist", desc: "Unlocked every other badge.", hint: "Collect them all." },
 ];

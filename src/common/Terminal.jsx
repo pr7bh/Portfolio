@@ -8,6 +8,8 @@ import { isStandalone, promptInstall } from "./pwa";
 import { engageHyperdrive } from "./hyperdrive";
 import { BADGES, isUnlocked, progress, unlock } from "./achievements";
 import { getMood } from "./fx";
+import Snake from "./Snake";
+import { fetchWeather, nextJoke } from "./terminalData";
 import {
   AVAILABILITY,
   CALL_REQUEST,
@@ -296,6 +298,63 @@ const COMMANDS = {
       );
     },
   },
+  snake: {
+    about: "play snake",
+    run: ({ print }) =>
+      new Promise((resolve) => {
+        print(<Dim>Arrows / WASD to steer · Space pause · Esc quit</Dim>);
+        print(<Snake onExit={resolve} />);
+      }).then((score) => print(<span>Game over — final score <Warm>{score}</Warm>. Type <Cool>snake</Cool> to play again.</span>)),
+  },
+  matrix: {
+    about: "enter the digital rain",
+    run: async ({ print }) => {
+      print(<Ok>Jacking in…</Ok>);
+      await sleep(600);
+      window.dispatchEvent(new Event("fx:matrix"));
+    },
+  },
+  weather: {
+    usage: "[city]",
+    about: "live weather",
+    run: async ({ args, print }) => {
+      const city = args.join(" ").trim();
+      print(<Dim>Querying the sky{city ? ` over ${city}` : " over Yamunanagar"}…</Dim>);
+      try {
+        const w = await fetchWeather(city);
+        if (w.notFound) return print(<Warm>weather: couldn&apos;t find &quot;{city}&quot;. Try a bigger nearby city.</Warm>, "err");
+        print(
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
+            <pre className="leading-tight text-(--warm)">{w.art.join("\n")}</pre>
+            <div>
+              <div className="text-white">
+                {w.place} <Dim>· {w.time} local</Dim>
+              </div>
+              <div className="mt-1">
+                <span className="text-2xl font-bold text-white">{w.temp}°C</span>{" "}
+                <Dim>feels {w.feels}°C</Dim> · <Cool>{w.label}</Cool>
+              </div>
+              <div className="mt-1 text-white/70">
+                Wind {w.wind} km/h · Humidity {w.humidity}%
+              </div>
+              {w.home && <Dim>That&apos;s where Prabhjot is based. Try `weather london`.</Dim>}
+            </div>
+          </div>
+        );
+      } catch {
+        print(<Warm>weather: the sky isn&apos;t answering right now. Try again in a bit.</Warm>, "err");
+      }
+    },
+  },
+  joke: {
+    about: "a dev joke",
+    run: async ({ print }) => {
+      const [setup, punch] = nextJoke();
+      print(<span>{setup}</span>);
+      await sleep(1600);
+      print(<Warm>{punch}</Warm>);
+    },
+  },
   neofetch: {
     about: "system info",
     run: ({ print }) => {
@@ -381,7 +440,7 @@ const COMMANDS = {
 const ALIASES = { "?": "help", about: "whoami", exp: "experience", work: "projects", cls: "clear", quit: "exit", resume: "cv", sound: "music", email: "message", call: "book" };
 const resolve = (name) => COMMANDS[name] ? name : ALIASES[name] || null;
 
-const SUGGESTIONS = ["help", "whoami", "projects", "warp", "badges", "sudo hire-me", "neofetch"];
+const SUGGESTIONS = ["help", "whoami", "projects", "snake", "matrix", "weather", "joke", "warp", "badges", "sudo hire-me"];
 
 let nextId = 1;
 
