@@ -11,6 +11,7 @@ import styles from "./ProjectsStyles.module.css";
 
 import geomind from "../../assets/geomind.webp";
 import syncora from "../../assets/syncora.webp";
+import overhead from "../../assets/overhead.webp";
 import realEstate from "../../assets/real-estate.webp";
 import netflix from "../../assets/netflix.webp";
 import cryptoverse from "../../assets/cryptoverse.webp";
@@ -32,6 +33,16 @@ const items = [
     subtitle: "GenAI meeting assistant • RAG • Gemini",
     link: "https://syncora-by-prabh.vercel.app/",
     accent: "#a9b8ff",
+  },
+  {
+    src: overhead,
+    alt: "Overhead: a live map of aircraft over New York City with wind and rain layers",
+    title: "Overhead",
+    subtitle: "Live aircraft map • Wind & weather",
+    link: "https://overhead-by-prabh.vercel.app/",
+    // Deployed behind Vercel Authentication (its data sources' terms).
+    isPrivate: true,
+    accent: "#ffcc1f",
   },
   {
     src: realEstate,
@@ -279,7 +290,7 @@ function Projects() {
                       href={item.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label={`Visit ${item.title} live site`}
+                      aria-label={`Visit ${item.title} live site${item.isPrivate ? " (sign-in required)" : ""}`}
                       className={styles.visitBadge}
                       onClick={(e) => e.stopPropagation()}
                       onKeyDown={(e) => e.stopPropagation()}
