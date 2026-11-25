@@ -40,8 +40,7 @@ const items = [
     title: "Overhead",
     subtitle: "Live aircraft map • Wind & weather",
     link: "https://overhead-by-prabh.vercel.app/",
-    // Deployed behind Vercel Authentication (its data sources' terms).
-    isPrivate: true,
+    note: "Planes refresh every 3 minutes, so the map can be empty for a minute or two.",
     accent: "#ffcc1f",
   },
   {
@@ -290,7 +289,7 @@ function Projects() {
                       href={item.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label={`Visit ${item.title} live site${item.isPrivate ? " (sign-in required)" : ""}`}
+                      aria-label={`Visit ${item.title} live site`}
                       className={styles.visitBadge}
                       onClick={(e) => e.stopPropagation()}
                       onKeyDown={(e) => e.stopPropagation()}

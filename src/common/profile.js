@@ -33,7 +33,7 @@ export const EXPERIENCE = [
 export const PROJECTS = [
   { slug: "geomind", title: "GeoMind AI", about: "Geospatial AI platform · LLM · Maps", url: "https://geo-mind-by-prabh.vercel.app/" },
   { slug: "syncora", title: "Syncora", about: "GenAI meeting assistant · RAG · Gemini", url: "https://syncora-by-prabh.vercel.app/" },
-  { slug: "overhead", title: "Overhead", about: "Live aircraft map · sign-in required", url: "https://overhead-by-prabh.vercel.app/" },
+  { slug: "overhead", title: "Overhead", about: "Live aircraft map · wind & weather", url: "https://overhead-by-prabh.vercel.app/" },
   { slug: "real-estate", title: "Real Estate", about: "Property discovery and search", url: "https://singh-estate.vercel.app/" },
   { slug: "netflix", title: "Netflix Clone", about: "Streaming platform UI", url: "https://netflix-by-prabh.vercel.app/" },
   { slug: "cryptoverse", title: "Cryptoverse", about: "Cryptocurrency tracker", url: "https://cryptoverse7.vercel.app/" },

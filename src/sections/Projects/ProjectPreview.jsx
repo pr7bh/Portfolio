@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import { IconArrowDown, IconArrowLeft, IconArrowRight, IconArrowUpRight, IconBrandGithub, IconLock, IconX } from "@tabler/icons-react";
+import { IconArrowDown, IconArrowLeft, IconArrowRight, IconArrowUpRight, IconBrandGithub, IconInfoCircle, IconX } from "@tabler/icons-react";
 import { Magnetic } from "../../common/Interactive";
 import Holo from "../../common/Holo";
 import { unlock } from "../../common/achievements";
@@ -181,7 +181,7 @@ function Overlay({ items, index, onClose, onNavigate }) {
                     rel="noopener noreferrer"
                     className="group inline-flex items-center gap-3 rounded-full bg-white px-7 py-4 text-sm font-semibold text-[#050506] transition-colors duration-300 hover:bg-(--warm)"
                   >
-                    {item.isPrivate ? "Open private demo" : "Visit live site"}
+                    Visit live site
                     <IconArrowUpRight
                       size={18}
                       stroke={2}
@@ -202,10 +202,10 @@ function Overlay({ items, index, onClose, onNavigate }) {
                   </a>
                 ))}
               </motion.div>
-              {item.isPrivate && (
+              {item.note && (
                 <motion.p variants={fade} className="mt-4 inline-flex items-center gap-2 text-sm text-white/60">
-                  <IconLock size={15} stroke={1.75} aria-hidden="true" />
-                  Sign-in required: access is limited to keep to the flight data terms.
+                  <IconInfoCircle size={15} stroke={1.75} aria-hidden="true" />
+                  {item.note}
                 </motion.p>
               )}
               {hasDetail && (
